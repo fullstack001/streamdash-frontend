@@ -31,7 +31,7 @@ export default defineConfig({
     port: 3030,
     proxy: {
       '/api': {
-        target: 'https://api.streamdash.com',
+        target: 'https://api.streamdash.co',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, '/api'),
