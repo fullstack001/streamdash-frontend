@@ -34,6 +34,7 @@ export const PRICE_OPTIONS = [
   { value: 'between', label: 'Between $25 - $75' },
   { value: 'above', label: 'Above $75' },
 ];
+
 export const COLOR_OPTIONS = [
   '#00AB55',
   '#000000',
