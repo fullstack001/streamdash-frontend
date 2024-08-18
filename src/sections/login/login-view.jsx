@@ -15,7 +15,13 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
 
+import { useAuth } from 'src/hooks/use-auth';
+
+import { signIn } from 'src/lib/api/user';
 import { bgGradient } from 'src/theme/css';
+import userStore from 'src/store/userStore';
+import getDevice from 'src/lib/api/getDevice';
+import devicesStore from 'src/store/devicesStore';
 
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
@@ -26,22 +32,52 @@ export default function LoginView() {
   const theme = useTheme();
 
   const router = useRouter();
+  const { setUser } = userStore();
+  const { setDevices } = devicesStore();
+  const user = useAuth();
 
+  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleClick = () => {
-    router.push('/dashboard');
+  const handleClick = async () => {
+    setLoading(true);
+    const data = { email, password };
+    const res = await signIn(data);
+    if (res === 200) {
+      setUser({ ...user, isAuth: true });
+      const response = await getDevice();
+      if (response === 500) {
+        alert('Network Error');
+      } else {
+        console.log(response);
+        setDevices(response.data);
+        router.push('/');
+      }
+      // navigate(`/${user.isAdmin ? 'admin-dashboard' : 'dashboard'}`);
+    }
+    // else if (res.msg == 'email') setEmailValid({ isvalid: false, msg: 'User not exist' });
+    // else if (res.msg == 'password') setPasswordValid({ isvalid: false, msg: 'Wrong Password' });
+    // else toast.info('Network Error.');
   };
 
   const renderForm = (
     <>
       <Stack spacing={3}>
-        <TextField name="email" label="Email address" />
+        <TextField
+          name="email"
+          label="Email address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
         <TextField
           name="password"
           label="Password"
           type={showPassword ? 'text' : 'password'}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -68,7 +104,11 @@ export default function LoginView() {
         color="inherit"
         onClick={handleClick}
       >
-        Login
+        {loading ? (
+          <img src="/assets/icons/spinner.svg" alt="Loading" style={{ width: 24, height: 24 }} />
+        ) : (
+          'Login'
+        )}
       </LoadingButton>
     </>
   );

@@ -1,3 +1,5 @@
+import Cookies from 'js-cookie';
+import PropTypes from 'prop-types';
 import { lazy, Suspense } from 'react';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 
@@ -7,10 +9,23 @@ export const IndexPage = lazy(() => import('src/pages/app'));
 export const SupportPage = lazy(() => import('src/pages/support'));
 export const Devices = lazy(() => import('src/pages/devices'));
 export const LoginPage = lazy(() => import('src/pages/login'));
-export const AddDevice = lazy(() => import('src/pages/add-device'));
+export const LogoutPage = lazy(() => import('src/pages/logout'));
+export const AddDevicePage = lazy(() => import('src/pages/add-device'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // ----------------------------------------------------------------------
+
+function isAuthenticated() {
+  return !!Cookies.get('token');
+}
+
+function PrivateRoute({ element }) {
+  return isAuthenticated() ? element : <Navigate to="/login" replace />;
+}
+
+PrivateRoute.propTypes = {
+  element: PropTypes.element.isRequired,
+};
 
 export default function Router() {
   const routes = useRoutes([
@@ -23,10 +38,11 @@ export default function Router() {
         </DashboardLayout>
       ),
       children: [
-        { element: <IndexPage />, index: true },
-        { path: 'all-devices', element: <Devices /> },
-        { path: 'add-device', element: <AddDevice /> },
-        { path: 'support', element: <SupportPage /> },
+        { element: <PrivateRoute element={<IndexPage />} />, index: true },
+        { path: 'all-devices', element: <PrivateRoute element={<Devices />} /> },
+        { path: 'add-device', element: <PrivateRoute element={<AddDevicePage />} /> },
+        { path: 'support', element: <PrivateRoute element={<SupportPage />} /> },
+        { path: 'logout', element: <PrivateRoute element={<LogoutPage />} /> },
       ],
     },
     {

@@ -12,19 +12,21 @@ import TablePagination from '@mui/material/TablePagination';
 // import { users } from 'src/_mock/user';
 
 // import Iconify from 'src/components/iconify';
+import devicesStore from 'src/store/devicesStore';
+
 import Scrollbar from 'src/components/scrollbar';
 
 import TableNoData from '../table-no-data';
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
-import getDevice from '../../../lib/api/getDevice';
 import UserTableToolbar from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
 // ----------------------------------------------------------------------
 
 export default function UserPage() {
+  const { devices } = devicesStore((state) => state);
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(0);
 
@@ -37,18 +39,11 @@ export default function UserPage() {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
   useEffect(() => {
-    const deviceGet = async () => {
-      const res = await getDevice();
-      if (res === 500) {
-        alert('Network Error');
-      } else {
-        console.log(res);
-        setUsers(res.data);
-      }
-    };
-    deviceGet();
-  }, []);
+    console.log(devices);
+    setUsers(devices);
+  }, [devices, setUsers]);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
