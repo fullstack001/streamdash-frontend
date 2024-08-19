@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import Cookies from 'js-cookie';
+import { useState, useEffect } from 'react';
 
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -6,10 +7,13 @@ import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
+import { useRouter } from 'src/routes/hooks';
+
 import addDevice from 'src/lib/api/addDevice';
 import devicesStore from 'src/store/devicesStore';
 
 export default function ProductsView() {
+  const router = useRouter();
   const { devices } = devicesStore((state) => state);
   const { setDevices } = devicesStore();
   const [username, setUsername] = useState('');
@@ -24,6 +28,13 @@ export default function ProductsView() {
     password: '',
     mac: '',
   });
+
+  useEffect(() => {
+  if (!Array.isArray(devices) || devices.length === 0) {
+    Cookies.remove('token');
+    router.push('/login');
+  } 
+}, [devices, router]);
 
   const validate = () => {
     let isValid = true;
