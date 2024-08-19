@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie';
 import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
@@ -12,6 +13,8 @@ import TablePagination from '@mui/material/TablePagination';
 // import { users } from 'src/_mock/user';
 
 // import Iconify from 'src/components/iconify';
+import { useRouter } from 'src/routes/hooks';
+
 import devicesStore from 'src/store/devicesStore';
 
 import Scrollbar from 'src/components/scrollbar';
@@ -26,6 +29,7 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 // ----------------------------------------------------------------------
 
 export default function UserPage() {
+  const router = useRouter();
   const { devices } = devicesStore((state) => state);
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(0);
@@ -41,9 +45,12 @@ export default function UserPage() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
-    console.log(devices);
+    if (devices.length === 0) {
+      Cookies.remove('token');
+      router.push('/login');
+    }
     setUsers(devices);
-  }, [devices, setUsers]);
+  }, [devices, setUsers, router]);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';

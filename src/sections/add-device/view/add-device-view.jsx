@@ -12,8 +12,6 @@ import devicesStore from 'src/store/devicesStore';
 export default function ProductsView() {
   const { devices } = devicesStore((state) => state);
   const { setDevices } = devicesStore();
-  console.log(devices);
-
   const [username, setUsername] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -76,7 +74,6 @@ export default function ProductsView() {
         if (response === 403) {
           alert('Network Error');
         } else {
-          console.log(response);
           setDevices(response.data);
 
           // Clear input fields
