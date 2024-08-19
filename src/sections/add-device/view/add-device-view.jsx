@@ -100,7 +100,7 @@ export default function ProductsView() {
       </Typography>
       <Grid container spacing={3} justifyContent="center" alignItems="center">
         <Grid item xs={12} sm={6} md={4}>
-          <Grid container spacing={3}>
+          <Grid container rowSpacing={2} columnSpacing={12}>
             <Grid item xs={12}>
               <TextField
                 fullWidth
