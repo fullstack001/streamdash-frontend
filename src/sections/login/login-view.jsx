@@ -51,7 +51,6 @@ export default function LoginView() {
       if (response === 500) {
         alert('Network Error');
       } else {
-        console.log(response);
         setDevices(response.data);
         router.push('/');
       }
