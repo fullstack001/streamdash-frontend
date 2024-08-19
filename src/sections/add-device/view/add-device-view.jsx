@@ -30,11 +30,11 @@ export default function ProductsView() {
   });
 
   useEffect(() => {
-  if (!Array.isArray(devices) || devices.length === 0) {
-    Cookies.remove('token');
-    router.push('/login');
-  } 
-}, [devices, router]);
+    if (!Array.isArray(devices) || devices.length === 0) {
+      Cookies.remove('token');
+      router.push('/login');
+    }
+  }, [devices, router]);
 
   const validate = () => {
     let isValid = true;
@@ -92,6 +92,7 @@ export default function ProductsView() {
           setName('');
           setPassword('');
           setMac('');
+          alert('A devied added.');
         }
       } catch (error) {
         alert('Network Error');

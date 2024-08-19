@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
 import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
+// import Checkbox from '@mui/material/Checkbox';
 import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
@@ -24,6 +24,7 @@ export default function UserTableRow({
   expiry,
   status,
   handleClick,
+  deleteAction,
 }) {
   const [open, setOpen] = useState(null);
 
@@ -34,15 +35,24 @@ export default function UserTableRow({
   const handleCloseMenu = () => {
     setOpen(null);
   };
+  const handleDelete = () => {
+    deleteAction(loginId);
+    setOpen(null);
+  };
+
+  // Parse expiry date and get the current date
+  const expiryDate = new Date(expiry);
+  const currentDate = new Date();
+  const isBeforeExpiry = currentDate > expiryDate;
 
   return (
     <>
       <TableRow hover tabIndex={-1} name="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
+        {/* <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
-        </TableCell>
+        </TableCell> */}
 
-        <TableCell component="th" scope="row" padding="none">
+        <TableCell component="th" scope="row">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Typography variant="subtitle2" noWrap>
               {loginId}
@@ -83,10 +93,12 @@ export default function UserTableRow({
           Edit
         </MenuItem>
 
-        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
-          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Delete
-        </MenuItem>
+        {isBeforeExpiry && (
+          <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
+            <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
+            Delete
+          </MenuItem>
+        )}
       </Popover>
     </>
   );
@@ -101,4 +113,5 @@ UserTableRow.propTypes = {
   name: PropTypes.any,
   selected: PropTypes.any,
   status: PropTypes.string,
+  deleteAction: PropTypes.string,
 };
