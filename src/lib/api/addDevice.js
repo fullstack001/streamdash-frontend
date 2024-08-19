@@ -11,6 +11,6 @@ export default async function addDevice(credential) {
     console.error('Error adding device:', err);
 
     // Return a more informative error object or message
-    return 404;
+    return 500;
   }
 }

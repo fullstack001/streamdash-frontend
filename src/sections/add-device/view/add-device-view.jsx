@@ -82,7 +82,7 @@ export default function ProductsView() {
       try {
         const data = { username, name, password, mac };
         const response = await addDevice(data);
-        if (response === 403) {
+        if (response === 500) {
           alert('Network Error');
         } else {
           setDevices(response.data);
