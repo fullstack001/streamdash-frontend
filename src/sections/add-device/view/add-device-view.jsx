@@ -150,7 +150,7 @@ export default function ProductsView() {
                 required
               />
             </Grid>
-            <Grid item xs={12} fullWidth justifyContent="center" alignItems="center">
+            <Grid item xs={12}>
               <Button
                 onClick={handleSubmit}
                 variant="contained"
