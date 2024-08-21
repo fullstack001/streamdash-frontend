@@ -9,13 +9,16 @@ import Typography from '@mui/material/Typography';
 
 import { useRouter } from 'src/routes/hooks';
 
+import { useAuth } from 'src/hooks/use-auth';
+
 import addDevice from 'src/lib/api/addDevice';
 import devicesStore from 'src/store/devicesStore';
 
 export default function ProductsView() {
   const router = useRouter();
+  const user = useAuth();
   const { devices } = devicesStore((state) => state);
-  const { setDevices } = devicesStore();
+  const { setDevices, setUserDevices } = devicesStore();
   const [username, setUsername] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -81,11 +84,13 @@ export default function ProductsView() {
 
       try {
         const data = { username, name, password, mac };
+        data.email = user.email;
         const response = await addDevice(data);
         if (response === 500) {
           alert('Network Error');
         } else {
           setDevices(response.data);
+          setUserDevices(response.userDevices);
 
           // Clear input fields
           setUsername('');
@@ -166,6 +171,7 @@ export default function ProductsView() {
                 color="primary"
                 fullWidth
                 disabled={loading}
+                sx={{ width: '100%' }}
               >
                 {loading ? (
                   <img

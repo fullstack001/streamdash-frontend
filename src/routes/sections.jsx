@@ -11,6 +11,8 @@ export const Devices = lazy(() => import('src/pages/devices'));
 export const LoginPage = lazy(() => import('src/pages/login'));
 export const LogoutPage = lazy(() => import('src/pages/logout'));
 export const AddDevicePage = lazy(() => import('src/pages/add-device'));
+export const SignUpPage = lazy(() => import('src/pages/signup'));
+export const EditDevicePage = lazy(() => import('src/pages/edit-device'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // ----------------------------------------------------------------------
@@ -41,6 +43,7 @@ export default function Router() {
         { element: <PrivateRoute element={<IndexPage />} />, index: true },
         { path: 'all-devices', element: <PrivateRoute element={<Devices />} /> },
         { path: 'add-device', element: <PrivateRoute element={<AddDevicePage />} /> },
+        { path: 'edit-device/:id', element: <PrivateRoute element={<EditDevicePage />} /> },
         { path: 'support', element: <PrivateRoute element={<SupportPage />} /> },
         { path: 'logout', element: <PrivateRoute element={<LogoutPage />} /> },
       ],
@@ -48,6 +51,10 @@ export default function Router() {
     {
       path: 'login',
       element: <LoginPage />,
+    },
+    {
+      path: 'signup',
+      element: <SignUpPage />,
     },
     {
       path: '404',

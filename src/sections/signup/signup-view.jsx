@@ -17,7 +17,7 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useAuth } from 'src/hooks/use-auth';
 
-import { signIn } from 'src/lib/api/user';
+import { signup } from 'src/lib/api/user';
 import { bgGradient } from 'src/theme/css';
 import userStore from 'src/store/userStore';
 import getDevice from 'src/lib/api/getDevice';
@@ -28,9 +28,8 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function LoginView() {
+export default function SignupView() {
   const theme = useTheme();
-
   const router = useRouter();
   const { setUser } = userStore();
   const { setDevices, setUserDevices } = devicesStore();
@@ -39,12 +38,47 @@ export default function LoginView() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setConfirmShowPassword] = useState(false);
+  const [errors, setErrors] = useState({
+    email: '',
+    password: '',
+    confirmPassword,
+  });
+
+  const validateForm = async () => {
+    const newErrors = {};
+
+    if (!email) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = 'Email is invalid';
+    }
+
+    if (!password) {
+      newErrors.password = 'Password is required';
+    } else if (password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    if (!confirmPassword) {
+      newErrors.confirmPassword = 'Confirm Password is required';
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleClick = async () => {
+    const isValid = await validateForm();
+    if (!isValid) return;
+
     setLoading(true);
     const data = { email, password };
-    const res = await signIn(data);
+    const res = await signup(data);
     if (res === 200) {
       setUser({ ...user, isAuth: true });
       const response = await getDevice(email);
@@ -55,15 +89,18 @@ export default function LoginView() {
         setUserDevices(response.userDevice);
         router.push('/');
       }
-      // navigate(`/${user.isAdmin ? 'admin-dashboard' : 'dashboard'}`);
+    } else {
+      if (res.msg === 'exist') {
+        const newErrors = {};
+        newErrors.email = 'Email already exist';
+        setErrors(newErrors);
+      }
+      setLoading(false);
     }
-    // else if (res.msg == 'email') setEmailValid({ isvalid: false, msg: 'User not exist' });
-    // else if (res.msg == 'password') setPasswordValid({ isvalid: false, msg: 'Wrong Password' });
-    // else toast.info('Network Error.');
   };
 
-  const goSignup = () => {
-    router.push('/signup');
+  const goLogin = () => {
+    router.push('/login');
   };
 
   const renderForm = (
@@ -74,6 +111,8 @@ export default function LoginView() {
           label="Email address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          error={!!errors.email}
+          helperText={errors.email}
         />
 
         <TextField
@@ -82,6 +121,8 @@ export default function LoginView() {
           type={showPassword ? 'text' : 'password'}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          error={!!errors.password}
+          helperText={errors.password}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -92,12 +133,25 @@ export default function LoginView() {
             ),
           }}
         />
-      </Stack>
 
-      <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 3 }}>
-        {/* <Link variant="subtitle2" underline="hover">
-          Forgot password?
-        </Link> */}
+        <TextField
+          name="confirmPassword"
+          label="Confirm Password"
+          type={showConfirmPassword ? 'text' : 'password'}
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          error={!!errors.confirmPassword}
+          helperText={errors.confirmPassword}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setConfirmShowPassword(!showConfirmPassword)} edge="end">
+                  <Iconify icon={showConfirmPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
       </Stack>
 
       <LoadingButton
@@ -107,12 +161,10 @@ export default function LoginView() {
         variant="contained"
         color="inherit"
         onClick={handleClick}
+        loading={loading}
+        sx={{ marginTop: '40px' }}
       >
-        {loading ? (
-          <img src="/assets/icons/spinner.svg" alt="Loading" style={{ width: 24, height: 24 }} />
-        ) : (
-          'Login'
-        )}
+        Signup
       </LoadingButton>
     </>
   );
@@ -143,46 +195,14 @@ export default function LoginView() {
             maxWidth: 420,
           }}
         >
-          <Typography variant="h4">Sign in to Streamdash</Typography>
+          <Typography variant="h4">Create New Account</Typography>
 
           <Typography variant="body2" sx={{ mt: 2, mb: 5 }}>
-            Don’t have an account?
-            <Link variant="subtitle2" sx={{ ml: 0.5, cursor: 'pointer' }} onClick={goSignup}>
-              Create new account
+            Do have an account already?
+            <Link variant="subtitle2" sx={{ ml: 0.5, cursor: 'pointer' }} onClick={goLogin}>
+              Login
             </Link>
           </Typography>
-
-          <Stack direction="row" spacing={2}>
-            {/* <Button
-              fullWidth
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-            >
-              <Iconify icon="eva:google-fill" color="#DF3E30" />
-            </Button>
-
-            <Button
-              fullWidth
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-            >
-              <Iconify icon="eva:facebook-fill" color="#1877F2" />
-            </Button>
-
-            <Button
-              fullWidth
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-            >
-              <Iconify icon="eva:twitter-fill" color="#1C9CEA" />
-            </Button> */}
-          </Stack>
 
           <Divider sx={{ my: 3 }}>
             {/* <Typography variant="body2" sx={{ color: 'text.secondary' }}>

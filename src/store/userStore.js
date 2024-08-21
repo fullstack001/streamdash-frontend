@@ -5,6 +5,7 @@ const initialState = {
   email: '',
   id: '',
   isAdmin: false,
+  credit: 0,
 };
 
 const userStore = create((set) => ({

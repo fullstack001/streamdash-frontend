@@ -10,6 +10,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
+import { useAuth } from 'src/hooks/use-auth';
+
 import { account } from 'src/_mock/account';
 
 // ----------------------------------------------------------------------
@@ -32,6 +34,7 @@ const MENU_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
+  const user = useAuth();
   const [open, setOpen] = useState(null);
 
   const handleOpen = (event) => {
@@ -86,10 +89,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {user.name}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {user.email}
           </Typography>
         </Box>
 

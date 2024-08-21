@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import Stack from '@mui/material/Stack';
 import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
 // import Checkbox from '@mui/material/Checkbox';
 import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
-import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
 import Label from 'src/components/label';
@@ -15,17 +13,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({
-  selected,
-  loginId,
-  mac,
-  name,
-  comment,
-  expiry,
-  status,
-  handleClick,
-  deleteAction,
-}) {
+export default function UserTableRow({ mac, expiry, status, deleteAction, editAction }) {
   const [open, setOpen] = useState(null);
 
   const handleOpenMenu = (event) => {
@@ -36,7 +24,11 @@ export default function UserTableRow({
     setOpen(null);
   };
   const handleDelete = () => {
-    deleteAction(loginId);
+    deleteAction();
+    setOpen(null);
+  };
+  const handleEdit = () => {
+    editAction();
     setOpen(null);
   };
 
@@ -47,25 +39,9 @@ export default function UserTableRow({
 
   return (
     <>
-      <TableRow hover tabIndex={-1} name="checkbox" selected={selected}>
-        {/* <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
-        </TableCell> */}
-
-        <TableCell component="th" scope="row">
-          <Stack direction="row" alignItems="center" spacing={2}>
-            <Typography variant="subtitle2" noWrap>
-              {loginId}
-            </Typography>
-          </Stack>
-        </TableCell>
-
+      <TableRow hover tabIndex={-1} name="checkbox">
         <TableCell>{mac}</TableCell>
-
-        <TableCell>{name}</TableCell>
-
-        <TableCell align="center">{comment}</TableCell>
-        <TableCell align="center">{expiry}</TableCell>
+        <TableCell>{expiry}</TableCell>
 
         <TableCell>
           <Label color={(status === 'INACTIVE' && 'error') || 'success'}>{status}</Label>
@@ -88,7 +64,7 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleCloseMenu}>
+        <MenuItem onClick={handleEdit}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>
@@ -106,12 +82,8 @@ export default function UserTableRow({
 
 UserTableRow.propTypes = {
   mac: PropTypes.any,
-  handleClick: PropTypes.func,
-  comment: PropTypes.any,
   expiry: PropTypes.any,
-  loginId: PropTypes.any,
-  name: PropTypes.any,
-  selected: PropTypes.any,
   status: PropTypes.string,
-  deleteAction: PropTypes.string,
+  deleteAction: PropTypes.func,
+  editAction: PropTypes.func,
 };

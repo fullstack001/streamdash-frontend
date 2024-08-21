@@ -39,15 +39,14 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 
 export default function UserPage() {
   const router = useRouter();
-  const { devices } = devicesStore((state) => state);
-  const { setDevice } = devicesStore();
+  const { devices, userDevices } = devicesStore((state) => state);
+  const { setDevices, setUserDevices } = devicesStore();
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [deleteId, setDeleteId] = useState('');
-  const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('name');
-  const [filterName, setFilterName] = useState('');
+  const [filterMac, setFilterMac] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -60,8 +59,12 @@ export default function UserPage() {
       Cookies.remove('token');
       router.push('/login');
     }
-    setUsers(devices);
-  }, [devices, setUsers, router]);
+    console.log(userDevices, devices);
+    const currentDevices = devices.filter((device) =>
+      userDevices.some((userDevice) => userDevice.mac === device.mac)
+    );
+    setUsers(currentDevices);
+  }, [devices, userDevices, setUsers, router]);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -70,34 +73,6 @@ export default function UserPage() {
       setOrderBy(id);
     }
   };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = users.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
-  };
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -107,16 +82,20 @@ export default function UserPage() {
     setRowsPerPage(parseInt(event.target.value, 10));
   };
 
-  const handleFilterByName = (event) => {
+  const handleFilterByMac = (event) => {
     setPage(0);
-    setFilterName(event.target.value);
+    setFilterMac(event.target.value);
   };
 
   const dataFiltered = applyFilter({
     inputData: users,
     comparator: getComparator(order, orderBy),
-    filterName,
+    filterMac,
   });
+
+  const handleEdit = (id) => {
+    router.push(`/edit-device/${id}`);
+  };
 
   const handleDelete = (id) => {
     setDeleteId(id);
@@ -131,11 +110,12 @@ export default function UserPage() {
   // Handle the deletion after confirmation
   const handleConfirmDelete = async () => {
     setLoading(true);
-    const res = await deleteDevice({ usernmae: deleteId });
+    const res = await deleteDevice({ username: deleteId });
     if (res === 200) {
       setSnackbarSeverity('success');
       setSnackbarMessage('Device deleted successfully');
-      setDevice(devices.filter((item) => item.loginId !== deleteId));
+      setDevices(devices.filter((item) => item.loginId !== deleteId));
+      setUserDevices(devices.filter((item) => item.loginId !== deleteId));
     } else {
       setSnackbarSeverity('error');
       setSnackbarMessage('Failed to delete device');
@@ -150,7 +130,7 @@ export default function UserPage() {
     setSnackbarOpen(false);
   };
 
-  const notFound = !dataFiltered.length && !!filterName;
+  const notFound = !dataFiltered.length && !!filterMac;
 
   return (
     <Container>
@@ -159,11 +139,7 @@ export default function UserPage() {
       </Stack>
 
       <Card>
-        <UserTableToolbar
-          numSelected={selected.length}
-          filterName={filterName}
-          onFilterName={handleFilterByName}
-        />
+        <UserTableToolbar filterMac={filterMac} onFilterMac={handleFilterByMac} />
 
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
@@ -172,14 +148,9 @@ export default function UserPage() {
                 order={order}
                 orderBy={orderBy}
                 rowCount={users.length}
-                numSelected={selected.length}
                 onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'loginId', label: 'loginId' },
                   { id: 'mac', label: 'Mac' },
-                  { id: 'name', label: 'Name' },
-                  { id: 'comment', label: 'Comment' },
                   { id: 'expiry', label: 'Expiry' },
                   { id: 'status', label: 'Status' },
                   { id: '' },
@@ -191,16 +162,11 @@ export default function UserPage() {
                   .map((row) => (
                     <UserTableRow
                       key={row.loginId}
-                      loginId={row.loginId}
                       mac={row.mac}
-                      name={row.name}
-                      comment={row.comment}
                       status={row.status}
                       expiry={row.expiry}
-                      isVerified={row.isVerified}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.name)}
-                      deleteAction={handleDelete}
+                      deleteAction={() => handleDelete(row.loginId)}
+                      editAction={() => handleEdit(row.loginId)}
                     />
                   ))}
 
@@ -209,7 +175,7 @@ export default function UserPage() {
                   emptyRows={emptyRows(page, rowsPerPage, users.length)}
                 />
 
-                {notFound && <TableNoData query={filterName} />}
+                {notFound && <TableNoData query={filterMac} />}
               </TableBody>
             </Table>
           </TableContainer>

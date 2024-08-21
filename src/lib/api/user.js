@@ -10,3 +10,13 @@ export const signIn = async (user) => {
     return error.response.data;
   }
 };
+
+export const signup = async (user) => {
+  try {
+    const records = await axios.post(`api/auth/signup`, user);
+    Cookies.set('token', records.data.token);
+    return 200;
+  } catch (error) {
+    return error.response.data;
+  }
+};

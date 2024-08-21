@@ -6,7 +6,9 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 
+import { useAuth } from 'src/hooks/use-auth';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { bgBlur } from 'src/theme/css';
@@ -22,8 +24,8 @@ import AccountPopover from './common/account-popover';
 // ----------------------------------------------------------------------
 
 export default function Header({ onOpenNav }) {
+  const user = useAuth();
   const theme = useTheme();
-
   const lgUp = useResponsive('up', 'lg');
 
   const renderContent = (
@@ -39,6 +41,11 @@ export default function Header({ onOpenNav }) {
       <Box sx={{ flexGrow: 1 }} />
 
       <Stack direction="row" alignItems="center" spacing={1}>
+        {/* Display the credit value */}
+        <Typography variant="body1" sx={{ color: theme.palette.text.primary, mr: 4 }}>
+          Credit: {user.credit}
+        </Typography>
+
         {/* <LanguagePopover /> */}
         {/* <NotificationsPopover /> */}
         <AccountPopover />
