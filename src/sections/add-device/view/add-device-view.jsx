@@ -1,7 +1,9 @@
 import Cookies from 'js-cookie';
 import { useState, useEffect } from 'react';
 
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
 import Grid from '@mui/material/Unstable_Grid2';
 import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
@@ -24,6 +26,9 @@ export default function ProductsView() {
   const [password, setPassword] = useState('');
   const [mac, setMac] = useState('');
   const [loading, setLoading] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
   const [errors, setErrors] = useState({
     username: '',
@@ -97,14 +102,22 @@ export default function ProductsView() {
           setName('');
           setPassword('');
           setMac('');
-          alert('A devied added.');
+          setSnackbarSeverity('success');
+          setSnackbarMessage('Your device has been connected successfully. ');
         }
       } catch (error) {
-        alert('Network Error');
+        setSnackbarSeverity('error');
+        setSnackbarMessage('Failed to connect device.');
       } finally {
         setLoading(false);
+        setSnackbarOpen(true);
       }
     }
+  };
+
+  // Handle closing of the snackbar
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -187,6 +200,17 @@ export default function ProductsView() {
           </Grid>
         </Grid>
       </Grid>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }
