@@ -115,7 +115,7 @@ export default function UserPage() {
       setSnackbarSeverity('success');
       setSnackbarMessage('Device deleted successfully');
       setDevices(devices.filter((item) => item.loginId !== deleteId));
-      setUserDevices(devices.filter((item) => item.loginId !== deleteId));
+      setUserDevices(userDevices.filter((item) => item.username !== deleteId));
     } else {
       setSnackbarSeverity('error');
       setSnackbarMessage('Failed to delete device');

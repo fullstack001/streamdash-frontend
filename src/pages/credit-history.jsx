@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 
-import { UserView } from 'src/sections/devices/view';
+import { HistoryView } from 'src/sections/credit-history/view';
 
 // ----------------------------------------------------------------------
 
-export default function Devices() {
+export default function CreditHistory() {
   return (
     <>
       <Helmet>
         <title> User | Streamdash </title>
       </Helmet>
 
-      <UserView />
+      <HistoryView />
     </>
   );
 }

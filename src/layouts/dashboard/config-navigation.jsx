@@ -23,15 +23,15 @@ const navConfig = [
     icon: icon('ic_user'),
   },
   {
+    title: 'Credit history',
+    path: '/credit-history',
+    icon: icon('ic_lock'),
+  },
+  {
     title: 'Support',
     path: '/support',
     icon: icon('ic_blog'),
   },
-  // {
-  //   title: 'login',
-  //   path: '/login',
-  //   icon: icon('ic_lock'),
-  // },
   // {
   //   title: 'Not found',
   //   path: '/404',
