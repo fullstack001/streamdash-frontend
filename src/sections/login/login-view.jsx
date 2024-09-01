@@ -48,6 +48,7 @@ export default function LoginView() {
     if (res === 200) {
       setUser({ ...user, isAuth: true });
       const response = await getDevice(email);
+      console.log(user);
       if (response === 500) {
         alert('Network Error');
       } else {
