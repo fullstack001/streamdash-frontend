@@ -10,7 +10,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
-import userStore from 'src/store/userStore';
+import { useAuth } from 'src/hooks/use-auth';
+
 import { account } from 'src/_mock/account';
 
 // ----------------------------------------------------------------------
@@ -33,9 +34,8 @@ const MENU_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
-  const user = userStore((state) => state);
+  const user = useAuth();
   const [open, setOpen] = useState(null);
-  console.log(user);
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);

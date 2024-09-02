@@ -9,7 +9,8 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import userStore from 'src/store/userStore';
+import { useAuth } from 'src/hooks/use-auth';
+
 import { getUserHistory } from 'src/lib/api/credit';
 
 import TableNoData from '../table-no-data';
@@ -22,7 +23,7 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 // ----------------------------------------------------------------------
 
 export default function HistoryPage() {
-  const user = userStore((state) => state);
+  const user = useAuth();
   const [history, setHistory] = useState([]);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
@@ -32,16 +33,16 @@ export default function HistoryPage() {
 
   useEffect(() => {
     const getHistory = async () => {
-      const res = await getUserHistory({ email: user.history });
+      const data = user.email;
+      const res = await getUserHistory(data);
       if (res === 500) {
         console.log(res);
       } else {
         setHistory(res);
       }
     };
-    setHistory([]);
     getHistory();
-  }, [setHistory, user]);
+  }, [user.email]);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';

@@ -48,6 +48,7 @@ export default function LoginView() {
     const data = { email, password };
     const res = await signIn(data);
     if (res === 200) {
+      console.log(authUser);
       setUser({ ...authUser, isAuth: true });
       const response = await getDevice(email);
       if (response === 500) {
