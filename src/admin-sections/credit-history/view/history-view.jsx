@@ -87,6 +87,7 @@ export default function HistoryPage() {
               rowCount={history.length}
               onRequestSort={handleSort}
               headLabel={[
+                { id: 'email', label: 'Email' },
                 { id: 'action', label: 'Action' },
                 { id: 'credit', label: 'Credit' },
                 { id: 'device', label: 'DeviceId' },
@@ -98,7 +99,8 @@ export default function HistoryPage() {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => (
                   <UserTableRow
-                    key={row.loginId}
+                    key={row._id}
+                    email={row.email}
                     action={row.action}
                     credit={row.credit}
                     userId={row.userId}
