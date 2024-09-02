@@ -6,6 +6,7 @@ const initialState = {
   id: '',
   isAdmin: false,
   credit: 0,
+  name: '',
 };
 
 const userStore = create((set) => ({

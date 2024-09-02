@@ -4,7 +4,11 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 
+import { useRouter } from 'src/routes/hooks';
+
 import { useAuth } from 'src/hooks/use-auth';
+
+import { getUser } from 'src/lib/api/user';
 
 import AppWidgetSummary from '../app-widget-summary';
 
@@ -16,11 +20,11 @@ const credits = [
 ];
 
 export default function AppView() {
+  const router = useRouter();
   const [windowClosed, setWindowClosed] = useState(false);
   const user = useAuth();
   const handleGridClick = (credit) => {
-    // const url = `http://localhost:3000?credit=${credit.credit}&price=${credit.price}&email=${user.email}`;
-    const url = `https://isstreamdash.com?credit=${credit.credit}&price=${credit.price}&email=${user.email}`;
+    const url = `https://istreamdash.com?credit=${credit.credit}&price=${credit.price}&email=${user.email}`;
     const newWindow = window.open(url, '_blank', 'width=800,height=650');
 
     const interval = setInterval(() => {
@@ -32,11 +36,20 @@ export default function AppView() {
   };
 
   useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const res = await getUser({ email: user.email });
+        console.log(res);
+        router.push('/');
+      } catch (error) {
+        console.log(error);
+      }
+    };
     if (windowClosed) {
-      console.log('The window has been closed.');
+      getUserData();
       setWindowClosed(false); // Reset state if needed
     }
-  }, [windowClosed]);
+  }, [windowClosed, user, router]);
 
   return (
     <Container maxWidth="xl">

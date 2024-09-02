@@ -10,7 +10,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableToolbar({ filterDevice, onFilterDevice }) {
+export default function UserTableToolbar({ filterMac, onFilterMac }) {
   return (
     <Toolbar
       sx={{
@@ -21,9 +21,9 @@ export default function UserTableToolbar({ filterDevice, onFilterDevice }) {
       }}
     >
       <OutlinedInput
-        value={filterDevice}
-        onChange={onFilterDevice}
-        placeholder="Search userId..."
+        value={filterMac}
+        onChange={onFilterMac}
+        placeholder="Search mac..."
         startAdornment={
           <InputAdornment position="start">
             <Iconify
@@ -44,6 +44,6 @@ export default function UserTableToolbar({ filterDevice, onFilterDevice }) {
 }
 
 UserTableToolbar.propTypes = {
-  filterDevice: PropTypes.string,
-  onFilterDevice: PropTypes.func,
+  filterMac: PropTypes.string,
+  onFilterMac: PropTypes.func,
 };

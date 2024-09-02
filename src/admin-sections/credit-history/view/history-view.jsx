@@ -9,8 +9,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import userStore from 'src/store/userStore';
-import { getUserHistory } from 'src/lib/api/credit';
+import { getAllHistory } from 'src/lib/api/credit';
 
 import TableNoData from '../table-no-data';
 import UserTableRow from '../user-table-row';
@@ -22,7 +21,6 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 // ----------------------------------------------------------------------
 
 export default function HistoryPage() {
-  const user = userStore((state) => state);
   const [history, setHistory] = useState([]);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
@@ -32,7 +30,7 @@ export default function HistoryPage() {
 
   useEffect(() => {
     const getHistory = async () => {
-      const res = await getUserHistory({ email: user.history });
+      const res = await getAllHistory();
       if (res === 500) {
         console.log(res);
       } else {
@@ -41,7 +39,7 @@ export default function HistoryPage() {
     };
     setHistory([]);
     getHistory();
-  }, [setHistory, user]);
+  }, [setHistory]);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -100,7 +98,7 @@ export default function HistoryPage() {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => (
                   <UserTableRow
-                    key={row._id}
+                    key={row.loginId}
                     action={row.action}
                     credit={row.credit}
                     userId={row.userId}

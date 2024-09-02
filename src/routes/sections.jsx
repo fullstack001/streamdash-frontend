@@ -1,8 +1,10 @@
 import Cookies from 'js-cookie';
 import PropTypes from 'prop-types';
+import { jwtDecode } from 'jwt-decode';
 import { lazy, Suspense } from 'react';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 
+import AdminLayout from 'src/layouts/admin';
 import DashboardLayout from 'src/layouts/dashboard';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
@@ -14,6 +16,8 @@ export const AddDevicePage = lazy(() => import('src/pages/add-device'));
 export const SignUpPage = lazy(() => import('src/pages/signup'));
 export const EditDevicePage = lazy(() => import('src/pages/edit-device'));
 export const CreditHistoryPage = lazy(() => import('src/pages/credit-history'));
+export const AdminCreditHistoryPage = lazy(() => import('src/admin-pages/credit-history'));
+export const AdminDevicePage = lazy(() => import('src/admin-pages/devices'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // ----------------------------------------------------------------------
@@ -21,6 +25,21 @@ export const Page404 = lazy(() => import('src/pages/page-not-found'));
 function isAuthenticated() {
   return !!Cookies.get('token');
 }
+
+function isAdmin() {
+  const token = Cookies.get('token');
+  if (!token) return false;
+  const decoded = jwtDecode(token);
+  return decoded.user.isAdmin;
+}
+
+function AdminPrivateRoute({ element }) {
+  return isAuthenticated() && isAdmin() ? element : <Navigate to="/login" replace />;
+}
+
+AdminPrivateRoute.propTypes = {
+  element: PropTypes.element.isRequired,
+};
 
 function PrivateRoute({ element }) {
   return isAuthenticated() ? element : <Navigate to="/login" replace />;
@@ -48,6 +67,27 @@ export default function Router() {
         { path: 'edit-device/:id', element: <PrivateRoute element={<EditDevicePage />} /> },
         { path: 'support', element: <PrivateRoute element={<SupportPage />} /> },
         { path: 'logout', element: <PrivateRoute element={<LogoutPage />} /> },
+      ],
+    },
+    {
+      path: 'admin',
+      element: (
+        <AdminLayout>
+          <Suspense>
+            <Outlet />
+          </Suspense>
+        </AdminLayout>
+      ),
+      children: [
+        { path: '', element: <Navigate to="devices" replace /> },
+        {
+          path: 'credit-history',
+          element: <AdminPrivateRoute element={<AdminCreditHistoryPage />} />,
+        },
+        {
+          path: 'devices',
+          element: <AdminPrivateRoute element={<AdminDevicePage />} />,
+        },
       ],
     },
     {

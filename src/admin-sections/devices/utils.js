@@ -35,7 +35,7 @@ export function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-export function applyFilter({ inputData, comparator, filterDevice }) {
+export function applyFilter({ inputData, comparator, filterMac }) {
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
@@ -46,9 +46,9 @@ export function applyFilter({ inputData, comparator, filterDevice }) {
 
   inputData = stabilizedThis.map((el) => el[0]);
 
-  if (filterDevice) {
+  if (filterMac) {
     inputData = inputData.filter(
-      (user) => user.userId.toLowerCase().indexOf(filterDevice.toLowerCase()) !== -1
+      (user) => user.mac.toLowerCase().indexOf(filterMac.toLowerCase()) !== -1
     );
   }
 

@@ -26,6 +26,8 @@ import devicesStore from 'src/store/devicesStore';
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
 
+import { isAdmin } from './util';
+
 // ----------------------------------------------------------------------
 
 export default function LoginView() {
@@ -34,7 +36,7 @@ export default function LoginView() {
   const router = useRouter();
   const { setUser } = userStore();
   const { setDevices, setUserDevices } = devicesStore();
-  const user = useAuth();
+  const authUser = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -46,15 +48,14 @@ export default function LoginView() {
     const data = { email, password };
     const res = await signIn(data);
     if (res === 200) {
-      setUser({ ...user, isAuth: true });
+      setUser({ ...authUser, isAuth: true });
       const response = await getDevice(email);
-      console.log(user);
       if (response === 500) {
         alert('Network Error');
       } else {
         setDevices(response.data);
         setUserDevices(response.userDevice);
-        router.push('/');
+        router.push(isAdmin() ? '/admin' : '/');
       }
       // navigate(`/${user.isAdmin ? 'admin-dashboard' : 'dashboard'}`);
     }
