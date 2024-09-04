@@ -15,21 +15,26 @@ import {
   InputLabel,
   Typography,
   FormControl,
+  FormHelperText,
 } from '@mui/material';
 
 import { useRouter } from 'src/routes/hooks';
 
+import { useAuth } from 'src/hooks/use-auth';
+
 import devicesStore from 'src/store/devicesStore';
 import uploadDeviceData from 'src/lib/api/uploadDeviceData';
+import addCreditToDevice from 'src/lib/api/addCreditToDevice';
 
 import Label from 'src/components/label';
 
 export default function EditDeviceView() {
-  const { devices, userDevices, updateDevice, updateUserDevice } = devicesStore();
+  const user = useAuth();
+  const { devices, userDevices, setDevices, updateDevice, updateUserDevice } = devicesStore();
   // const { devices, userDevices } = devicesStore();
   const router = useRouter();
   const { id } = useParams();
-  const [credits, setCredits] = useState(1);
+  const [credits, setCredits] = useState(null);
   const [originMac, setOriginMac] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -38,9 +43,11 @@ export default function EditDeviceView() {
   const [status, setStatus] = useState(null);
   const [creatDate, setCreatDate] = useState(null);
   const [editloading, setEditLoading] = useState(false);
+  const [addLoading, setAddLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [creditsError, setCreditsError] = useState('');
   const [errors, setErrors] = useState({
     password: '',
     mac: '',
@@ -49,7 +56,6 @@ export default function EditDeviceView() {
   useEffect(() => {
     const originDevice = devices.find((device) => device.loginId === id);
     const userDevice = userDevices.find((device) => device.username === id);
-    console.log(originDevice);
     setCreatDate(userDevice.date);
     setName(originDevice.name);
     setPassword(userDevice.password);
@@ -64,7 +70,17 @@ export default function EditDeviceView() {
   };
 
   const handleCreditsChange = (event) => {
-    setCredits(event.target.value);
+    const selectedCredits = event.target.value;
+    if (selectedCredits > user.credit) {
+      // Compare selected value with user.credit
+      setCreditsError(
+        `Selected credits (${selectedCredits}) exceed your available credits (${user.credit}).`
+      );
+      setCredits(null);
+    } else {
+      setCreditsError('');
+      setCredits(selectedCredits);
+    }
   };
 
   const validate = () => {
@@ -116,6 +132,34 @@ export default function EditDeviceView() {
       }
     }
   };
+
+  const handleAddCredit = async () => {
+    if (credits > 0) {
+      const mail = user.email;
+      const data = { email: mail, id, credits };
+      setAddLoading(true);
+      try {
+        const res = await addCreditToDevice(data);
+        if (res === 500) {
+          setSnackbarSeverity('error');
+          setSnackbarMessage('Failed to Add Credit to Device.');
+        } else {
+          setDevices(res.data);
+          setSnackbarSeverity('success');
+          setSnackbarMessage(
+            `${credits} credit${credits > 1 ? 's' : ''} has been added to you device successfully. `
+          );
+        }
+      } catch (error) {
+        setSnackbarSeverity('error');
+        setSnackbarMessage('Failed to update device data.');
+      } finally {
+        setAddLoading(false);
+        setSnackbarOpen(true);
+      }
+    }
+  };
+
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
@@ -161,13 +205,6 @@ export default function EditDeviceView() {
             margin="normal"
             onChange={(e) => setMac(e.target.value)}
           />
-          {/* <FormControl fullWidth margin="normal">
-            <InputLabel>Status</InputLabel>
-            <Select value="ACTIVE">
-              <MenuItem value="ACTIVE">ACTIVE</MenuItem>
-              <MenuItem value="INACTIVE">INACTIVE</MenuItem>
-            </Select>
-          </FormControl> */}
           <Box mt={2}>
             <Button
               variant="contained"
@@ -217,19 +254,42 @@ export default function EditDeviceView() {
               </Grid>
             </Grid>
             <Typography variant="h6">Credits</Typography>
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" error={Boolean(creditsError)}>
               <InputLabel>Select Credits</InputLabel>
-              <Select value={credits} onChange={handleCreditsChange}>
+              <Select
+                value={credits}
+                onChange={handleCreditsChange}
+                sx={{
+                  color: creditsError ? 'red' : 'inherit',
+                  '.MuiOutlinedInput-notchedOutline': {
+                    borderColor: creditsError ? 'red' : 'inherit',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: creditsError ? 'red' : 'primary.main',
+                  },
+                }}
+              >
                 {Array.from({ length: 24 }, (_, index) => (
                   <MenuItem key={index + 1} value={index + 1}>
                     {index + 1}
                   </MenuItem>
                 ))}
               </Select>
+              {creditsError && (
+                <FormHelperText sx={{ color: 'red' }}>{creditsError}</FormHelperText>
+              )}
             </FormControl>
             <Box mt={2}>
-              <Button variant="contained" color="success">
-                Submit
+              <Button variant="contained" color="success" onClick={handleAddCredit}>
+                {addLoading ? (
+                  <img
+                    src="/assets/icons/spinner.svg"
+                    alt="Loading"
+                    style={{ width: 24, height: 24 }}
+                  />
+                ) : (
+                  'Submit'
+                )}
               </Button>
               <Button variant="contained" color="error" sx={{ ml: 2 }} onClick={goBack}>
                 Cancel
