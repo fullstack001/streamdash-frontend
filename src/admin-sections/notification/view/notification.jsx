@@ -94,7 +94,8 @@ export default function AddDeviceView() {
         const data = { title, content };
         const response = await putNotification(data);
         if (response === 500) {
-          alert('Network Error');
+          setSnackbarSeverity('error');
+          setSnackbarMessage('Failed to change notification.');
         } else {
           setSnackbarSeverity('success');
           setSnackbarMessage('Notification has been changed successfully.');

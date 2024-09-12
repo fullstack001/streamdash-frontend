@@ -143,7 +143,8 @@ export default function AddDeviceView() {
         data.email = user.email;
         const response = await addDevice(data);
         if (response === 500) {
-          alert('Network Error');
+          setSnackbarSeverity('error');
+          setSnackbarMessage('Failed to connect device. Try Again.');
         } else {
           setDevices(response.data);
           setUserDevices(response.userDevices);
