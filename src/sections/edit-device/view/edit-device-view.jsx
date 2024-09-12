@@ -188,6 +188,7 @@ export default function EditDeviceView() {
             fullWidth
             disabled={status === 'INACTIVE'}
             label="Password"
+            type="password"
             value={password}
             variant="outlined"
             error={!!errors.password}
