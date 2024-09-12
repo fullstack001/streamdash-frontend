@@ -61,7 +61,7 @@ export default function UserPage() {
     }
     console.log(userDevices, devices);
     const currentDevices = devices.filter((device) =>
-      userDevices.some((userDevice) => userDevice.mac === device.mac)
+      userDevices.some((userDevice) => userDevice.username === device.loginId)
     );
     setUsers(currentDevices);
   }, [devices, userDevices, setUsers, router]);
