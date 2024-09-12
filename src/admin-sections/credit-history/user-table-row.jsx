@@ -13,7 +13,7 @@ export default function UserTableRow({ email, userId, action, credit, date }) {
       <TableCell>{credit}</TableCell>
 
       <TableCell>{userId}</TableCell>
-      <TableCell>{date}</TableCell>
+      <TableCell>{date.split('T')[0]}</TableCell>
     </TableRow>
   );
 }
