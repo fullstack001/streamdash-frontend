@@ -3,11 +3,17 @@ import { useState, useEffect } from 'react';
 
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import Snackbar from '@mui/material/Snackbar';
+import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
+import InputLabel from '@mui/material/InputLabel';
 import Typography from '@mui/material/Typography';
+import FormControl from '@mui/material/FormControl';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { useRouter } from 'src/routes/hooks';
 
@@ -16,11 +22,50 @@ import { useAuth } from 'src/hooks/use-auth';
 import addDevice from 'src/lib/api/addDevice';
 import devicesStore from 'src/store/devicesStore';
 
-export default function ProductsView() {
+// Custom styles for the input fields and button
+const CustomTextField = styled(TextField)({
+  '& .MuiOutlinedInput-root': {
+    borderRadius: 8, // Rounded corners for input fields
+    '& fieldset': {
+      borderColor: '#ccc',
+    },
+    '&:hover fieldset': {
+      borderColor: '#999',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#6200ea', // Purple border when focused
+    },
+  },
+  '& .MuiInputBase-input': {
+    padding: '12px 16px', // Padding inside the input fields
+  },
+});
+
+const CustomButton = styled(Button)({
+  borderRadius: 8, // Rounded button corners
+  backgroundColor: '#7b61ff', // Purple button background
+  textTransform: 'none', // Normal case for button text
+  fontSize: '16px',
+  padding: '12px 16px',
+  '&:hover': {
+    backgroundColor: '#6a50ff', // Slightly darker purple on hover
+  },
+});
+
+const FAQSection = styled('div')({
+  backgroundColor: '#f9f9f9',
+  padding: '16px',
+  borderRadius: '8px',
+  marginTop: '20px',
+  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+});
+
+export default function AddDeviceView() {
   const router = useRouter();
   const user = useAuth();
   const { devices } = devicesStore((state) => state);
   const { setDevices, setUserDevices } = devicesStore();
+  const [credit, setCredit] = useState(null);
   const [username, setUsername] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -29,12 +74,14 @@ export default function ProductsView() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [openFAQ, setOpenFAQ] = useState(0);
 
   const [errors, setErrors] = useState({
     username: '',
     name: '',
     password: '',
     mac: '',
+    credit: '',
   });
 
   useEffect(() => {
@@ -46,7 +93,7 @@ export default function ProductsView() {
 
   const validate = () => {
     let isValid = true;
-    const newErrors = { username: '', name: '', password: '', mac: '' };
+    const newErrors = { username: '', name: '', password: '', mac: '', credit: '' };
 
     if (username.trim() === '') {
       newErrors.username = 'User Id is required.';
@@ -76,6 +123,10 @@ export default function ProductsView() {
       newErrors.mac = 'MAC ID already exists.';
       isValid = false;
     }
+    if (!credit) {
+      newErrors.credit = 'Validity is required.';
+      isValid = false;
+    }
 
     setErrors(newErrors);
     return isValid;
@@ -88,7 +139,7 @@ export default function ProductsView() {
       setLoading(true);
 
       try {
-        const data = { username, name, password, mac };
+        const data = { username, name, password, mac, credit };
         data.email = user.email;
         const response = await addDevice(data);
         if (response === 500) {
@@ -102,8 +153,9 @@ export default function ProductsView() {
           setName('');
           setPassword('');
           setMac('');
+          setCredit(null);
           setSnackbarSeverity('success');
-          setSnackbarMessage('Your device has been connected successfully. ');
+          setSnackbarMessage('Your device has been connected successfully.');
         }
       } catch (error) {
         setSnackbarSeverity('error');
@@ -115,23 +167,45 @@ export default function ProductsView() {
     }
   };
 
+  const handleDurationChange = (e) => {
+    const newCredit = e.target.value;
+    if (newCredit !== 0 && newCredit > user.credit) {
+      setSnackbarSeverity('error');
+      setSnackbarMessage('You do not have enough credits.');
+      setSnackbarOpen(true);
+    } else {
+      setCredit(newCredit);
+    }
+  };
   // Handle closing of the snackbar
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
 
+  // Handle opening/closing FAQ items
+  const toggleFAQ = (index) => {
+    if (openFAQ === index) {
+      setOpenFAQ(null); // Close if the same FAQ is clicked
+    } else {
+      setOpenFAQ(index); // Open the clicked FAQ
+    }
+  };
   return (
-    <Container>
-      <Typography variant="h4" sx={{ mb: 5 }}>
-        Add Device
-      </Typography>
-      <Grid container spacing={3} justifyContent="center" alignItems="center">
-        <Grid item xs={12} sm={6} md={4}>
-          <Grid container rowSpacing={2} columnSpacing={12}>
-            <Grid item xs={12}>
-              <TextField
+    <Container maxWidth="lg" sx={{ marginTop: 5 }}>
+      <Grid container spacing={4}>
+        {/* Left Column: Form */}
+        <Grid container item xs={12} md={6}>
+          <Typography variant="h4" sx={{ mb: 4 }}>
+            Add Device
+          </Typography>
+          <Grid container item xs={12} fullWidth spacing={2} sx={{ mb: 1 }}>
+            <Grid xs={3} fullWidth>
+              User Id*
+            </Grid>
+            <Grid xs={5} fullWidth>
+              <CustomTextField
                 fullWidth
-                label="User Id"
+                placeholder="examplelogin"
                 variant="outlined"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -140,10 +214,15 @@ export default function ProductsView() {
                 required
               />
             </Grid>
-            <Grid item xs={12}>
-              <TextField
+          </Grid>
+          <Grid container item xs={12} fullWidth spacing={2} sx={{ mb: 1 }}>
+            <Grid xs={3} fullWidth>
+              Name*
+            </Grid>
+            <Grid xs={5} fullWidth>
+              <CustomTextField
                 fullWidth
-                label="Name"
+                placeholder="Max Hodgson"
                 variant="outlined"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -152,23 +231,29 @@ export default function ProductsView() {
                 required
               />
             </Grid>
-            <Grid item xs={12}>
-              <TextField
+          </Grid>
+          <Grid container item fullWidth xs={12} spacing={2} sx={{ mb: 1 }}>
+            <Grid xs={3}>Password*</Grid>
+            <Grid xs={5}>
+              <CustomTextField
                 fullWidth
-                label="Password"
+                placeholder="Type a password"
                 type="password"
+                variant="outlined"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                variant="outlined"
                 error={!!errors.password}
                 helperText={errors.password}
                 required
               />
             </Grid>
-            <Grid item xs={12}>
-              <TextField
+          </Grid>
+          <Grid container item xs={12} fullWidth spacing={2} sx={{ mb: 1 }}>
+            <Grid xs={3}>MAC*</Grid>
+            <Grid xs={5}>
+              <CustomTextField
                 fullWidth
-                label="MAC ID"
+                placeholder="00:1A:79:__:__:__"
                 variant="outlined"
                 value={mac}
                 onChange={(e) => setMac(e.target.value)}
@@ -177,27 +262,108 @@ export default function ProductsView() {
                 required
               />
             </Grid>
-            <Grid item xs={12}>
-              <Button
-                onClick={handleSubmit}
-                variant="contained"
-                color="primary"
-                fullWidth
-                disabled={loading}
-                sx={{ width: '100%' }}
-              >
-                {loading ? (
-                  <img
-                    src="/assets/icons/spinner.svg"
-                    alt="Loading"
-                    style={{ width: 24, height: 24 }}
-                  />
-                ) : (
-                  'Submit'
-                )}
-              </Button>
+          </Grid>
+          <Grid container item xs={12} spacing={2} sx={{ mb: 1 }}>
+            <Grid xs={3}>Validity</Grid>
+            <Grid xs={5}>
+              <FormControl fullWidth>
+                <InputLabel id="duration-label">Validity</InputLabel>
+                <Select
+                  labelId="duration-label"
+                  value={credit}
+                  onChange={handleDurationChange}
+                  label="Validity"
+                  error={!!errors.credit}
+                  helperText={errors.credit}
+                  fullWidth
+                >
+                  <MenuItem value="0">2 Days Trial</MenuItem>
+                  <MenuItem value="1">1 Month</MenuItem>
+                  <MenuItem value="2">2 Months</MenuItem>
+                  <MenuItem value="3">3 Months</MenuItem>
+                  <MenuItem value="4">4 Months</MenuItem>
+                  <MenuItem value="5">5 Months</MenuItem>
+                  <MenuItem value="6">6 Months</MenuItem>
+                  <MenuItem value="7">7 Months</MenuItem>
+                  <MenuItem value="8">8 Months</MenuItem>
+                  <MenuItem value="9">9 Months</MenuItem>
+                  <MenuItem value="10">10 Months</MenuItem>
+                  <MenuItem value="11">11 Months</MenuItem>
+                  <MenuItem value="12">12 Months</MenuItem>
+                </Select>
+              </FormControl>
             </Grid>
           </Grid>
+          <Grid item xs={6}>
+            <CustomButton onClick={handleSubmit} variant="contained" fullWidth disabled={loading}>
+              {loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Submit'}
+            </CustomButton>
+          </Grid>
+        </Grid>
+
+        {/* Right Column: FAQ Section */}
+        <Grid item xs={12} md={6}>
+          <FAQSection>
+            <div>
+              <Typography variant="h6" onClick={() => toggleFAQ(1)} style={{ cursor: 'pointer' }}>
+                Do you charge for each upgrade?
+              </Typography>
+              {openFAQ === 1 && (
+                <Typography variant="body2" sx={{ mt: 1, borderBottom: '3px solid ', pb: 2 }}>
+                  Lemon drops chocolate cake gummies carrot cake chupa chups muffin topping. Sesame
+                  snaps icing marzipan gummi bears macaroon dragee danish caramels powder.
+                </Typography>
+              )}
+            </div>
+
+            <div style={{ marginTop: '20px' }}>
+              <Typography variant="h6" onClick={() => toggleFAQ(2)} style={{ cursor: 'pointer' }}>
+                Do I need to purchase a license for each website?
+              </Typography>
+              {openFAQ === 2 && (
+                <Typography variant="body2" sx={{ mt: 1, borderBottom: '3px solid ', pb: 2 }}>
+                  Single regular license can be used for one end product. For each additional
+                  product or client, a separate license is required.
+                </Typography>
+              )}
+            </div>
+
+            <div style={{ marginTop: '20px' }}>
+              <Typography variant="h6" onClick={() => toggleFAQ(3)} style={{ cursor: 'pointer' }}>
+                What is a regular license?
+              </Typography>
+              {openFAQ === 3 && (
+                <Typography variant="body2" sx={{ mt: 1, borderBottom: '3px solid ', pb: 2 }}>
+                  A regular license can be used for end products that do not charge users for
+                  access. It allows for personal or client use of the product.
+                </Typography>
+              )}
+            </div>
+
+            <div style={{ marginTop: '20px' }}>
+              <Typography variant="h6" onClick={() => toggleFAQ(4)} style={{ cursor: 'pointer' }}>
+                What is an extended license?
+              </Typography>
+              {openFAQ === 4 && (
+                <Typography variant="body2" sx={{ mt: 1, borderBottom: '3px solid ', pb: 2 }}>
+                  An extended license allows the product to be used in a paid service or product,
+                  and can cover multiple users or installations.
+                </Typography>
+              )}
+            </div>
+
+            <div style={{ marginTop: '20px' }}>
+              <Typography variant="h6" onClick={() => toggleFAQ(5)} style={{ cursor: 'pointer' }}>
+                Which license is applicable for SaaS applications?
+              </Typography>
+              {openFAQ === 5 && (
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  For SaaS applications, an extended license is typically required, as the product
+                  is offered as a paid service to end users.
+                </Typography>
+              )}
+            </div>
+          </FAQSection>
         </Grid>
       </Grid>
 

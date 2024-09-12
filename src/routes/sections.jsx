@@ -18,6 +18,7 @@ export const EditDevicePage = lazy(() => import('src/pages/edit-device'));
 export const CreditHistoryPage = lazy(() => import('src/pages/credit-history'));
 export const AdminCreditHistoryPage = lazy(() => import('src/admin-pages/credit-history'));
 export const AdminDevicePage = lazy(() => import('src/admin-pages/devices'));
+export const AdminNotificationPage = lazy(() => import('src/admin-pages/notification'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // ----------------------------------------------------------------------
@@ -87,6 +88,10 @@ export default function Router() {
         {
           path: 'devices',
           element: <AdminPrivateRoute element={<AdminDevicePage />} />,
+        },
+        {
+          path: 'set-notification',
+          element: <AdminPrivateRoute element={<AdminNotificationPage />} />,
         },
       ],
     },

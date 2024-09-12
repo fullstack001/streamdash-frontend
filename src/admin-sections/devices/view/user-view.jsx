@@ -150,7 +150,7 @@ export default function UserView() {
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Users</Typography>
+        <Typography variant="h4">Devuces</Typography>
       </Stack>
 
       <Card>

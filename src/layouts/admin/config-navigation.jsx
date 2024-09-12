@@ -17,6 +17,11 @@ const navConfig = [
     path: 'credit-history',
     icon: icon('ic_lock'),
   },
+  {
+    title: 'Notification',
+    path: 'set-notification',
+    icon: icon('ic_blog'),
+  },
 ];
 
 export default navConfig;

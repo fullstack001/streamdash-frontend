@@ -36,6 +36,7 @@ export default function SignupView() {
   const user = useAuth();
 
   const [loading, setLoading] = useState(false);
+  const [nameUser, setNameUser] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -77,7 +78,7 @@ export default function SignupView() {
     if (!isValid) return;
 
     setLoading(true);
-    const data = { email, password };
+    const data = { nameUser, email, password };
     const res = await signup(data);
     if (res === 200) {
       setUser({ ...user, isAuth: true });
@@ -106,6 +107,12 @@ export default function SignupView() {
   const renderForm = (
     <>
       <Stack spacing={3}>
+        <TextField
+          name="nameUser"
+          label="User Name"
+          value={nameUser}
+          onChange={(e) => setNameUser(e.target.value)}
+        />
         <TextField
           name="email"
           label="Email address"

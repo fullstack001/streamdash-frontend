@@ -110,12 +110,9 @@ export default function LoginView() {
         variant="contained"
         color="inherit"
         onClick={handleClick}
+        loading={loading} // Use the built-in loading prop
       >
-        {loading ? (
-          <img src="/assets/icons/spinner.svg" alt="Loading" style={{ width: 24, height: 24 }} />
-        ) : (
-          'Login'
-        )}
+        Login
       </LoadingButton>
     </>
   );

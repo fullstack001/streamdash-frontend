@@ -27,11 +27,11 @@ const navConfig = [
     path: '/credit-history',
     icon: icon('ic_lock'),
   },
-  {
-    title: 'Support',
-    path: '/support',
-    icon: icon('ic_blog'),
-  },
+  // {
+  //   title: 'Support',
+  //   path: '/support',
+  //   icon: icon('ic_blog'),
+  // },
   // {
   //   title: 'Not found',
   //   path: '/404',
