@@ -137,6 +137,8 @@ export default function AddDeviceView() {
 
     if (validate()) {
       setLoading(true);
+      setSnackbarSeverity('success');
+      setSnackbarMessage('Please do not refresh the page. Your request is being processed.');
 
       try {
         const data = { username, name, password, mac, credit };

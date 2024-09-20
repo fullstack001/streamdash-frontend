@@ -111,6 +111,8 @@ export default function EditDeviceView() {
   const handleEditUser = async () => {
     if (validate()) {
       setEditLoading(true);
+      setSnackbarSeverity('success');
+      setSnackbarMessage('Please do not refresh the page. Your request is being processed.');
       try {
         const data = { id, name, password, mac };
         const response = await uploadDeviceData(data);
@@ -137,6 +139,8 @@ export default function EditDeviceView() {
     if (credits > 0) {
       const mail = user.email;
       const data = { email: mail, id, credits };
+      setSnackbarSeverity('success');
+      setSnackbarMessage('Please do not refresh the page. Your request is being processed.');
       setAddLoading(true);
       try {
         const res = await addCreditToDevice(data);

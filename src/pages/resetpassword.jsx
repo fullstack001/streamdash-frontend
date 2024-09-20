@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 
-import { UserView } from 'src/admin-sections/devices/view';
+import { ResetPasswordView } from 'src/sections/reset-password';
 
 // ----------------------------------------------------------------------
 
-export default function Devices() {
+export default function ResetPasswordPage() {
   return (
     <>
       <Helmet>
-        <title> Devices | Streamdash </title>
+        <title> Login | Streamdash </title>
       </Helmet>
 
-      <UserView />
+      <ResetPasswordView />
     </>
   );
 }

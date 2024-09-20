@@ -8,9 +8,14 @@ const icon = (name) => (
 
 const navConfig = [
   {
+    title: 'Users',
+    path: 'users',
+    icon: icon('ic_user'),
+  },
+  {
     title: 'Devices',
     path: 'devices',
-    icon: icon('ic_user'),
+    icon: icon('ic_analytics'),
   },
   {
     title: 'Credit history',
@@ -21,6 +26,11 @@ const navConfig = [
     title: 'Notification',
     path: 'set-notification',
     icon: icon('ic_blog'),
+  },
+  {
+    title: 'Product Pages',
+    path: 'product',
+    icon: icon('ic_cart'),
   },
 ];
 

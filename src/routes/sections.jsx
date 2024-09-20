@@ -16,9 +16,12 @@ export const AddDevicePage = lazy(() => import('src/pages/add-device'));
 export const SignUpPage = lazy(() => import('src/pages/signup'));
 export const EditDevicePage = lazy(() => import('src/pages/edit-device'));
 export const CreditHistoryPage = lazy(() => import('src/pages/credit-history'));
+export const AdminUserPage = lazy(() => import('src/admin-pages/user'));
 export const AdminCreditHistoryPage = lazy(() => import('src/admin-pages/credit-history'));
 export const AdminDevicePage = lazy(() => import('src/admin-pages/devices'));
 export const AdminNotificationPage = lazy(() => import('src/admin-pages/notification'));
+export const AdminProductPAge = lazy(() => import('src/admin-pages/product'));
+export const ResetPasswordPage = lazy(() => import('src/pages/resetpassword'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // ----------------------------------------------------------------------
@@ -82,6 +85,10 @@ export default function Router() {
       children: [
         { path: '', element: <Navigate to="devices" replace /> },
         {
+          path: 'users',
+          element: <AdminPrivateRoute element={<AdminUserPage />} />,
+        },
+        {
           path: 'credit-history',
           element: <AdminPrivateRoute element={<AdminCreditHistoryPage />} />,
         },
@@ -93,6 +100,10 @@ export default function Router() {
           path: 'set-notification',
           element: <AdminPrivateRoute element={<AdminNotificationPage />} />,
         },
+        {
+          path: 'product',
+          element: <AdminPrivateRoute element={<AdminProductPAge />} />,
+        },
       ],
     },
     {
@@ -103,6 +114,8 @@ export default function Router() {
       path: 'signup',
       element: <SignUpPage />,
     },
+    { path: 'reset-password/:token', element: <ResetPasswordPage /> },
+
     {
       path: '404',
       element: <Page404 />,

@@ -4,11 +4,13 @@ import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-// import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
+import Modal from '@mui/material/Modal';
+import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { alpha, useTheme } from '@mui/material/styles';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -17,7 +19,7 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useAuth } from 'src/hooks/use-auth';
 
-import { signIn } from 'src/lib/api/user';
+import { signIn, sendPasswordReset } from 'src/lib/api/user'; // Add password reset API
 import { bgGradient } from 'src/theme/css';
 import userStore from 'src/store/userStore';
 import getDevice from 'src/lib/api/getDevice';
@@ -43,8 +45,39 @@ export default function LoginView() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+  const [openForgotPassword, setOpenForgotPassword] = useState(false); // Modal state
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetMessage, setResetMessage] = useState('');
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+  // Handle modal open/close
+  const handleOpenForgotPassword = () => setOpenForgotPassword(true);
+  const handleCloseForgotPassword = () => setOpenForgotPassword(false);
+
+  // Handle password reset request
+  const handleResetPassword = async () => {
+    setResetLoading(true);
+
+    const res = await sendPasswordReset({ email: resetEmail });
+    if (res === 200) {
+      setResetMessage('Password reset link has been sent to your email.');
+    } else {
+      setResetMessage('Error sending password reset link. Please try again.');
+    }
+    setResetLoading(false);
+  };
+
   const handleClick = async () => {
     setLoading(true);
+    setSnackbarSeverity('success');
+    setSnackbarMessage(
+      'If you refresh the page, you will be logged out. Pages will load slow, please be patient.'
+    );
+    setSnackbarOpen(true);
     const data = { email, password };
     const res = await signIn(data);
     if (res === 200) {
@@ -58,20 +91,20 @@ export default function LoginView() {
         setUserDevices(response.userDevice);
         router.push(isAdmin() ? '/admin' : '/');
       }
-      // navigate(`/${user.isAdmin ? 'admin-dashboard' : 'dashboard'}`);
     }
-    // else if (res.msg == 'email') setEmailValid({ isvalid: false, msg: 'User not exist' });
-    // else if (res.msg == 'password') setPasswordValid({ isvalid: false, msg: 'Wrong Password' });
-    // else toast.info('Network Error.');
   };
 
   const goSignup = () => {
     router.push('/signup');
   };
 
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+
   const renderForm = (
     <>
-      <Stack spacing={3}>
+      <Stack spacing={3} maxWidth="700px">
         <TextField
           name="email"
           label="Email address"
@@ -98,9 +131,14 @@ export default function LoginView() {
       </Stack>
 
       <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 3 }}>
-        {/* <Link variant="subtitle2" underline="hover">
+        <Link
+          variant="subtitle2"
+          underline="hover"
+          sx={{ cursor: 'pointer' }}
+          onClick={handleOpenForgotPassword}
+        >
           Forgot password?
-        </Link> */}
+        </Link>
       </Stack>
 
       <LoadingButton
@@ -110,7 +148,7 @@ export default function LoginView() {
         variant="contained"
         color="inherit"
         onClick={handleClick}
-        loading={loading} // Use the built-in loading prop
+        loading={loading}
       >
         Login
       </LoadingButton>
@@ -152,47 +190,59 @@ export default function LoginView() {
             </Link>
           </Typography>
 
-          <Stack direction="row" spacing={2}>
-            {/* <Button
-              fullWidth
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-            >
-              <Iconify icon="eva:google-fill" color="#DF3E30" />
-            </Button>
-
-            <Button
-              fullWidth
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-            >
-              <Iconify icon="eva:facebook-fill" color="#1877F2" />
-            </Button>
-
-            <Button
-              fullWidth
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-            >
-              <Iconify icon="eva:twitter-fill" color="#1C9CEA" />
-            </Button> */}
-          </Stack>
-
-          <Divider sx={{ my: 3 }}>
-            {/* <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              OR
-            </Typography> */}
-          </Divider>
-
           {renderForm}
         </Card>
       </Stack>
+
+      {/* Modal for Forgot Password */}
+      <Modal open={openForgotPassword} onClose={handleCloseForgotPassword}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 400,
+            bgcolor: 'background.paper',
+            borderRadius: 2,
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography variant="h6" component="h2">
+            Forgot Password?
+          </Typography>
+          <TextField
+            fullWidth
+            label="Enter your email"
+            value={resetEmail}
+            onChange={(e) => setResetEmail(e.target.value)}
+            sx={{ mt: 2 }}
+          />
+          {resetMessage && (
+            <Typography variant="body2" color="success.main" sx={{ mt: 2 }}>
+              {resetMessage}
+            </Typography>
+          )}
+          <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
+            <Button onClick={handleCloseForgotPassword}>Cancel</Button>
+            <LoadingButton onClick={handleResetPassword} loading={resetLoading} variant="contained">
+              Send Reset Link
+            </LoadingButton>
+          </Stack>
+        </Box>
+      </Modal>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
