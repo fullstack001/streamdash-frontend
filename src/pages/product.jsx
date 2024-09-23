@@ -20,7 +20,6 @@ export default function ProductPage() {
       <Logo margin={3} />
       <Box
         sx={{
-          paddingTop: '50px',
           display: 'block',
           '@media (min-width: 900px)': {
             display: 'flex',

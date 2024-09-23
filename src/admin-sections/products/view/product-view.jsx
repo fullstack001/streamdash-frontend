@@ -17,6 +17,7 @@ export default function ProductPage() {
     { product: 6, id: 975645 },
     { product: 12, id: 346345 },
     { product: 50, id: 675454 },
+    { product: 'all', id: 934323 },
   ];
 
   return (

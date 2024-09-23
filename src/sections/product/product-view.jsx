@@ -26,6 +26,7 @@ const products = [
   { credit: 6, id: 975645, price: 60 },
   { credit: 12, id: 346345, price: 150 },
   { credit: 50, id: 675454, price: 450 },
+  { credit: 'all', id: 934323 },
 ];
 
 export default function ProductView() {
@@ -42,9 +43,10 @@ export default function ProductView() {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [showMessage, setShowMessage] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState({});
 
   const handlePayment = () => {
-    const url = `https://istreamdash.com?credit=${product.credit}&price=${product.price}&email=${email}`;
+    const url = `https://istreamdash.com?credit=${currentProduct.credit}&price=${currentProduct.price}&email=${email}`;
     const newWindow = window.open(url, '_blank', 'width=800,height=650');
 
     const interval = setInterval(() => {
@@ -72,7 +74,7 @@ export default function ProductView() {
   const validateForm = () => {
     let isValid = true;
     if (nameUser === '') {
-      setNameUser('User name is required');
+      setUserError('User name is required');
       isValid = false;
     } else {
       setUserError('');
@@ -95,9 +97,8 @@ export default function ProductView() {
     return isValid;
   };
 
-  const handleSignup = async () => {
+  const handleSignup = async (prod) => {
     if (validateForm()) {
-      // Simulate a signup action (you can replace this with an actual API call)
       const data = { nameUser, email, password };
       await signupDirectly(data);
 
@@ -105,54 +106,187 @@ export default function ProductView() {
         const data1 = { email };
         await tryFree(data1);
       } else {
-        // On successful signup, call the handlePayment function
-        handlePayment(product);
+        handlePayment(prod);
       }
 
-      // Close the modal after signing up
-      setOpenModal(false);
+      setOpenModal(false); // Close the modal after signing up
     }
   };
 
   return (
     <Box sx={{ padding: '20px', maxWidth: '900px', margin: 'auto' }}>
       <Notification />
-      <Paper
-        elevation={4}
-        sx={{
-          padding: '16px',
-          marginBottom: '16px',
-          border: '1px solid #ddd',
-          backgroundColor: '#007bff',
-          color: '#f5f5f5',
-        }}
-      >
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Box>
-            <Typography variant="h4" sx={{ fontWeight: 'bold' }} mb={2}>
-              {product.credit === 0 ? 'Free Trial' : product.credit}{' '}
-              {product.credit === 1 && 'credit'}
-              {product.credit > 1 && 'credits'}
-            </Typography>
-            <Typography>Enjoy a full month of IPTV</Typography>
-            <Typography>
-              {product.credit === 0 && 'Free Trial'}
+
+      {/* Check if product.credit is 'all' */}
+      {product.credit === 'all' ? (
+        products
+          .filter((prod) => prod.credit !== 'all') // Filter out 'all' itself
+          .map((prod) => (
+            <Paper
+              key={prod.id}
+              elevation={4}
+              sx={{
+                padding: '16px',
+                marginBottom: '16px',
+                border: '1px solid #ddd',
+                backgroundColor: '#007bff',
+                color: '#f5f5f5',
+              }}
+            >
+              <Grid container justifyContent="space-between" alignItems="center">
+                <Box>
+                  <Typography variant="h4" sx={{ fontWeight: 'bold' }} mb={2}>
+                    {prod.credit === 0 ? 'Free Trial' : prod.credit} {prod.credit === 1 && 'credit'}
+                    {prod.credit > 1 && 'credits'}
+                  </Typography>
+                  <Typography>Enjoy a full month of IPTV</Typography>
+                  {/* <Typography>
+                    {prod.credit === 0 && 'Free Trial'}
+                    {prod.credit > 0 && `Subscribe $${prod.price}`}
+                  </Typography> */}
+                </Box>
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    setOpenModal(true);
+                    setCurrentProduct(prod);
+                  }}
+                  sx={{
+                    backgroundColor: '#fff',
+                    color: '#007bff',
+                  }}
+                >
+                  {prod.credit === 0 && 'Try free'}
+                  {prod.credit > 0 && `Subscribe $${prod.price}`}
+                </Button>
+
+                {/* Modal for Email and Password Signup */}
+                <Dialog open={openModal} onClose={() => setOpenModal(false)}>
+                  <DialogTitle>Sign up to continue</DialogTitle>
+                  <DialogContent>
+                    <TextField
+                      label="UserName"
+                      type="text"
+                      fullWidth
+                      value={nameUser}
+                      onChange={(e) => setNameUser(e.target.value)}
+                      error={!!userError}
+                      helperText={userError}
+                      sx={{ marginBottom: '16px' }}
+                    />
+                    <TextField
+                      label="Email"
+                      type="email"
+                      fullWidth
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      error={!!emailError}
+                      helperText={emailError}
+                      sx={{ marginBottom: '16px' }}
+                    />
+                    <TextField
+                      label="Password"
+                      type="password"
+                      fullWidth
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      error={!!passwordError}
+                      helperText={passwordError}
+                    />
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => setOpenModal(false)}>Cancel</Button>
+                    <Button variant="contained" onClick={() => handleSignup(prod)}>
+                      Confirm
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+              </Grid>
+            </Paper>
+          ))
+      ) : (
+        <Paper
+          elevation={4}
+          sx={{
+            padding: '16px',
+            marginBottom: '16px',
+            border: '1px solid #ddd',
+            backgroundColor: '#007bff',
+            color: '#f5f5f5',
+          }}
+        >
+          <Grid container justifyContent="space-between" alignItems="center">
+            <Box>
+              <Typography variant="h4" sx={{ fontWeight: 'bold' }} mb={2}>
+                {product.credit === 0 ? 'Free Trial' : product.credit}{' '}
+                {product.credit === 1 && 'credit'}
+                {product.credit > 1 && 'credits'}
+              </Typography>
+              <Typography>Enjoy a full month of IPTV</Typography>
+              <Typography>
+                {product.credit === 0 && 'Free Trial'}
+                {product.credit > 0 && `Subscribe $${product.price}`}
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              onClick={() => {
+                setOpenModal(true);
+                setCurrentProduct(product);
+              }}
+              sx={{
+                backgroundColor: '#fff',
+                color: '#007bff',
+              }}
+            >
+              {product.credit === 0 && 'Try free'}
               {product.credit > 0 && `Subscribe $${product.price}`}
-            </Typography>
-          </Box>
-          <Button
-            variant="contained"
-            onClick={() => setOpenModal(true)}
-            sx={{
-              backgroundColor: '#fff',
-              color: '#007bff',
-            }}
-          >
-            {product.credit === 0 && 'Try free'}
-            {product.credit > 0 && `Subscribe $${product.price}`}
-          </Button>
-        </Grid>
-      </Paper>
+            </Button>
+
+            {/* Modal for Email and Password Signup */}
+            <Dialog open={openModal} onClose={() => setOpenModal(false)}>
+              <DialogTitle>Sign up to continue</DialogTitle>
+              <DialogContent>
+                <TextField
+                  label="UserName"
+                  type="text"
+                  fullWidth
+                  value={nameUser}
+                  onChange={(e) => setNameUser(e.target.value)}
+                  error={!!userError}
+                  helperText={userError}
+                  sx={{ marginBottom: '16px' }}
+                />
+                <TextField
+                  label="Email"
+                  type="email"
+                  fullWidth
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  error={!!emailError}
+                  helperText={emailError}
+                  sx={{ marginBottom: '16px' }}
+                />
+                <TextField
+                  label="Password"
+                  type="password"
+                  fullWidth
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  error={!!passwordError}
+                  helperText={passwordError}
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setOpenModal(false)}>Cancel</Button>
+                <Button variant="contained" onClick={handleSignup}>
+                  Confirm
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </Grid>
+        </Paper>
+      )}
       {showMessage && (
         <Grid
           item
@@ -177,48 +311,6 @@ export default function ProductView() {
           </Typography>
         </Grid>
       )}
-
-      {/* Modal for Email and Password Signup */}
-      <Dialog open={openModal} onClose={() => setOpenModal(false)}>
-        <DialogTitle>Sign up to continue</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="UserName"
-            type="text"
-            fullWidth
-            value={nameUser}
-            onChange={(e) => setNameUser(e.target.value)}
-            error={!!userError}
-            helperText={userError}
-            sx={{ marginBottom: '16px' }}
-          />
-          <TextField
-            label="Email"
-            type="email"
-            fullWidth
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            error={!!emailError}
-            helperText={emailError}
-            sx={{ marginBottom: '16px' }}
-          />
-          <TextField
-            label="Password"
-            type="password"
-            fullWidth
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            error={!!passwordError}
-            helperText={passwordError}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenModal(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleSignup}>
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 }
