@@ -3,22 +3,21 @@ import { Helmet } from 'react-helmet-async';
 import { Box } from '@mui/material';
 
 import Logo from 'src/components/logo';
-import IndexSideBar from 'src/components/indexSidebar';
+import ProductSideBar from 'src/components/productSideBar';
 
-import { SignupView } from 'src/sections/signup';
+import { ProductView } from 'src/sections/product';
 
 // ----------------------------------------------------------------------
 
-export default function LoginPage() {
+export default function ProductPage() {
   return (
     <>
       <Helmet>
-        <title> Signup </title>
+        <title> Porduct | Streamdash </title>
       </Helmet>
 
+      {/* Flex container to align Sidebar and ProductView side by side */}
       <Logo margin={3} />
-
-      {/* Flex container to align Sidebar and LoginView side by side */}
       <Box
         sx={{
           paddingTop: '50px',
@@ -38,12 +37,12 @@ export default function LoginPage() {
             display: 'flex',
           }}
         >
-          <IndexSideBar />
+          <ProductSideBar />
         </Box>
 
         {/* Login View Section */}
         <Box flexGrow={1}>
-          <SignupView />
+          <ProductView />
         </Box>
       </Box>
     </>

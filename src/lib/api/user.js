@@ -69,6 +69,16 @@ export const signup = async (data) => {
   }
 };
 
+export const signupDirectly = async (data) => {
+  try {
+    const response = await axios.post(`${requestAddress}/api/auth/signup-direct`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error signing up:', error);
+    return { status: 500, msg: 'Server error' };
+  }
+};
+
 export const verifyEmail = async (data) => {
   try {
     const records = await axios.post(`${requestAddress}/api/auth/verify-email`, data);
@@ -94,6 +104,16 @@ export const addUserByAdmin = async (newUser) => {
 export const addCreditByAdmin = async (data) => {
   try {
     const res = await axios.post(`${requestAddress}/api/auth/add-credit-by-admin`, data);
+    return res.data;
+  } catch (error) {
+    console.error('Error verifying email:', error);
+    return 500;
+  }
+};
+
+export const tryFree = async (data) => {
+  try {
+    const res = await axios.post(`${requestAddress}/api/auth/try-free`, data);
     return res.data;
   } catch (error) {
     console.error('Error verifying email:', error);

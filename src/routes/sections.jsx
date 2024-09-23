@@ -11,6 +11,7 @@ export const IndexPage = lazy(() => import('src/pages/app'));
 export const SupportPage = lazy(() => import('src/pages/support'));
 export const Devices = lazy(() => import('src/pages/devices'));
 export const LoginPage = lazy(() => import('src/pages/login'));
+export const ProductPage = lazy(() => import('src/pages/product'));
 export const LogoutPage = lazy(() => import('src/pages/logout'));
 export const AddDevicePage = lazy(() => import('src/pages/add-device'));
 export const SignUpPage = lazy(() => import('src/pages/signup'));
@@ -113,6 +114,10 @@ export default function Router() {
     {
       path: 'signup',
       element: <SignUpPage />,
+    },
+    {
+      path: 'product/:product_id',
+      element: <ProductPage />,
     },
     { path: 'reset-password/:token', element: <ResetPasswordPage /> },
 

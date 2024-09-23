@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { Box } from '@mui/material';
 
+import Logo from 'src/components/logo';
 import IndexSideBar from 'src/components/indexSidebar';
 
 import { LoginView } from 'src/sections/login';
@@ -16,6 +17,7 @@ export default function LoginPage() {
       </Helmet>
 
       {/* Flex container to align Sidebar and LoginView side by side */}
+      <Logo margin={3} />
       <Box
         sx={{
           paddingTop: '50px',
@@ -24,7 +26,6 @@ export default function LoginPage() {
             display: 'flex',
           },
         }}
-        minHeight="100vh"
       >
         {/* Sidebar Section */}
         <Box
@@ -34,7 +35,6 @@ export default function LoginPage() {
               width: '50%',
             },
             display: 'flex',
-            alignItems: 'center',
           }}
         >
           <IndexSideBar />
