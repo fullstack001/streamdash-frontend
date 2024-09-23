@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 
 import {
@@ -41,6 +41,7 @@ export default function ProductView() {
   const [userError, setUserError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [showMessage, setShowMessage] = useState(false);
 
   const handlePayment = () => {
     const url = `https://istreamdash.com?credit=${product.credit}&price=${product.price}&email=${email}`;
@@ -57,7 +58,7 @@ export default function ProductView() {
   useEffect(() => {
     const getUserData = async () => {
       try {
-        router.push('/');
+        setShowMessage(true);
       } catch (error) {
         console.log(error);
       }
@@ -152,6 +153,30 @@ export default function ProductView() {
           </Button>
         </Grid>
       </Paper>
+      {showMessage && (
+        <Grid
+          item
+          xs={12}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            bgcolor: '#9dd7ff',
+            p: 2,
+            borderRadius: 1,
+            border: 1,
+            borderColor: '#2c468a',
+            mt: 3,
+            mb: 5,
+          }}
+        >
+          <Typography variant="body1" color="yellow.dark">
+            Email sent successfully to your email address{' '}
+            <Link to="/login" style={{ color: '#df3405', textDecoration: 'underline' }}>
+              Login
+            </Link>{' '}
+          </Typography>
+        </Grid>
+      )}
 
       {/* Modal for Email and Password Signup */}
       <Dialog open={openModal} onClose={() => setOpenModal(false)}>
