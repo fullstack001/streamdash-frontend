@@ -120,3 +120,33 @@ export const tryFree = async (data) => {
     return 500;
   }
 };
+
+export const updateProfile = async (data) => {
+  try {
+    const res = await axios.post(`${requestAddress}/api/auth/update-profile`, data);
+    return res.data;
+  } catch (error) {
+    console.log('Error update profile', error);
+    return 500;
+  }
+};
+
+export const updatePassword = async (data) => {
+  try {
+    const res = await axios.post(`${requestAddress}/api/auth/update-password`, data);
+    return res.data;
+  } catch (error) {
+    console.log('Error update password', error);
+    return 500;
+  }
+};
+
+export const deleteUser = async (id) => {
+  try {
+    const res = await axios.post(`${requestAddress}/api/auth/delete-user/`, { id });
+    return res.data;
+  } catch (error) {
+    console.log('Error delete user', error);
+    return 500;
+  }
+};

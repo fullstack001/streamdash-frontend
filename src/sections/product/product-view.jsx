@@ -1,12 +1,15 @@
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 
+import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Box,
   Grid,
   Paper,
+  Alert,
   Button,
   Dialog,
+  Snackbar,
   TextField,
   Typography,
   DialogTitle,
@@ -16,7 +19,12 @@ import {
 
 import { useRouter } from 'src/routes/hooks';
 
-import { tryFree, signupDirectly } from 'src/lib/api/user';
+import { useAuth } from 'src/hooks/use-auth';
+
+import userStore from 'src/store/userStore';
+import getDevice from 'src/lib/api/getDevice';
+import devicesStore from 'src/store/devicesStore';
+import { signIn, tryFree, signupDirectly } from 'src/lib/api/user';
 
 import Notification from './notification';
 
@@ -32,18 +40,26 @@ const products = [
 export default function ProductView() {
   const { product_id } = useParams();
   const product = products.find((item) => item.id === Number(product_id));
+  const { setUser } = userStore();
   const router = useRouter();
+  const authUser = useAuth();
+  const { setDevices, setUserDevices } = devicesStore();
 
+  const [loading, setLoading] = useState(false);
   const [windowClosed, setWindowClosed] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [email, setEmail] = useState('');
-  const [nameUser, setNameUser] = useState('');
   const [password, setPassword] = useState('');
-  const [userError, setUserError] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [showMessage, setShowMessage] = useState(false);
   const [currentProduct, setCurrentProduct] = useState({});
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
   const handlePayment = () => {
     const url = `https://istreamdash.com?credit=${currentProduct.credit}&price=${currentProduct.price}&email=${email}`;
@@ -73,12 +89,6 @@ export default function ProductView() {
 
   const validateForm = () => {
     let isValid = true;
-    if (nameUser === '') {
-      setUserError('User name is required');
-      isValid = false;
-    } else {
-      setUserError('');
-    }
 
     if (!/\S+@\S+\.\S+/.test(email)) {
       setEmailError('Please enter a valid email');
@@ -94,12 +104,42 @@ export default function ProductView() {
       setPasswordError('');
     }
 
+    if (!confirmPassword) {
+      setConfirmPasswordError('Confirm Password is required');
+    } else if (password !== confirmPassword) {
+      setConfirmPasswordError('Passwords do not match');
+    }
+
     return isValid;
+  };
+
+  const handleClickSignin = async () => {
+    setLoading(true);
+    setSnackbarSeverity('success');
+    setSnackbarMessage(
+      'If you refresh the page, you will be logged out. Pages will load slow, please be patient.'
+    );
+    setSnackbarOpen(true);
+    const data = { email, password };
+    const res = await signIn(data);
+    if (res === 200) {
+      console.log(authUser);
+      setUser({ ...authUser, isAuth: true });
+      const response = await getDevice(email);
+      if (response === 500) {
+        alert('Network Error');
+      } else {
+        setDevices(response.data);
+        setUserDevices(response.userDevice);
+        router.push('/add-device');
+      }
+    }
+    setLoading(false);
   };
 
   const handleSignup = async (prod) => {
     if (validateForm()) {
-      const data = { nameUser, email, password };
+      const data = { email, password };
       await signupDirectly(data);
 
       if (product.credit === 0) {
@@ -113,150 +153,83 @@ export default function ProductView() {
     }
   };
 
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+
   return (
-    <Box sx={{ padding: '20px', maxWidth: '900px', margin: 'auto' }}>
-      <Notification />
-
-      {/* Check if product.credit is 'all' */}
-      {product.credit === 'all' ? (
-        products
-          .filter((prod) => prod.credit !== 'all') // Filter out 'all' itself
-          .map((prod) => (
-            <Paper
-              key={prod.id}
-              elevation={4}
-              sx={{
-                padding: '16px',
-                marginBottom: '16px',
-                border: '1px solid #ddd',
-                backgroundColor: '#007bff',
-                color: '#f5f5f5',
-              }}
+    <>
+      <Box sx={{ padding: '20px', margin: 'auto' }}>
+        <Grid container>
+          <Grid item xs={12} md={6} sx={{ padding: '40px' }}>
+            <Typography sx={{ fontSize: '45px', fontWeight: '600' }} gutterBottom color="#156BE2">
+              Discover the power of our IPTV services
+            </Typography>
+            <Typography
+              sx={{ fontSize: '25px', fontWeight: '300', marginBottom: '10px' }}
+              color="textSecondary"
             >
-              <Grid container justifyContent="space-between" alignItems="center">
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 'bold' }} mb={2}>
-                    {prod.credit === 0 ? 'Free Trial' : prod.credit} {prod.credit === 1 && 'credit'}
-                    {prod.credit > 1 && 'credits'}
-                  </Typography>
-                  <Typography>Enjoy a full month of IPTV</Typography>
-                  {/* <Typography>
-                    {prod.credit === 0 && 'Free Trial'}
-                    {prod.credit > 0 && `Subscribe $${prod.price}`}
-                  </Typography> */}
-                </Box>
-                <Button
-                  variant="contained"
-                  onClick={() => {
-                    setOpenModal(true);
-                    setCurrentProduct(prod);
-                  }}
-                  sx={{
-                    backgroundColor: '#fff',
-                    color: '#007bff',
-                  }}
-                >
-                  {prod.credit === 0 && 'Try free'}
-                  {prod.credit > 0 && `Subscribe $${prod.price}`}
-                </Button>
-
-                {/* Modal for Email and Password Signup */}
-                <Dialog open={openModal} onClose={() => setOpenModal(false)}>
-                  <DialogTitle>Sign up to continue</DialogTitle>
-                  <DialogContent>
-                    <TextField
-                      label="UserName"
-                      type="text"
-                      fullWidth
-                      value={nameUser}
-                      onChange={(e) => setNameUser(e.target.value)}
-                      error={!!userError}
-                      helperText={userError}
-                      sx={{ marginBottom: '16px' }}
-                    />
-                    <TextField
-                      label="Email"
-                      type="email"
-                      fullWidth
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      error={!!emailError}
-                      helperText={emailError}
-                      sx={{ marginBottom: '16px' }}
-                    />
-                    <TextField
-                      label="Password"
-                      type="password"
-                      fullWidth
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      error={!!passwordError}
-                      helperText={passwordError}
-                    />
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={() => setOpenModal(false)}>Cancel</Button>
-                    <Button variant="contained" onClick={() => handleSignup(prod)}>
-                      Confirm
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-              </Grid>
-            </Paper>
-          ))
-      ) : (
-        <Paper
-          elevation={4}
-          sx={{
-            padding: '16px',
-            marginBottom: '16px',
-            border: '1px solid #ddd',
-            backgroundColor: '#007bff',
-            color: '#f5f5f5',
-          }}
-        >
-          <Grid container justifyContent="space-between" alignItems="center">
-            <Box>
-              <Typography variant="h4" sx={{ fontWeight: 'bold' }} mb={2}>
-                {product.credit === 0 ? 'Free Trial' : product.credit}{' '}
-                {product.credit === 1 && 'credit'}
-                {product.credit > 1 && 'credits'}
-              </Typography>
-              <Typography>Enjoy a full month of IPTV</Typography>
-              <Typography>
-                {product.credit === 0 && 'Free Trial'}
-                {product.credit > 0 && `Subscribe $${product.price}`}
+              Choose the plan that fits your needs and enjoy seamless streaming of a wide variety of
+              channels and thousands of VODs.
+            </Typography>
+            <Box sx={{ display: 'flex', marginTop: '10px' }}>
+              <img
+                width="25px"
+                height="25px"
+                style={{ marginTop: '5px' }}
+                src="/assets/icons/round_check.svg"
+                alt="Smart TV"
+              />
+              <Typography sx={{ fontSize: '25px', fontWeight: '500', marginLeft: '10px' }}>
+                Access over 9,000 live channels
               </Typography>
             </Box>
-            <Button
-              variant="contained"
-              onClick={() => {
-                setOpenModal(true);
-                setCurrentProduct(product);
-              }}
-              sx={{
-                backgroundColor: '#fff',
-                color: '#007bff',
-              }}
-            >
-              {product.credit === 0 && 'Try free'}
-              {product.credit > 0 && `Subscribe $${product.price}`}
-            </Button>
-
-            {/* Modal for Email and Password Signup */}
-            <Dialog open={openModal} onClose={() => setOpenModal(false)}>
-              <DialogTitle>Sign up to continue</DialogTitle>
-              <DialogContent>
-                <TextField
-                  label="UserName"
-                  type="text"
-                  fullWidth
-                  value={nameUser}
-                  onChange={(e) => setNameUser(e.target.value)}
-                  error={!!userError}
-                  helperText={userError}
-                  sx={{ marginBottom: '16px' }}
-                />
+            <Box sx={{ display: 'flex', marginTop: '10px' }}>
+              <img
+                width="25px"
+                height="25px"
+                style={{ marginTop: '5px' }}
+                src="/assets/icons/round_check.svg"
+                alt="Smart TV"
+              />
+              <Typography sx={{ fontSize: '25px', fontWeight: '500', marginLeft: '10px' }}>
+                Money-back guarantee for peace of mind
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', marginTop: '10px' }}>
+              <img
+                width="25px"
+                height="25px"
+                style={{ marginTop: '5px' }}
+                src="/assets/icons/round_check.svg"
+                alt="Smart TV"
+              />
+              <Typography sx={{ fontSize: '25px', fontWeight: '500', marginLeft: '10px' }}>
+                Simple set-up. Perfect privacy
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', marginTop: '10px' }}>
+              <img
+                width="25px"
+                height="25px"
+                style={{ marginTop: '5px' }}
+                src="/assets/icons/round_check.svg"
+                alt="Smart TV"
+              />
+              <Typography sx={{ fontSize: '25px', fontWeight: '500', marginLeft: '10px' }}>
+                Money-back guarantee for peace of mind
+              </Typography>
+            </Box>
+            <img src="/assets/images/product-sub.png" width="60%" alt="" />
+          </Grid>
+          {showMessage ? (
+            <Grid item xs={12} md={6}>
+              {/* Login form */}
+              <Paper elevation={4} sx={{ mt: 12, padding: '16px', marginBottom: '16px' }}>
+                <Typography variant="h6" gutterBottom>
+                  Your payment has been successfully processed.
+                  <br /> Please login below to add your device.
+                </Typography>
                 <TextField
                   label="Email"
                   type="email"
@@ -275,42 +248,167 @@ export default function ProductView() {
                   onChange={(e) => setPassword(e.target.value)}
                   error={!!passwordError}
                   helperText={passwordError}
+                  sx={{ marginBottom: '16px' }}
                 />
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setOpenModal(false)}>Cancel</Button>
-                <Button variant="contained" onClick={handleSignup}>
-                  Confirm
-                </Button>
-              </DialogActions>
-            </Dialog>
-          </Grid>
-        </Paper>
-      )}
-      {showMessage && (
-        <Grid
-          item
-          xs={12}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            bgcolor: '#9dd7ff',
-            p: 2,
-            borderRadius: 1,
-            border: 1,
-            borderColor: '#2c468a',
-            mt: 3,
-            mb: 5,
-          }}
-        >
-          <Typography variant="body1" color="yellow.dark">
-            Email sent successfully to your email address{' '}
-            <Link to="/login" style={{ color: '#df3405', textDecoration: 'underline' }}>
-              Login
-            </Link>{' '}
-          </Typography>
+                <LoadingButton
+                  variant="contained"
+                  color="primary"
+                  loading={loading}
+                  onClick={handleClickSignin}
+                  fullWidth
+                >
+                  Log In
+                </LoadingButton>
+              </Paper>
+            </Grid>
+          ) : (
+            <Grid item xs={12} md={6}>
+              <Notification />
+
+              {/* Check if product.credit is 'all' */}
+              {product.credit === 'all' ? (
+                products
+                  .filter((prod) => prod.credit !== 'all') // Filter out 'all' itself
+                  .map((prod) => (
+                    <Paper
+                      key={prod.id}
+                      elevation={4}
+                      sx={{
+                        padding: '16px',
+                        marginBottom: '16px',
+                        border: '1px solid #ddd',
+                        backgroundColor: '#007bff',
+                        color: '#f5f5f5',
+                      }}
+                    >
+                      <Grid container justifyContent="space-between" alignItems="center">
+                        <Box>
+                          <Typography variant="h4" sx={{ fontWeight: 'bold' }} mb={2}>
+                            {prod.credit === 0 ? 'Free Trial' : prod.credit}{' '}
+                            {prod.credit === 1 && 'credit'}
+                            {prod.credit > 1 && 'credits'}
+                          </Typography>
+                          <Typography>Enjoy a full month of IPTV</Typography>
+                          {/* <Typography>
+                    {prod.credit === 0 && 'Free Trial'}
+                    {prod.credit > 0 && `Subscribe $${prod.price}`}
+                  </Typography> */}
+                        </Box>
+                        <Button
+                          variant="contained"
+                          onClick={() => {
+                            setOpenModal(true);
+                            setCurrentProduct(prod);
+                          }}
+                          sx={{
+                            backgroundColor: '#fff',
+                            color: '#007bff',
+                          }}
+                        >
+                          {prod.credit === 0 && 'Try free'}
+                          {prod.credit > 0 && `Subscribe $${prod.price}`}
+                        </Button>
+
+                        {/* Modal for Email and Password Signup */}
+                        <Dialog open={openModal} onClose={() => setOpenModal(false)}>
+                          <DialogTitle>Sign up to continue</DialogTitle>
+                          <DialogContent>
+                            <TextField
+                              label="Email"
+                              type="email"
+                              fullWidth
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              error={!!emailError}
+                              helperText={emailError}
+                              sx={{ my: 2 }}
+                            />
+                            <TextField
+                              label="Password"
+                              type="password"
+                              fullWidth
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              error={!!passwordError}
+                              helperText={passwordError}
+                              sx={{ mb: 2 }}
+                            />
+                            <TextField
+                              label="Confirm Password"
+                              type="password"
+                              fullWidth
+                              value={confirmPassword}
+                              onChange={(e) => setConfirmPassword(e.target.value)}
+                              error={!!confirmPasswordError}
+                              helperText={confirmPasswordError}
+                              sx={{ marginBottom: '16px' }}
+                            />
+                          </DialogContent>
+                          <DialogActions>
+                            <Button onClick={() => setOpenModal(false)}>Cancel</Button>
+                            <Button variant="contained" onClick={() => handleSignup(prod)}>
+                              Continue
+                            </Button>
+                          </DialogActions>
+                        </Dialog>
+                      </Grid>
+                    </Paper>
+                  ))
+              ) : (
+                <Paper
+                  elevation={4}
+                  sx={{
+                    padding: '16px',
+                    marginBottom: '16px',
+                    border: '1px solid #ddd',
+                    backgroundColor: '#007bff',
+                    color: '#f5f5f5',
+                  }}
+                >
+                  <Grid container justifyContent="space-between" alignItems="center">
+                    <Box>
+                      <Typography variant="h4" sx={{ fontWeight: 'bold' }} mb={2}>
+                        {product.credit === 0 ? 'Free Trial' : product.credit}{' '}
+                        {product.credit === 1 && 'credit'}
+                        {product.credit > 1 && 'credits'}
+                      </Typography>
+                      <Typography>Enjoy a full month of IPTV</Typography>
+                      <Typography>
+                        {product.credit === 0 && 'Free Trial'}
+                        {product.credit > 0 && `Subscribe $${product.price}`}
+                      </Typography>
+                    </Box>
+                    <Button
+                      variant="contained"
+                      onClick={() => {
+                        setOpenModal(true);
+                        setCurrentProduct(product);
+                      }}
+                      sx={{
+                        backgroundColor: '#fff',
+                        color: '#007bff',
+                      }}
+                    >
+                      {product.credit === 0 && 'Try free'}
+                      {product.credit > 0 && `Subscribe $${product.price}`}
+                    </Button>
+                  </Grid>
+                </Paper>
+              )}
+            </Grid>
+          )}
         </Grid>
-      )}
-    </Box>
+      </Box>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </>
   );
 }

@@ -6,21 +6,21 @@ import Stack from '@mui/material/Stack';
 import Modal from '@mui/material/Modal';
 import Alert from '@mui/material/Alert';
 import Table from '@mui/material/Table';
-// import Dialog from '@mui/material/Dialog';
+import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-// import DialogTitle from '@mui/material/DialogTitle';
-// import DialogActions from '@mui/material/DialogActions';
-// import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-// import DialogContentText from '@mui/material/DialogContentText';
+import DialogContentText from '@mui/material/DialogContentText';
 
-import { getAllUser, addUserByAdmin, addCreditByAdmin } from 'src/lib/api/user';
+import { getAllUser, deleteUser, addUserByAdmin, addCreditByAdmin } from 'src/lib/api/user';
 
 // import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -55,10 +55,12 @@ export default function UserView() {
   const [filterMac, setFilterMac] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openAddUserModal, setOpenAddUserModal] = useState(false); // State to control modal
-  const [userName, setUserName] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const [deleteId, setDeleteId] = useState('');
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -128,7 +130,7 @@ export default function UserView() {
 
   // Handle saving a new user
   const handleSaveNewUser = async () => {
-    const newUser = { userName, email: newEmail, password };
+    const newUser = { email: newEmail, password };
 
     try {
       const res = await addUserByAdmin(newUser);
@@ -141,7 +143,6 @@ export default function UserView() {
         setUsers(res.data.filter((item) => item.isAdmin === false));
         setOpenAddUserModal(false);
         // Clear the form inputs
-        setUserName('');
         setNewEmail('');
         setPassword('');
       }
@@ -154,38 +155,35 @@ export default function UserView() {
   // Handle closing the Add User modal
   const handleCloseAddUserModal = () => {
     setOpenAddUserModal(false);
-    setUserName('');
     setNewEmail('');
     setPassword('');
   };
 
-  // const handleDelete = (id) => {
-  //   setDeleteId(id);
-  //   setConfirmOpen(true);
-  // };
+  const handleDelete = (id) => {
+    setDeleteId(id);
+    setConfirmOpen(true);
+  };
 
   // Handle closing of the confirmation dialog
-  // const handleCloseConfirm = () => {
-  //   setConfirmOpen(false);
-  // };
+  const handleCloseConfirm = () => {
+    setConfirmOpen(false);
+  };
 
   // Handle the deletion after confirmation
-  // const handleConfirmDelete = async () => {
-  //   setLoading(true);
-  //   const res = await deleteDevice({ username: deleteId });
-  //   if (res === 200) {
-  //     setSnackbarSeverity('success');
-  //     setSnackbarMessage('Device deleted successfully');
-  //     setDevices(devices.filter((item) => item.loginId !== deleteId));
-  //     setUserDevices(userDevices.filter((item) => item.username !== deleteId));
-  //   } else {
-  //     setSnackbarSeverity('error');
-  //     setSnackbarMessage('Failed to delete device');
-  //   }
-  //   setSnackbarOpen(true);
-  //   handleCloseConfirm();
-  //   setLoading(false);
-  // };
+  const handleConfirmDelete = async () => {
+    setLoading(true);
+    const res = await deleteUser(deleteId);
+    if (res !== 200) {
+      setSnackbarSeverity('success');
+      setSnackbarMessage('User deleted successfully');
+    } else {
+      setSnackbarSeverity('error');
+      setSnackbarMessage('Failed to delete device');
+    }
+    setSnackbarOpen(true);
+    handleCloseConfirm();
+    setLoading(false);
+  };
 
   // // Handle closing of the snackbar
   const handleCloseSnackbar = () => {
@@ -215,7 +213,6 @@ export default function UserView() {
                 rowCount={users.length}
                 onRequestSort={handleSort}
                 headLabel={[
-                  { id: 'name', label: 'name' },
                   { id: 'email', label: 'Email' },
                   { id: 'credit', label: 'Credit' },
                   { id: 'isActive', label: 'Active' },
@@ -229,10 +226,10 @@ export default function UserView() {
                     <UserTableRow
                       key={row._id}
                       email={row.email}
-                      name={row.name}
                       isActive={row.isActive}
                       credit={row.credit}
                       editAction={handleAddCredit}
+                      deleteUser={() => handleDelete(row._id)}
                     />
                   ))}
 
@@ -257,7 +254,7 @@ export default function UserView() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Card>
-      {/* <Dialog
+      <Dialog
         open={confirmOpen}
         onClose={handleCloseConfirm}
         aria-labelledby="alert-dialog-title"
@@ -285,7 +282,7 @@ export default function UserView() {
             )}
           </Button>
         </DialogActions>
-      </Dialog> */}
+      </Dialog>
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={4000}
@@ -306,12 +303,6 @@ export default function UserView() {
             Add New User
           </Typography>
           <Stack spacing={3}>
-            <TextField
-              label="Username"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              fullWidth
-            />
             <TextField
               label="Email"
               value={newEmail}

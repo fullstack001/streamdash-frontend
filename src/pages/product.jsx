@@ -11,7 +11,11 @@ import { ProductView } from 'src/sections/product';
 
 export default function ProductPage() {
   return (
-    <>
+    <Box
+      sx={{
+        px: { xs: 2, md: 12 }, // Hide on xs, show on md and above
+      }}
+    >
       <Helmet>
         <title> Porduct | Streamdash </title>
       </Helmet>
@@ -21,29 +25,17 @@ export default function ProductPage() {
       <Box
         sx={{
           display: 'block',
-          '@media (min-width: 900px)': {
-            display: 'flex',
-          },
         }}
       >
         {/* Sidebar Section */}
-        <Box
-          sx={{
-            width: '100%',
-            '@media (min-width: 900px)': {
-              width: '50%',
-            },
-            display: 'flex',
-          }}
-        >
-          <ProductSideBar />
-        </Box>
+
+        <ProductSideBar />
 
         {/* Login View Section */}
-        <Box flexGrow={1}>
+        <Box>
           <ProductView />
         </Box>
       </Box>
-    </>
+    </Box>
   );
 }

@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-import { ResetPasswordView } from 'src/sections/reset-password';
+import { ProfileView } from 'src/sections/profile';
 
 // ----------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ export default function ResetPasswordPage() {
         <title> ResetPassword | Streamdash </title>
       </Helmet>
 
-      <ResetPasswordView />
+      <ProfileView />
     </>
   );
 }

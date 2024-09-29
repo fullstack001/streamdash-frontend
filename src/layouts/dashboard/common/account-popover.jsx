@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FaHome, FaUser } from 'react-icons/fa';
 
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -19,15 +20,13 @@ import { account } from 'src/_mock/account';
 const MENU_OPTIONS = [
   {
     label: 'Home',
-    icon: 'eva:home-fill',
+    icon: <FaHome />,
+    link: '/',
   },
   {
     label: 'Profile',
-    icon: 'eva:person-fill',
-  },
-  {
-    label: 'Settings',
-    icon: 'eva:settings-2-fill',
+    icon: <FaUser />,
+    link: '/profile',
   },
 ];
 
@@ -100,7 +99,13 @@ export default function AccountPopover() {
 
         {MENU_OPTIONS.map((option) => (
           <MenuItem key={option.label} onClick={handleClose}>
-            {option.label}
+            {option.icon}
+            <Link
+              to={option.link}
+              style={{ marginLeft: 8, textDecoration: 'none', color: 'inherit' }} // Remove underline and set color
+            >
+              {option.label}
+            </Link>
           </MenuItem>
         ))}
 
@@ -110,9 +115,31 @@ export default function AccountPopover() {
           disableRipple
           disableTouchRipple
           onClick={handleClose}
-          sx={{ typography: 'body2', color: 'error.main', py: 1.5 }}
+          sx={{
+            typography: 'body2',
+            color: 'error.main',
+            py: 1,
+            m: 2,
+            backgroundColor: 'error.light',
+            '&:hover': {
+              backgroundColor: 'error.dark',
+              color: 'white',
+            },
+            borderRadius: 2, // Make it look like a button
+            textAlign: 'center',
+          }}
         >
-          <Link to="/logout">Logout</Link>
+          <Link
+            to="/logout"
+            style={{
+              textDecoration: 'none', // Remove underline
+              color: 'inherit', // Make sure color stays consistent with the MenuItem
+              width: '100%', // Make the button full width
+              textAlign: 'center',
+            }}
+          >
+            Logout
+          </Link>
         </MenuItem>
       </Popover>
     </>

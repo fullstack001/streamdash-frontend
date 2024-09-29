@@ -17,6 +17,7 @@ export const AddDevicePage = lazy(() => import('src/pages/add-device'));
 export const SignUpPage = lazy(() => import('src/pages/signup'));
 export const EditDevicePage = lazy(() => import('src/pages/edit-device'));
 export const CreditHistoryPage = lazy(() => import('src/pages/credit-history'));
+export const ProfilePage = lazy(() => import('src/pages/profile'));
 export const AdminUserPage = lazy(() => import('src/admin-pages/user'));
 export const AdminCreditHistoryPage = lazy(() => import('src/admin-pages/credit-history'));
 export const AdminDevicePage = lazy(() => import('src/admin-pages/devices'));
@@ -68,6 +69,8 @@ export default function Router() {
         { element: <PrivateRoute element={<IndexPage />} />, index: true },
         { path: 'all-devices', element: <PrivateRoute element={<Devices />} /> },
         { path: 'credit-history', element: <PrivateRoute element={<CreditHistoryPage />} /> },
+        { path: 'profile', element: <PrivateRoute element={<ProfilePage />} /> },
+
         { path: 'add-device', element: <PrivateRoute element={<AddDevicePage />} /> },
         { path: 'edit-device/:id', element: <PrivateRoute element={<EditDevicePage />} /> },
         { path: 'support', element: <PrivateRoute element={<SupportPage />} /> },

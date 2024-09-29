@@ -4,14 +4,13 @@ import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-// import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
 import Snackbar from '@mui/material/Snackbar';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Modal, Alert, Button } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
 import InputAdornment from '@mui/material/InputAdornment';
 
@@ -37,13 +36,11 @@ export default function SignupView() {
   const user = useAuth();
 
   const [loading, setLoading] = useState(false);
-  const [nameUser, setNameUser] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setConfirmShowPassword] = useState(false);
-  const [verificationModalOpen, setVerificationModalOpen] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
   const [verificationLoading, setVerificationLoading] = useState(false);
   const [verificationError, setVerificationError] = useState('');
@@ -57,6 +54,8 @@ export default function SignupView() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+  const [isVerificationStage, setIsVerificationStage] = useState(false); // New state to track signup vs verification stage
 
   const validateForm = async () => {
     const newErrors = {};
@@ -87,11 +86,11 @@ export default function SignupView() {
     const isValid = await validateForm();
     if (!isValid) return;
     setLoading(true);
-    const data = { nameUser, email, password };
+    const data = { email, password };
 
     const res = await signup(data);
     if (res.status === 200) {
-      setVerificationModalOpen(true); // Open the verification modal on success
+      setIsVerificationStage(true); // Move to verification stage on success
       setSuccess('Signup successful! Check your email for the verification code.');
     } else {
       console.log(res.msg);
@@ -118,13 +117,13 @@ export default function SignupView() {
         setDevices(response.data);
         setUserDevices(response.userDevice);
         router.push('/');
-        setVerificationModalOpen(false); // Close the modal on success
       }
     } else {
       setVerificationError('Invalid verification code. Please try again.');
     }
     setVerificationLoading(false);
   };
+
   const goLogin = () => {
     router.push('/login');
   };
@@ -132,16 +131,12 @@ export default function SignupView() {
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
-  const renderForm = (
+
+  // Signup form rendering
+  const renderSignupForm = (
     <>
       {success && <Alert severity="success">{success}</Alert>}
       <Stack spacing={3}>
-        <TextField
-          name="nameUser"
-          label="User Name"
-          value={nameUser}
-          onChange={(e) => setNameUser(e.target.value)}
-        />
         <TextField
           name="email"
           label="Email address"
@@ -205,6 +200,34 @@ export default function SignupView() {
     </>
   );
 
+  // Verification form rendering
+  const renderVerificationForm = (
+    <>
+      {verificationError && <Alert severity="error">{verificationError}</Alert>}
+      <Typography variant="h6">Verify Your Email</Typography>
+      <Typography sx={{ mt: 2 }}>
+        We have sent a verification code to your email. Please enter it below to activate your
+        account.
+      </Typography>
+      <TextField
+        label="Verification Code"
+        value={verificationCode}
+        onChange={(e) => setVerificationCode(e.target.value)}
+        fullWidth
+        sx={{ mt: 2 }}
+      />
+      <LoadingButton
+        onClick={handleVerification}
+        loading={verificationLoading}
+        variant="contained"
+        color="primary"
+        sx={{ mt: 2 }}
+      >
+        Verify
+      </LoadingButton>
+    </>
+  );
+
   return (
     <Box
       sx={{
@@ -222,73 +245,25 @@ export default function SignupView() {
             maxWidth: 700,
           }}
         >
-          <Typography variant="h4">Create New Account</Typography>
-
-          <Typography variant="body2" sx={{ mt: 2, mb: 5 }}>
-            Do have an account already?
-            <Link variant="subtitle2" sx={{ ml: 0.5, cursor: 'pointer' }} onClick={goLogin}>
-              Login
-            </Link>
+          <Typography variant="h4">
+            {isVerificationStage ? 'Email Verification' : 'Create New Account'}
           </Typography>
 
-          <Divider sx={{ my: 3 }}>
-            {/* <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              OR
-            </Typography> */}
-          </Divider>
+          {!isVerificationStage && (
+            <Typography variant="body2" sx={{ mt: 2, mb: 5 }}>
+              Do you have an account already?
+              <Link variant="subtitle2" sx={{ ml: 0.5, cursor: 'pointer' }} onClick={goLogin}>
+                Login
+              </Link>
+            </Typography>
+          )}
 
-          {renderForm}
+          <Divider sx={{ my: 3 }} />
+
+          {isVerificationStage ? renderVerificationForm : renderSignupForm}
         </Card>
       </Stack>
 
-      {/* Modal for Email Verification */}
-      <Modal
-        open={verificationModalOpen}
-        onClose={() => setVerificationModalOpen(false)}
-        aria-labelledby="verify-email-modal"
-        aria-describedby="verify-email-modal-description"
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            borderRadius: 2,
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          <Typography variant="h6" component="h2">
-            Verify Your Email
-          </Typography>
-          <Typography sx={{ mt: 2 }}>
-            We have sent a verification code to your email. Please enter it below to activate your
-            account.
-          </Typography>
-          {verificationError && <Alert severity="error">{verificationError}</Alert>}
-          <TextField
-            label="Verification Code"
-            value={verificationCode}
-            onChange={(e) => setVerificationCode(e.target.value)}
-            fullWidth
-            sx={{ mt: 2 }}
-          />
-          <Stack direction="row" justifyContent="flex-end" spacing={2} sx={{ mt: 3 }}>
-            <Button onClick={() => setVerificationModalOpen(false)}>Cancel</Button>
-            <LoadingButton
-              onClick={handleVerification}
-              loading={verificationLoading}
-              variant="contained"
-              color="primary"
-            >
-              Verify
-            </LoadingButton>
-          </Stack>
-        </Box>
-      </Modal>
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={4000}

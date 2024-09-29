@@ -28,7 +28,7 @@ const modalStyle = {
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({ name, credit, isActive, email, editAction }) {
+export default function UserTableRow({ credit, isActive, email, editAction, deleteUser }) {
   const [open, setOpen] = useState(false); // Modal open/close state
   const [newCredit, setNewCredit] = useState(0); // Track new credit value
   const [error, setError] = useState(''); // Handle input validation
@@ -51,7 +51,6 @@ export default function UserTableRow({ name, credit, isActive, email, editAction
   return (
     <>
       <TableRow hover tabIndex={-1} name="checkbox">
-        <TableCell>{name}</TableCell>
         <TableCell>{email}</TableCell>
         <TableCell>
           <Label color={(!isActive && 'error') || 'success'}>
@@ -68,6 +67,14 @@ export default function UserTableRow({ name, credit, isActive, email, editAction
           >
             Add Credit
           </Button>
+          <Button
+            variant="contained"
+            color="warning"
+            onClick={deleteUser} // Open modal on click
+            startIcon={<Iconify icon="eva:edit-fill" />}
+          >
+            Delete
+          </Button>
         </TableCell>
       </TableRow>
 
@@ -75,7 +82,7 @@ export default function UserTableRow({ name, credit, isActive, email, editAction
       <Modal open={open} onClose={handleClose} aria-labelledby="add-credit-modal">
         <Box sx={modalStyle}>
           <Typography variant="h6" component="h2" gutterBottom>
-            Add Credit to {name}
+            Add Credit to {email}
           </Typography>
 
           {/* Credit input field */}
@@ -106,8 +113,8 @@ export default function UserTableRow({ name, credit, isActive, email, editAction
 
 UserTableRow.propTypes = {
   email: PropTypes.any,
-  name: PropTypes.any,
   credit: PropTypes.any,
   isActive: PropTypes.any,
   editAction: PropTypes.func,
+  deleteUser: PropTypes.func,
 };
