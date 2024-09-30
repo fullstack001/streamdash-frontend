@@ -4,15 +4,19 @@ import { Box, Grid, Typography } from '@mui/material';
 
 export default function ProductSideBar() {
   return (
-    <Box sx={{ backgroundColor: '#D9D9D9', borderRadius: 6, pb: 3 }}>
+    <Box sx={{ backgroundColor: '#F8F4F5', borderRadius: 6, pb: 3 }}>
       {/* Header Section */}
       <Grid container sx={{ padding: '0px' }}>
         <Grid item xs={12} md={6} sx={{ padding: '40px' }}>
-          <Typography sx={{ fontSize: '45px', fontWeight: '600' }} gutterBottom color="#156BE2">
+          <Typography
+            sx={{ fontSize: { xs: '30px', md: '45px' }, fontWeight: '600' }}
+            gutterBottom
+            color="#156BE2"
+          >
             Best IPTV Service
           </Typography>
           <Typography
-            sx={{ fontSize: '20px', fontWeight: '300', marginBottom: '10px' }}
+            sx={{ fontSize: { xs: '18px', md: '20px' }, fontWeight: '300', marginBottom: '10px' }}
             color="textSecondary"
           >
             Choose the plan that fits your needs and enjoy seamless streaming of a wide variety of
@@ -26,7 +30,9 @@ export default function ProductSideBar() {
               src="/assets/icons/round_check.svg"
               alt="Smart TV"
             />
-            <Typography sx={{ fontSize: '20px', fontWeight: '500', marginLeft: '10px' }}>
+            <Typography
+              sx={{ fontSize: { xs: '18px', md: '20px' }, fontWeight: '500', marginLeft: '10px' }}
+            >
               Access over 9,000 live channels
             </Typography>
           </Box>
@@ -38,7 +44,9 @@ export default function ProductSideBar() {
               src="/assets/icons/round_check.svg"
               alt="Smart TV"
             />
-            <Typography sx={{ fontSize: '20px', fontWeight: '500', marginLeft: '10px' }}>
+            <Typography
+              sx={{ fontSize: { xs: '18px', md: '20px' }, fontWeight: '500', marginLeft: '10px' }}
+            >
               Money-back guarantee for peace of mind
             </Typography>
           </Box>
@@ -50,7 +58,9 @@ export default function ProductSideBar() {
               src="/assets/icons/round_check.svg"
               alt="Smart TV"
             />
-            <Typography sx={{ fontSize: '20px', fontWeight: '500', marginLeft: '10px' }}>
+            <Typography
+              sx={{ fontSize: { xs: '18px', md: '20px' }, fontWeight: '500', marginLeft: '10px' }}
+            >
               Simple set-up. Perfect privacy
             </Typography>
           </Box>
@@ -62,7 +72,9 @@ export default function ProductSideBar() {
               src="/assets/icons/round_check.svg"
               alt="Smart TV"
             />
-            <Typography sx={{ fontSize: '20px', fontWeight: '500', marginLeft: '10px' }}>
+            <Typography
+              sx={{ fontSize: { xs: '18px', md: '20px' }, fontWeight: '500', marginLeft: '10px' }}
+            >
               Money-back guarantee for peace of mind
             </Typography>
           </Box>
@@ -87,7 +99,7 @@ export default function ProductSideBar() {
                 right: 0,
                 bottom: 0,
                 background:
-                  'linear-gradient(to right, #D9D9D9 10%, transparent 30%), linear-gradient(to top, #D9D9D9 10%, transparent 30%)',
+                  'linear-gradient(to right, #F8F4F5 10%, transparent 30%), linear-gradient(to top, #F8F4F5 10%, transparent 30%)',
               }}
             />
             {/* The actual image */}
@@ -102,42 +114,30 @@ export default function ProductSideBar() {
           </div>
         </Grid>
       </Grid>
-      <Grid item justifyContent="center" sx={{ mt: 4, padding: 0, textAlign: 'center' }}>
-        <img
-          style={{ margin: '0 5%' }}
-          width="100px"
-          height="120px"
-          src="/assets/images/products/smart-tv-icon.png"
-          alt="Smart TV"
-        />
-        <img
-          style={{ margin: '0 5%' }}
-          width="100px"
-          height="120px"
-          src="/assets/images/products/laptop-icon.png"
-          alt="Laptop or PC"
-        />
-        <img
-          style={{ margin: '0 5%' }}
-          width="100px"
-          height="120px"
-          src="/assets/images/products/android-icon.png"
-          alt="Android"
-        />
-        <img
-          width="100px"
-          height="120px"
-          style={{ margin: '0 5%' }}
-          src="/assets/images/products/ios-icon.png"
-          alt="iOS"
-        />
-        <img
-          style={{ margin: '0 5%' }}
-          width="100px"
-          height="120px"
-          src="/assets/images/products/windows-icon.png"
-          alt="Windows"
-        />
+      <Grid
+        item
+        justifyContent="center"
+        sx={{
+          position: 'relative',
+          padding: 0,
+          textAlign: 'center',
+          '& img': {
+            margin: '0 5%',
+            opacity: 0.4,
+            width: '80px',
+            height: '100px',
+            '@media (max-width: 900px)': {
+              width: '40px',
+              height: '50px',
+            },
+          },
+        }}
+      >
+        <img src="/assets/images/products/smart-tv-icon.png" alt="Smart TV" />
+        <img src="/assets/images/products/laptop-icon.png" alt="Laptop or PC" />
+        <img src="/assets/images/products/android-icon.png" alt="Android" />
+        <img src="/assets/images/products/ios-icon.png" alt="iOS" />
+        <img src="/assets/images/products/windows-icon.png" alt="Windows" />
       </Grid>
     </Box>
   );

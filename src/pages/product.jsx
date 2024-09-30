@@ -21,7 +21,10 @@ export default function ProductPage() {
   return (
     <Box
       sx={{
+        backgroundColor: '#ffffff',
         px: { xs: 2, md: 12 }, // Hide on xs, show on md and above
+        maxWidth: '1516px',
+        mx: 'auto',
       }}
     >
       <Helmet>
@@ -29,7 +32,11 @@ export default function ProductPage() {
       </Helmet>
 
       {/* Flex container to align Sidebar and ProductView side by side */}
-      <Box margin={3} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+      <Box
+        margin={3}
+        padding={2}
+        sx={{ display: 'flex', borderBottom: 'solid 1px #D9D9D9', justifyContent: 'space-between' }}
+      >
         <Logo />
         <Button
           variant="contained"

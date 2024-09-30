@@ -42,6 +42,8 @@ export default function LoginView() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const [openForgotPassword, setOpenForgotPassword] = useState(false); // Modal state
@@ -72,16 +74,17 @@ export default function LoginView() {
 
   const handleClick = async () => {
     setLoading(true);
-    setSnackbarSeverity('success');
-    setSnackbarMessage(
-      'If you refresh the page, you will be logged out. Pages will load slow, please be patient.'
-    );
-    setSnackbarOpen(true);
+
     const data = { email, password };
     const res = await signIn(data);
     if (res === 200) {
       console.log(authUser);
       setUser({ ...authUser, isAuth: true });
+      setSnackbarSeverity('success');
+      setSnackbarMessage(
+        'If you refresh the page, you will be logged out. Pages will load slow, please be patient.'
+      );
+      setSnackbarOpen(true);
       const response = await getDevice(email);
       if (response === 500) {
         alert('Network Error');
@@ -90,8 +93,14 @@ export default function LoginView() {
         setUserDevices(response.userDevice);
         router.push(isAdmin() ? '/admin' : '/');
       }
+    } else if (res.msg === 'email') {
+      setEmailError('User not found.');
+    } else if (res.msg === 'password') {
+      setPasswordError('Invalid Password');
     }
+    setLoading(false);
   };
+  console.log(emailError);
 
   const goSignup = () => {
     router.push('/signup');
@@ -107,6 +116,8 @@ export default function LoginView() {
         <TextField
           name="email"
           label="Email address"
+          error={!!emailError}
+          helperText={emailError}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -114,6 +125,8 @@ export default function LoginView() {
         <TextField
           name="password"
           label="Password"
+          error={!!passwordError}
+          helperText={passwordError}
           type={showPassword ? 'text' : 'password'}
           value={password}
           onChange={(e) => setPassword(e.target.value)}

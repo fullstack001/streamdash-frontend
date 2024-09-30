@@ -22,10 +22,12 @@ export function overrides(theme) {
           padding: 0,
           width: '100%',
           height: '100%',
+          backgroundColor: '#ffffff',
         },
         '#root': {
           width: '100%',
           height: '100%',
+          backgroundColor: '#ffffff',
         },
         input: {
           '&[type=number]': {

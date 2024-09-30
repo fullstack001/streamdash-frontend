@@ -62,7 +62,7 @@ export const resetPassword = async (data) => {
 
 export const signup = async (data) => {
   try {
-    const response = await fetch('/api/auth/signup', {
+    const response = await fetch(`${requestAddress}/api/auth/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -73,17 +73,17 @@ export const signup = async (data) => {
     return { status: response.status, ...resData };
   } catch (error) {
     console.error('Error signing up:', error);
-    return { status: 500, msg: 'Server error' };
+    return { status: 500, msg: error.response?.data.msg };
   }
 };
 
 export const signupDirectly = async (data) => {
   try {
     const response = await axios.post(`${requestAddress}/api/auth/signup-direct`, data);
-    return response.data;
+    return { status: 200, data: response.data };
   } catch (error) {
     console.error('Error signing up:', error);
-    return { status: 500, msg: 'Server error' };
+    return { status: 500, msg: error.response?.data.msg };
   }
 };
 

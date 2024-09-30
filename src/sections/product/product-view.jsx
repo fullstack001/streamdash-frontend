@@ -143,16 +143,21 @@ export default function ProductView() {
   const handleSignup = async (prod) => {
     if (validateForm()) {
       const data = { email, password };
-      await signupDirectly(data);
+      const response = await signupDirectly(data);
 
-      if (product.credit === 0) {
-        const data1 = { email };
-        await tryFree(data1);
-      } else {
-        handlePayment(prod);
+      if (response.status === 200) {
+        if (product.credit === 0) {
+          const data1 = { email };
+          await tryFree(data1);
+        } else {
+          handlePayment(prod);
+        }
+        setOpenModal(false); // Close the modal after signing up
+      } else if (response.status === 500) {
+        if (response.msg === 'exist') {
+          setEmailError('User already exist. Please signin');
+        }
       }
-
-      setOpenModal(false); // Close the modal after signing up
     }
   };
 
@@ -164,12 +169,16 @@ export default function ProductView() {
     <>
       <Box sx={{ padding: '20px', margin: 'auto' }}>
         <Grid container>
-          <Grid item xs={12} md={6} sx={{ padding: '40px' }}>
-            <Typography sx={{ fontSize: '45px', fontWeight: '600' }} gutterBottom color="#156BE2">
+          <Grid item xs={12} md={6} sx={{ padding: { xs: '20px', md: '40px' } }}>
+            <Typography
+              sx={{ fontSize: { xs: '30px', md: '45px' }, fontWeight: '600' }}
+              gutterBottom
+              color="#156BE2"
+            >
               Discover the power of our IPTV services
             </Typography>
             <Typography
-              sx={{ fontSize: '25px', fontWeight: '300', marginBottom: '10px' }}
+              sx={{ fontSize: { xs: '18px', md: '25px' }, fontWeight: '300', marginBottom: '10px' }}
               color="textSecondary"
             >
               Choose the plan that fits your needs and enjoy seamless streaming of a wide variety of
@@ -183,7 +192,9 @@ export default function ProductView() {
                 src="/assets/icons/round_check.svg"
                 alt="Smart TV"
               />
-              <Typography sx={{ fontSize: '25px', fontWeight: '500', marginLeft: '10px' }}>
+              <Typography
+                sx={{ fontSize: { xs: '18px', md: '25px' }, fontWeight: '500', marginLeft: '10px' }}
+              >
                 Access over 9,000 live channels
               </Typography>
             </Box>
@@ -195,7 +206,9 @@ export default function ProductView() {
                 src="/assets/icons/round_check.svg"
                 alt="Smart TV"
               />
-              <Typography sx={{ fontSize: '25px', fontWeight: '500', marginLeft: '10px' }}>
+              <Typography
+                sx={{ fontSize: { xs: '18px', md: '25px' }, fontWeight: '500', marginLeft: '10px' }}
+              >
                 Money-back guarantee for peace of mind
               </Typography>
             </Box>
@@ -207,7 +220,9 @@ export default function ProductView() {
                 src="/assets/icons/round_check.svg"
                 alt="Smart TV"
               />
-              <Typography sx={{ fontSize: '25px', fontWeight: '500', marginLeft: '10px' }}>
+              <Typography
+                sx={{ fontSize: { xs: '18px', md: '25px' }, fontWeight: '500', marginLeft: '10px' }}
+              >
                 Simple set-up. Perfect privacy
               </Typography>
             </Box>
@@ -219,11 +234,13 @@ export default function ProductView() {
                 src="/assets/icons/round_check.svg"
                 alt="Smart TV"
               />
-              <Typography sx={{ fontSize: '25px', fontWeight: '500', marginLeft: '10px' }}>
+              <Typography
+                sx={{ fontSize: { xs: '18px', md: '25px' }, fontWeight: '500', marginLeft: '10px' }}
+              >
                 Money-back guarantee for peace of mind
               </Typography>
             </Box>
-            <img src="/assets/images/product-sub.png" width="60%" alt="" />
+            <img src="/assets/images/product-sub.png" width="80%" alt="" />
           </Grid>
           {showMessage ? (
             <Grid item xs={12} md={6}>
@@ -280,22 +297,22 @@ export default function ProductView() {
                         padding: '16px',
                         marginBottom: '16px',
                         border: '1px solid #ddd',
-                        backgroundColor: '#007bff',
+                        backgroundColor: '#157EE3',
                         color: '#f5f5f5',
                       }}
                     >
                       <Grid container justifyContent="space-between" alignItems="center">
                         <Box>
-                          <Typography variant="h4" sx={{ fontWeight: 'bold' }} mb={2}>
+                          <Typography sx={{ fontWeight: 'bold', fontSize: '40px' }} mb={2}>
                             {prod.credit === 0 ? 'Free Trial' : prod.credit}{' '}
                             {prod.credit === 1 && 'credit'}
                             {prod.credit > 1 && 'credits'}
                           </Typography>
                           <Typography>Enjoy a full month of IPTV</Typography>
-                          {/* <Typography>
-                    {prod.credit === 0 && 'Free Trial'}
-                    {prod.credit > 0 && `Subscribe $${prod.price}`}
-                  </Typography> */}
+                          <Typography>
+                            {prod.credit === 0 && 'Free Trial'}
+                            {prod.credit > 0 && `Subscribe $${prod.price}`}
+                          </Typography>
                         </Box>
                         <Button
                           onClick={() => {
@@ -305,7 +322,10 @@ export default function ProductView() {
                           variant="contained"
                           sx={{
                             backgroundColor: '#fff',
-                            color: '#007bff',
+                            color: '#157EE3',
+                            width: '243px',
+                            fontSize: '24px',
+                            padding: '10px',
                           }}
                         >
                           {prod.credit === 0 && 'Try free'}
@@ -389,7 +409,10 @@ export default function ProductView() {
                       }}
                       sx={{
                         backgroundColor: '#fff',
-                        color: '#007bff',
+                        color: '#157EE3',
+                        width: '243px',
+                        fontSize: '24px',
+                        padding: '10px',
                       }}
                     >
                       {product.credit === 0 && 'Try free'}

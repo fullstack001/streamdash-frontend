@@ -48,7 +48,7 @@ export default function SignupView() {
   const [errors, setErrors] = useState({
     email: '',
     password: '',
-    confirmPassword,
+    confirmPassword:'',
   });
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -89,11 +89,15 @@ export default function SignupView() {
     const data = { email, password };
 
     const res = await signup(data);
+    console.log(res);
     if (res.status === 200) {
       setIsVerificationStage(true); // Move to verification stage on success
       setSuccess('Signup successful! Check your email for the verification code.');
-    } else {
-      console.log(res.msg);
+    } else if (res.status === 400) {
+      console.log(res);
+      if (res.msg === 'exist') {
+        setErrors((prev) => ({ ...prev, email: 'User already exist' }));
+      }
     }
     setLoading(false);
   };
