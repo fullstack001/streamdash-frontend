@@ -124,10 +124,10 @@ export default function ProductSideBar() {
           '& img': {
             margin: '0 5%',
             opacity: 0.4,
-            width: '80px',
+            width: '100px',
             height: '100px',
             '@media (max-width: 900px)': {
-              width: '40px',
+              width: '50px',
               height: '50px',
             },
           },
