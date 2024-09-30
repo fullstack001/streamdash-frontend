@@ -12,7 +12,7 @@ export default function ProductSideBar() {
             Best IPTV Service
           </Typography>
           <Typography
-            sx={{ fontSize: '25px', fontWeight: '300', marginBottom: '10px' }}
+            sx={{ fontSize: '20px', fontWeight: '300', marginBottom: '10px' }}
             color="textSecondary"
           >
             Choose the plan that fits your needs and enjoy seamless streaming of a wide variety of
@@ -26,7 +26,7 @@ export default function ProductSideBar() {
               src="/assets/icons/round_check.svg"
               alt="Smart TV"
             />
-            <Typography sx={{ fontSize: '25px', fontWeight: '500', marginLeft: '10px' }}>
+            <Typography sx={{ fontSize: '20px', fontWeight: '500', marginLeft: '10px' }}>
               Access over 9,000 live channels
             </Typography>
           </Box>
@@ -38,7 +38,7 @@ export default function ProductSideBar() {
               src="/assets/icons/round_check.svg"
               alt="Smart TV"
             />
-            <Typography sx={{ fontSize: '25px', fontWeight: '500', marginLeft: '10px' }}>
+            <Typography sx={{ fontSize: '20px', fontWeight: '500', marginLeft: '10px' }}>
               Money-back guarantee for peace of mind
             </Typography>
           </Box>
@@ -50,7 +50,7 @@ export default function ProductSideBar() {
               src="/assets/icons/round_check.svg"
               alt="Smart TV"
             />
-            <Typography sx={{ fontSize: '25px', fontWeight: '500', marginLeft: '10px' }}>
+            <Typography sx={{ fontSize: '20px', fontWeight: '500', marginLeft: '10px' }}>
               Simple set-up. Perfect privacy
             </Typography>
           </Box>
@@ -62,7 +62,7 @@ export default function ProductSideBar() {
               src="/assets/icons/round_check.svg"
               alt="Smart TV"
             />
-            <Typography sx={{ fontSize: '25px', fontWeight: '500', marginLeft: '10px' }}>
+            <Typography sx={{ fontSize: '20px', fontWeight: '500', marginLeft: '10px' }}>
               Money-back guarantee for peace of mind
             </Typography>
           </Box>
@@ -77,7 +77,7 @@ export default function ProductSideBar() {
             display: { xs: 'none', md: 'block' }, // Hide on xs, show on md and above
           }}
         >
-          <div style={{ position: 'relative', width: '70%', marginLeft: 'auto' }}>
+          <div style={{ position: 'relative', width: '90%', marginLeft: 'auto' }}>
             {/* The gradient overlay container */}
             <Box
               sx={{
@@ -102,23 +102,23 @@ export default function ProductSideBar() {
           </div>
         </Grid>
       </Grid>
-      <Grid container justifyContent="center" spacing={2} sx={{ mt: 4 }}>
+      <Grid item justifyContent="center" sx={{ mt: 4, padding: 0, textAlign: 'center' }}>
         <img
-          style={{ margin: '0 100px' }}
+          style={{ margin: '0 5%' }}
           width="100px"
           height="120px"
           src="/assets/images/products/smart-tv-icon.png"
           alt="Smart TV"
         />
         <img
-          style={{ margin: '0 100px' }}
+          style={{ margin: '0 5%' }}
           width="100px"
           height="120px"
           src="/assets/images/products/laptop-icon.png"
           alt="Laptop or PC"
         />
         <img
-          style={{ margin: '0 100px' }}
+          style={{ margin: '0 5%' }}
           width="100px"
           height="120px"
           src="/assets/images/products/android-icon.png"
@@ -127,12 +127,12 @@ export default function ProductSideBar() {
         <img
           width="100px"
           height="120px"
-          style={{ margin: '0 100px' }}
+          style={{ margin: '0 5%' }}
           src="/assets/images/products/ios-icon.png"
           alt="iOS"
         />
         <img
-          style={{ margin: '0 100px' }}
+          style={{ margin: '0 5%' }}
           width="100px"
           height="120px"
           src="/assets/images/products/windows-icon.png"

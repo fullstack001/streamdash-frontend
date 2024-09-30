@@ -22,6 +22,14 @@ export const getUser = async (email) => {
     return error.response.data;
   }
 };
+export const getUserPayment = async (email) => {
+  try {
+    const records = await axios.post(`${requestAddress}/api/auth/getUserpayment`, email);
+    return records.data;
+  } catch (error) {
+    return false;
+  }
+};
 
 export const getAllUser = async () => {
   try {

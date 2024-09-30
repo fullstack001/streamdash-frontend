@@ -24,7 +24,7 @@ import { useAuth } from 'src/hooks/use-auth';
 import userStore from 'src/store/userStore';
 import getDevice from 'src/lib/api/getDevice';
 import devicesStore from 'src/store/devicesStore';
-import { signIn, tryFree, signupDirectly } from 'src/lib/api/user';
+import { signIn, tryFree, getUserPayment, signupDirectly } from 'src/lib/api/user';
 
 import Notification from './notification';
 
@@ -76,7 +76,10 @@ export default function ProductView() {
   useEffect(() => {
     const getUserData = async () => {
       try {
-        setShowMessage(true);
+        const procecces = await getUserPayment({ email });
+        if (procecces) {
+          setShowMessage(true);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -85,7 +88,7 @@ export default function ProductView() {
       getUserData();
       setWindowClosed(false); // Reset state if needed
     }
-  }, [windowClosed, router]);
+  }, [windowClosed, authUser, email]);
 
   const validateForm = () => {
     let isValid = true;
@@ -295,11 +298,11 @@ export default function ProductView() {
                   </Typography> */}
                         </Box>
                         <Button
-                          variant="contained"
                           onClick={() => {
                             setOpenModal(true);
                             setCurrentProduct(prod);
                           }}
+                          variant="contained"
                           sx={{
                             backgroundColor: '#fff',
                             color: '#007bff',

@@ -1,6 +1,8 @@
 import { Helmet } from 'react-helmet-async';
 
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
+
+import { useRouter } from 'src/routes/hooks';
 
 import Logo from 'src/components/logo';
 import ProductSideBar from 'src/components/productSideBar';
@@ -10,6 +12,12 @@ import { ProductView } from 'src/sections/product';
 // ----------------------------------------------------------------------
 
 export default function ProductPage() {
+  const router = useRouter();
+
+  const clickLogin = () => {
+    router.push('/login');
+  };
+
   return (
     <Box
       sx={{
@@ -21,7 +29,21 @@ export default function ProductPage() {
       </Helmet>
 
       {/* Flex container to align Sidebar and ProductView side by side */}
-      <Logo margin={3} />
+      <Box margin={3} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Logo />
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: '#007bff',
+            color: '#fff',
+            borderRadius: 4,
+            padding: '10px 20px',
+          }}
+          onClick={clickLogin}
+        >
+          Login
+        </Button>
+      </Box>
       <Box
         sx={{
           display: 'block',
