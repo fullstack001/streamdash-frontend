@@ -12,7 +12,6 @@ import {
   Select,
   MenuItem,
   TextField,
-  IconButton,
   InputLabel,
   Typography,
   FormControl,
@@ -129,7 +128,7 @@ export default function EditDeviceView() {
           updateDevice(id, { name, mac, expiry, status });
           updateUserDevice(id, { name, password, mac });
           setSnackbarSeverity('success');
-          setSnackbarMessage('Your device data has been updateded successfully. ');
+          setSnackbarMessage('Your device data has been updated successfully. ');
         }
       } catch (error) {
         setSnackbarSeverity('error');
@@ -181,10 +180,10 @@ export default function EditDeviceView() {
 
   return (
     <Box p={2}>
-      <Box display="flex" justifyContent="flex-end">
-        <IconButton color="error" onClick={goBack}>
-          Back
-        </IconButton>
+      <Box display="flex">
+        <Button variant="contained" color="primary" onClick={goBack}>
+          ← Back
+        </Button>
       </Box>
 
       <Grid container spacing={2} component={Paper} p={2}>
