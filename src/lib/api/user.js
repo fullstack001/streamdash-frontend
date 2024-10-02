@@ -145,7 +145,7 @@ export const updatePassword = async (data) => {
     return res.data;
   } catch (error) {
     console.log('Error update password', error);
-    return 500;
+    return { status: 500, msg: error.response.data.msg };
   }
 };
 

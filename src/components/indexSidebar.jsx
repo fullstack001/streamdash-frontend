@@ -28,13 +28,10 @@ export default function IndexSideBar() {
       <Box
         mt={4}
         elevation={3}
-        p={4}
         sx={{
+          p: { md: 4, sx: 2 },
           textAlign: 'left',
           color: '#156BE2',
-          '@media (min-width: 900px)': {
-            textAlign: 'left',
-          },
         }}
       >
         <Typography variant="h5" gutterBottom>
@@ -43,42 +40,41 @@ export default function IndexSideBar() {
 
         <Grid
           container
-          spacing={4}
+          spacing={2}
           justifyContent="center"
           sx={{
-            textAlign: 'center',
             color: '#156BE2',
-            '@media (min-width: 900px)': {
-              textAlign: 'left',
-            },
           }}
         >
-          {/* Global TV Access */}
-          <Grid item xs={12} md={3}>
-            <img src="/assets/icons/landing/1.svg" alt="first" />
-            <Typography>Global TV Access</Typography>
-          </Grid>
-
-          {/* Stream on Any Device */}
-          <Grid item xs={12} md={3}>
-            <img src="/assets/icons/landing/2.svg" alt="first" />
-
-            <Typography>Stream on Any Device</Typography>
-          </Grid>
-
-          {/* Unlimited Device Connections */}
-          <Grid item xs={12} md={3}>
-            <img src="/assets/icons/landing/3.svg" alt="first" />
-
-            <Typography>Unlimited Device Connections</Typography>
-          </Grid>
-
-          {/* Automatic Access & Self-Managed Dashboard */}
-          <Grid item xs={12} md={3}>
-            <img src="/assets/icons/landing/4.svg" alt="first" />
-
-            <Typography>Automatic Access & Self-Managed Dashboard</Typography>
-          </Grid>
+          {[
+            { icon: '1.svg', text: 'Global TV Access' },
+            { icon: '2.svg', text: 'Stream on Any Device' },
+            { icon: '3.svg', text: 'Unlimited Device Connections' },
+            { icon: '4.svg', text: 'Automatic Access & Self-Managed Dashboard' },
+          ].map((item, index) => (
+            <Grid item xs={12} sm={6} md={3} key={index}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: { xs: 'flex-start', sm: 'center', md: 'flex-start' },
+                  flexDirection: { xs: 'row', sm: 'column', md: 'column' },
+                  textAlign: { xs: 'left', sm: 'center', md: 'center' },
+                  '& img': {
+                    width: '100px',
+                    marginRight: '0px',
+                    '@media (max-width: 900px)': {
+                      width: '60px',
+                      marginRight: '8px',
+                    },
+                  },
+                }}
+              >
+                <img src={`/assets/icons/landing/${item.icon}`} alt={`feature-${index + 1}`} />
+                <Typography>{item.text}</Typography>
+              </Box>
+            </Grid>
+          ))}
         </Grid>
       </Box>
     </Container>

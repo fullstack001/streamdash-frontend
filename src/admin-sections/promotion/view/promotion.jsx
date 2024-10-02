@@ -10,7 +10,7 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { getNotification, putNotification } from 'src/lib/api/notification';
+import { getPromotion, putPromotion } from 'src/lib/api/promotion';
 
 // Custom styles for the input fields and button
 const CustomTextField = styled(TextField)({
@@ -42,7 +42,7 @@ const CustomButton = styled(Button)({
   },
 });
 
-export default function AddDeviceView() {
+export default function PromotionView() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
@@ -58,7 +58,7 @@ export default function AddDeviceView() {
   useEffect(() => {
     const getNoti = async () => {
       try {
-        const res = await getNotification();
+        const res = await getPromotion();
         setTitle(res.title);
         setContent(res.content);
       } catch (error) {
@@ -92,7 +92,7 @@ export default function AddDeviceView() {
 
       try {
         const data = { title, content };
-        const response = await putNotification(data);
+        const response = await putPromotion(data);
         if (response === 500) {
           setSnackbarSeverity('error');
           setSnackbarMessage('Failed to change notification.');
@@ -118,7 +118,7 @@ export default function AddDeviceView() {
   return (
     <Container sx={{ marginTop: 5 }}>
       <Typography variant="h4" sx={{ mb: 4 }}>
-        Set Notification
+        Set Promotion
       </Typography>
       <Grid container spacing={4}>
         <Grid container item xs={12} alignItems="center" spacing={2} sx={{ mb: 1 }}>

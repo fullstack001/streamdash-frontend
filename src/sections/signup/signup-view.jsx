@@ -48,7 +48,7 @@ export default function SignupView() {
   const [errors, setErrors] = useState({
     email: '',
     password: '',
-    confirmPassword:'',
+    confirmPassword: '',
   });
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -120,7 +120,7 @@ export default function SignupView() {
       } else {
         setDevices(response.data);
         setUserDevices(response.userDevice);
-        router.push('/');
+        router.push('/dashboard');
       }
     } else {
       setVerificationError('Invalid verification code. Please try again.');
@@ -199,7 +199,7 @@ export default function SignupView() {
         loading={loading}
         sx={{ marginTop: '40px' }}
       >
-        Signup
+        Sign Up
       </LoadingButton>
     </>
   );

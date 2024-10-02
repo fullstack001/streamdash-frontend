@@ -50,6 +50,7 @@ export default function LoginView() {
   const [resetEmail, setResetEmail] = useState('');
   const [resetLoading, setResetLoading] = useState(false);
   const [resetMessage, setResetMessage] = useState('');
+  const [resetSuccess, setResetSuccess] = useState(false); // Add this state
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -66,6 +67,7 @@ export default function LoginView() {
     const res = await sendPasswordReset({ email: resetEmail });
     if (res === 200) {
       setResetMessage('Password reset link has been sent to your email.');
+      setResetSuccess(true); // Set this to true on success
     } else {
       setResetMessage('Error sending password reset link. Please try again.');
     }
@@ -91,7 +93,7 @@ export default function LoginView() {
       } else {
         setDevices(response.data);
         setUserDevices(response.userDevice);
-        router.push(isAdmin() ? '/admin' : '/');
+        router.push(isAdmin() ? '/admin' : '/dashboard');
       }
     } else if (res.msg === 'email') {
       setEmailError('User not found.');
@@ -228,10 +230,20 @@ export default function LoginView() {
             </Typography>
           )}
           <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
-            <Button onClick={handleCloseForgotPassword}>Cancel</Button>
-            <LoadingButton onClick={handleResetPassword} loading={resetLoading} variant="contained">
-              Send Reset Link
-            </LoadingButton>
+            {resetSuccess ? (
+              <Button onClick={handleCloseForgotPassword}>Close</Button>
+            ) : (
+              <>
+                <Button onClick={handleCloseForgotPassword}>Cancel</Button>
+                <LoadingButton
+                  onClick={handleResetPassword}
+                  loading={resetLoading}
+                  variant="contained"
+                >
+                  Send Reset Link
+                </LoadingButton>
+              </>
+            )}
           </Stack>
         </Box>
       </Modal>

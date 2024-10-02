@@ -1,8 +1,11 @@
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 
 import { Box, Button } from '@mui/material';
 
 import { useRouter } from 'src/routes/hooks';
+
+import { getFooter } from 'src/lib/api/footer';
 
 import Logo from 'src/components/logo';
 import ProductSideBar from 'src/components/productSideBar';
@@ -12,7 +15,16 @@ import { ProductView } from 'src/sections/product';
 // ----------------------------------------------------------------------
 
 export default function ProductPage() {
+  const [footer, setFooter] = useState({});
   const router = useRouter();
+
+  useEffect(() => {
+    const getData = async () => {
+      const res = await getFooter();
+      setFooter(res);
+    };
+    getData();
+  }, []);
 
   const clickLogin = () => {
     router.push('/login');
@@ -64,6 +76,22 @@ export default function ProductPage() {
         <Box>
           <ProductView />
         </Box>
+      </Box>
+      <Box
+        margin={3}
+        sx={{
+          borderTop: 'solid 1px #D9D9D9',
+          justifyContent: 'center',
+          alignItems: 'center',
+          '& p': {
+            lineHeight: 0.6,
+            mx: 'auto',
+            textAlign: 'center',
+          },
+        }}
+      >
+        <p>{footer.title}</p>
+        <p> {footer.content}</p>
       </Box>
     </Box>
   );

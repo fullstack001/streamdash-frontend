@@ -43,7 +43,7 @@ export default function Header({ onOpenNav }) {
       <Stack direction="row" alignItems="center" spacing={1}>
         {/* Display the credit value */}
         <Typography variant="body1" sx={{ color: theme.palette.text.primary, mr: 4 }}>
-          Credit: {user.credit}
+          Credit{user.credit > 1 ? 's' : ''}: {user.credit}
         </Typography>
 
         {/* <LanguagePopover /> */}

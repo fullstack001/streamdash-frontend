@@ -127,8 +127,9 @@ export default function ProductSideBar() {
             width: '100px',
             height: '100px',
             '@media (max-width: 900px)': {
-              width: '50px',
-              height: '50px',
+              width: '45px',
+              height: '45px',
+              margin: '0 2%',
             },
           },
         }}

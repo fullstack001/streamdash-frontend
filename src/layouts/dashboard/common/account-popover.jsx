@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaHome, FaUser } from 'react-icons/fa';
+import { FaUser } from 'react-icons/fa';
 
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -18,11 +18,11 @@ import { account } from 'src/_mock/account';
 // ----------------------------------------------------------------------
 
 const MENU_OPTIONS = [
-  {
-    label: 'Home',
-    icon: <FaHome />,
-    link: '/',
-  },
+  // {
+  //   label: 'Home',
+  //   icon: <FaHome />,
+  //   link: '/',
+  // },
   {
     label: 'Profile',
     icon: <FaUser />,
@@ -117,15 +117,14 @@ export default function AccountPopover() {
           onClick={handleClose}
           sx={{
             typography: 'body2',
-            color: 'error.main',
+            color: 'white',
             py: 1,
             m: 2,
-            backgroundColor: 'error.light',
+            backgroundColor: 'primary.main', // Changed to blue (primary color)
             '&:hover': {
-              backgroundColor: 'error.dark',
-              color: 'white',
+              backgroundColor: 'error.main', // Changed to red on hover
             },
-            borderRadius: 2, // Make it look like a button
+            borderRadius: 2,
             textAlign: 'center',
           }}
         >
@@ -136,9 +135,10 @@ export default function AccountPopover() {
               color: 'inherit', // Make sure color stays consistent with the MenuItem
               width: '100%', // Make the button full width
               textAlign: 'center',
+              display: 'block', // Added to ensure full coverage of MenuItem
             }}
           >
-            Logout
+            Log out
           </Link>
         </MenuItem>
       </Popover>

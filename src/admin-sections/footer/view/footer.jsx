@@ -10,7 +10,7 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { getNotification, putNotification } from 'src/lib/api/notification';
+import { getFooter, putFooter } from 'src/lib/api/footer';
 
 // Custom styles for the input fields and button
 const CustomTextField = styled(TextField)({
@@ -42,7 +42,7 @@ const CustomButton = styled(Button)({
   },
 });
 
-export default function AddDeviceView() {
+export default function FooterView() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
@@ -58,7 +58,7 @@ export default function AddDeviceView() {
   useEffect(() => {
     const getNoti = async () => {
       try {
-        const res = await getNotification();
+        const res = await getFooter();
         setTitle(res.title);
         setContent(res.content);
       } catch (error) {
@@ -92,7 +92,7 @@ export default function AddDeviceView() {
 
       try {
         const data = { title, content };
-        const response = await putNotification(data);
+        const response = await putFooter(data);
         if (response === 500) {
           setSnackbarSeverity('error');
           setSnackbarMessage('Failed to change notification.');
@@ -118,15 +118,15 @@ export default function AddDeviceView() {
   return (
     <Container sx={{ marginTop: 5 }}>
       <Typography variant="h4" sx={{ mb: 4 }}>
-        Set Notification
+        Set Footer
       </Typography>
-      <Grid container spacing={4}>
+      <Grid container spacing={2}>
         <Grid container item xs={12} alignItems="center" spacing={2} sx={{ mb: 1 }}>
-          <Grid xs={3}>Title*</Grid>
+          <Grid xs={3}>Line1*</Grid>
           <Grid xs={9}>
             <CustomTextField
               fullWidth
-              placeholder="Type  Title"
+              placeholder="Footer line 1"
               variant="outlined"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -137,19 +137,17 @@ export default function AddDeviceView() {
           </Grid>
         </Grid>
         <Grid container item xs={12} alignItems="center" spacing={2} sx={{ mb: 1 }}>
-          <Grid xs={3}>content*</Grid>
+          <Grid xs={3}>Line2*</Grid>
           <Grid xs={9}>
             <CustomTextField
               fullWidth
-              placeholder="Type  content"
+              placeholder="Footer Line 2"
               type="content"
               variant="outlined"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               error={!!errors.content}
               helperText={errors.content}
-              multiline
-              rows={4}
               required
             />
           </Grid>

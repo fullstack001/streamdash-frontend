@@ -26,8 +26,8 @@ export default function ProfileEditView() {
   const authUser = useAuth();
 
   const [loading, setLoading] = useState(false);
-  const [nameUser, setNameUser] = useState('');
-  const [nameError, setNameError] = useState(''); // For username validation
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState(''); // For email validation
 
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [newPassword, setNewPassword] = useState('');
@@ -40,13 +40,17 @@ export default function ProfileEditView() {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
-  // Validate username
-  const validateUsername = () => {
-    if (nameUser.trim() === '') {
-      setNameError('Username is required');
+  // Validate email
+  const validateEmail = () => {
+    if (email.trim() === '') {
+      setEmailError('Email is required');
       return false;
     }
-    setNameError('');
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError('Invalid email format');
+      return false;
+    }
+    setEmailError('');
     return true;
   };
 
@@ -73,22 +77,23 @@ export default function ProfileEditView() {
 
   // Handle profile update request
   const handleUpdateProfile = async () => {
-    if (!validateUsername()) return;
+    if (!validateEmail()) return;
 
     setLoading(true);
     const data = {
-      name: nameUser,
-      email: authUser.email,
+      oldEmail: authUser.email,
+      email,
     };
 
     const res = await updateProfile(data);
-    if (res !== 500) {
+    if (res.status !== 500) {
       setSnackbarSeverity('success');
-      setSnackbarMessage('Profile updated successfully.');
-      setUser({ ...authUser, name: nameUser });
-    } else {
+      setSnackbarMessage('Email updated successfully.');
+      setUser({ ...authUser, email });
+    } else if (res.msg === 'exist') {
+      setEmailError('Email already Exist');
       setSnackbarSeverity('error');
-      setSnackbarMessage('Error updating profile. Please try again.');
+      setSnackbarMessage('Error updating email. Please try again.');
     }
     setLoading(false);
     setSnackbarOpen(true);
@@ -124,12 +129,12 @@ export default function ProfileEditView() {
     <>
       <Stack spacing={3}>
         <TextField
-          name="nameUser"
-          label="Username"
-          value={nameUser}
-          onChange={(e) => setNameUser(e.target.value)}
-          error={!!nameError}
-          helperText={nameError}
+          name="email"
+          label="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          error={!!emailError}
+          helperText={emailError}
         />
       </Stack>
 
@@ -142,7 +147,7 @@ export default function ProfileEditView() {
         loading={loading}
         sx={{ marginTop: '20px' }}
       >
-        Update Username
+        Update Email
       </LoadingButton>
     </>
   );
@@ -221,7 +226,7 @@ export default function ProfileEditView() {
           <Typography variant="h4">Edit Profile</Typography>
 
           <Typography variant="body2" sx={{ mt: 2, mb: 5 }}>
-            Update your username, or change your password.
+            Update your email, or change your password.
           </Typography>
 
           {renderProfileForm}

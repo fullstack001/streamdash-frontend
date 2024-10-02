@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
+import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Box,
   Grid,
@@ -22,6 +23,7 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useAuth } from 'src/hooks/use-auth';
 
+import { getUser } from 'src/lib/api/user';
 import devicesStore from 'src/store/devicesStore';
 import uploadDeviceData from 'src/lib/api/uploadDeviceData';
 import addCreditToDevice from 'src/lib/api/addCreditToDevice';
@@ -112,7 +114,11 @@ export default function EditDeviceView() {
     if (validate()) {
       setEditLoading(true);
       setSnackbarSeverity('success');
-      setSnackbarMessage('Please do not refresh the page. Your request is being processed.');
+      setSnackbarMessage(
+        'If you refresh the page, you will be logged out. Pages will load slow, please be patient.'
+      );
+      setSnackbarOpen(true);
+
       try {
         const data = { id, name, password, mac };
         const response = await uploadDeviceData(data);
@@ -140,7 +146,10 @@ export default function EditDeviceView() {
       const mail = user.email;
       const data = { email: mail, id, credits };
       setSnackbarSeverity('success');
-      setSnackbarMessage('Please do not refresh the page. Your request is being processed.');
+      setSnackbarMessage(
+        'If you refresh the page, you will be logged out. Pages will load slow, please be patient.'
+      );
+      setSnackbarOpen(true);
       setAddLoading(true);
       try {
         const res = await addCreditToDevice(data);
@@ -153,6 +162,7 @@ export default function EditDeviceView() {
           setSnackbarMessage(
             `${credits} credit${credits > 1 ? 's' : ''} has been added to you device successfully. `
           );
+          await getUser(user.email);
         }
       } catch (error) {
         setSnackbarSeverity('error');
@@ -210,22 +220,15 @@ export default function EditDeviceView() {
             onChange={(e) => setMac(e.target.value)}
           />
           <Box mt={2}>
-            <Button
+            <LoadingButton
               variant="contained"
               color="success"
               onClick={handleEditUser}
               disabled={status === 'INACTIVE'}
+              loading={editloading}
             >
-              {editloading ? (
-                <img
-                  src="/assets/icons/spinner.svg"
-                  alt="Loading"
-                  style={{ width: 24, height: 24 }}
-                />
-              ) : (
-                'Submit'
-              )}
-            </Button>
+              Submit
+            </LoadingButton>
             <Button variant="contained" color="error" sx={{ ml: 2 }} onClick={goBack}>
               Cancel
             </Button>
@@ -271,6 +274,19 @@ export default function EditDeviceView() {
                   '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                     borderColor: creditsError ? 'red' : 'primary.main',
                   },
+                  '& .MuiSelect-select': {
+                    paddingRight: '32px', // Add space for the dropdown icon
+                  },
+                  '& .MuiSelect-icon': {
+                    right: '8px', // Adjust the position of the dropdown icon
+                  },
+                }}
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      maxHeight: 300, // Limit the height of the dropdown menu
+                    },
+                  },
                 }}
               >
                 {Array.from({ length: 24 }, (_, index) => (
@@ -284,17 +300,14 @@ export default function EditDeviceView() {
               )}
             </FormControl>
             <Box mt={2}>
-              <Button variant="contained" color="success" onClick={handleAddCredit}>
-                {addLoading ? (
-                  <img
-                    src="/assets/icons/spinner.svg"
-                    alt="Loading"
-                    style={{ width: 24, height: 24 }}
-                  />
-                ) : (
-                  'Submit'
-                )}
-              </Button>
+              <LoadingButton
+                variant="contained"
+                color="success"
+                onClick={handleAddCredit}
+                loading={addLoading}
+              >
+                Submit
+              </LoadingButton>
               <Button variant="contained" color="error" sx={{ ml: 2 }} onClick={goBack}>
                 Cancel
               </Button>

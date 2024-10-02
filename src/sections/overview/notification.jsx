@@ -1,11 +1,10 @@
-import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 
 import { Box, Stack, useTheme, Typography, useMediaQuery } from '@mui/material';
 
 import { getNotification } from 'src/lib/api/notification';
 
-export default function CongratulationCard({ user }) {
+export default function CongratulationCard() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [title, setTitle] = useState('');
@@ -44,7 +43,7 @@ export default function CongratulationCard({ user }) {
           variant={isSmallScreen ? 'h5' : 'h3'} // Adjust font size for smaller screens
           sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center' }}
         >
-          {title} <span style={{ color: '#6200ea', marginLeft: '8px' }}>{user}!</span> 🎉
+          {title} 🎉
         </Typography>
         <Typography variant="body1" sx={{ mt: 1, display: 'flex', alignItems: 'center' }}>
           {content}{' '}
@@ -62,10 +61,10 @@ export default function CongratulationCard({ user }) {
         {/* Badge and additional images */}
         <Stack direction="column" spacing={1} alignItems="center">
           <img
-            src="/assets/images/Screenshot_2.png"
+            src="/assets/images/tv_6113713.png"
             alt="Badge"
             style={{
-              width: isSmallScreen ? '50%' : '80%', // Adjust image size on smaller screens
+              width: isSmallScreen ? '30%' : '40%', // Adjust image size on smaller screens
               height: 'auto',
             }}
           />
@@ -74,7 +73,3 @@ export default function CongratulationCard({ user }) {
     </Box>
   );
 }
-
-CongratulationCard.propTypes = {
-  user: PropTypes.string,
-};

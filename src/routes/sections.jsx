@@ -23,6 +23,9 @@ export const AdminCreditHistoryPage = lazy(() => import('src/admin-pages/credit-
 export const AdminDevicePage = lazy(() => import('src/admin-pages/devices'));
 export const AdminNotificationPage = lazy(() => import('src/admin-pages/notification'));
 export const AdminProductPAge = lazy(() => import('src/admin-pages/product'));
+export const AdminFacPage = lazy(() => import('src/admin-pages/fac'));
+export const AdminPromotionPage = lazy(() => import('src/admin-pages/promotion'));
+export const AdminFooterPage = lazy(() => import('src/admin-pages/footer'));
 export const ResetPasswordPage = lazy(() => import('src/pages/resetpassword'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
@@ -58,6 +61,10 @@ PrivateRoute.propTypes = {
 export default function Router() {
   const routes = useRoutes([
     {
+      path: '/',
+      element: <Navigate to="/login" replace />,
+    },
+    {
       element: (
         <DashboardLayout>
           <Suspense>
@@ -66,7 +73,7 @@ export default function Router() {
         </DashboardLayout>
       ),
       children: [
-        { element: <PrivateRoute element={<IndexPage />} />, index: true },
+        { path: 'dashboard', element: <PrivateRoute element={<IndexPage />} /> },
         { path: 'all-devices', element: <PrivateRoute element={<Devices />} /> },
         { path: 'credit-history', element: <PrivateRoute element={<CreditHistoryPage />} /> },
         { path: 'profile', element: <PrivateRoute element={<ProfilePage />} /> },
@@ -107,6 +114,18 @@ export default function Router() {
         {
           path: 'product',
           element: <AdminPrivateRoute element={<AdminProductPAge />} />,
+        },
+        {
+          path: 'fac',
+          element: <AdminPrivateRoute element={<AdminFacPage />} />,
+        },
+        {
+          path: 'promotion',
+          element: <AdminPrivateRoute element={<AdminPromotionPage />} />,
+        },
+        {
+          path: 'footer',
+          element: <AdminPrivateRoute element={<AdminFooterPage />} />,
         },
       ],
     },

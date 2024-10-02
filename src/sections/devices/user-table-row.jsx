@@ -26,7 +26,7 @@ export default function UserTableRow({ mac, expiry, status, deleteAction, editAc
       <TableCell align="right">
         <Button
           variant="contained"
-          color="primary"
+          color="success"
           onClick={editAction}
           startIcon={<Iconify icon="eva:edit-fill" />}
         >

@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 
-import { Box, Stack, useTheme, Typography, useMediaQuery } from '@mui/material';
+import { Box, useTheme, Typography, useMediaQuery } from '@mui/material';
 
-import { getNotification } from 'src/lib/api/notification';
+import { getPromotion } from 'src/lib/api/promotion';
 
 export default function CongratulationCard({ user }) {
   const theme = useTheme();
@@ -13,7 +13,7 @@ export default function CongratulationCard({ user }) {
   useEffect(() => {
     const getNoti = async () => {
       try {
-        const res = await getNotification();
+        const res = await getPromotion();
         setTitle(res.title);
         setContent(res.content);
       } catch (error) {
@@ -26,10 +26,8 @@ export default function CongratulationCard({ user }) {
   return (
     <Box
       sx={{
-        display: 'flex',
         flexDirection: isSmallScreen ? 'column' : 'row', // Switch layout direction on small screens
         alignItems: 'center',
-        justifyContent: 'space-between',
         padding: isSmallScreen ? 2 : 3,
         borderRadius: 3,
         boxShadow: '0px 3px 10px rgba(0, 0, 0, 0.1)',
@@ -50,27 +48,6 @@ export default function CongratulationCard({ user }) {
           {content}{' '}
         </Typography>
       </Box>
-
-      {/* Right side: Avatar and badge image */}
-      <Stack
-        direction="row"
-        spacing={2}
-        alignItems="center"
-        justifyContent={isSmallScreen ? 'center' : 'flex-end'}
-        sx={{ width: isSmallScreen ? '100%' : 'auto' }}
-      >
-        {/* Badge and additional images */}
-        <Stack direction="column" spacing={1} alignItems="center">
-          <img
-            src="/assets/images/Screenshot_2.png"
-            alt="Badge"
-            style={{
-              width: isSmallScreen ? '50%' : '80%', // Adjust image size on smaller screens
-              height: 'auto',
-            }}
-          />
-        </Stack>
-      </Stack>
     </Box>
   );
 }

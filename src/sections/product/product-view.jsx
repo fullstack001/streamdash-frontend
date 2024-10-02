@@ -29,11 +29,46 @@ import { signIn, tryFree, getUserPayment, signupDirectly } from 'src/lib/api/use
 import Notification from './notification';
 
 const products = [
-  { credit: 0, id: 323642, price: 0 },
-  { credit: 1, id: 453423, price: 20 },
-  { credit: 6, id: 975645, price: 60 },
-  { credit: 12, id: 346345, price: 150 },
-  { credit: 50, id: 675454, price: 450 },
+  {
+    credit: 0,
+    id: 323642,
+    price: 0,
+    text: 'Get free access for 2 days. ',
+    sutText: 'Start Free Trial',
+    buttonText: 'Start Free Trial',
+  },
+  {
+    credit: 1,
+    id: 453423,
+    price: 20,
+    text: 'Get 1 months of access for $20.',
+    sutText: 'Cost per credit: $20',
+    buttonText: 'Get 1 month - $20',
+  },
+  {
+    credit: 6,
+    id: 975645,
+    price: 60,
+    text: 'Get 6 months of access for $90.',
+    sutText: 'Cost per credit: $15',
+    buttonText: 'Get 6 months - $90',
+  },
+  {
+    credit: 12,
+    id: 346345,
+    price: 150,
+    text: 'Get 12 months of access for $150.',
+    sutText: 'Cost per credit: $12.50',
+    buttonText: 'Get 12 months - $150',
+  },
+  {
+    credit: 50,
+    id: 675454,
+    price: 450,
+    text: 'Get 50 months of access for $500.',
+    sutText: 'Cost per credit: $10',
+    buttonText: 'Get 50 monts - $500',
+  },
   { credit: 'all', id: 934323 },
 ];
 
@@ -308,11 +343,8 @@ export default function ProductView() {
                             {prod.credit === 1 && 'credit'}
                             {prod.credit > 1 && 'credits'}
                           </Typography>
-                          <Typography>Enjoy a full month of IPTV</Typography>
-                          <Typography>
-                            {prod.credit === 0 && 'Free Trial'}
-                            {prod.credit > 0 && `Subscribe $${prod.price}`}
-                          </Typography>
+                          <Typography>{prod.text}</Typography>
+                          <Typography>{prod.sutText}</Typography>
                         </Box>
                         <Button
                           onClick={() => {
@@ -323,57 +355,16 @@ export default function ProductView() {
                           sx={{
                             backgroundColor: '#fff',
                             color: '#157EE3',
-                            width: '243px',
+                            width: '260px',
                             fontSize: '24px',
                             padding: '10px',
+                            ':hover': {
+                              color: '#FFFFFF',
+                            },
                           }}
                         >
-                          {prod.credit === 0 && 'Try free'}
-                          {prod.credit > 0 && `Subscribe $${prod.price}`}
+                          {prod.buttonText}
                         </Button>
-
-                        {/* Modal for Email and Password Signup */}
-                        <Dialog open={openModal} onClose={() => setOpenModal(false)}>
-                          <DialogTitle>Sign up to continue</DialogTitle>
-                          <DialogContent>
-                            <TextField
-                              label="Email"
-                              type="email"
-                              fullWidth
-                              value={email}
-                              onChange={(e) => setEmail(e.target.value)}
-                              error={!!emailError}
-                              helperText={emailError}
-                              sx={{ my: 2 }}
-                            />
-                            <TextField
-                              label="Password"
-                              type="password"
-                              fullWidth
-                              value={password}
-                              onChange={(e) => setPassword(e.target.value)}
-                              error={!!passwordError}
-                              helperText={passwordError}
-                              sx={{ mb: 2 }}
-                            />
-                            <TextField
-                              label="Confirm Password"
-                              type="password"
-                              fullWidth
-                              value={confirmPassword}
-                              onChange={(e) => setConfirmPassword(e.target.value)}
-                              error={!!confirmPasswordError}
-                              helperText={confirmPasswordError}
-                              sx={{ marginBottom: '16px' }}
-                            />
-                          </DialogContent>
-                          <DialogActions>
-                            <Button onClick={() => setOpenModal(false)}>Cancel</Button>
-                            <Button variant="contained" onClick={() => handleSignup(prod)}>
-                              Continue
-                            </Button>
-                          </DialogActions>
-                        </Dialog>
                       </Grid>
                     </Paper>
                   ))
@@ -395,11 +386,8 @@ export default function ProductView() {
                         {product.credit === 1 && 'credit'}
                         {product.credit > 1 && 'credits'}
                       </Typography>
-                      <Typography>Enjoy a full month of IPTV</Typography>
-                      <Typography>
-                        {product.credit === 0 && 'Free Trial'}
-                        {product.credit > 0 && `Subscribe $${product.price}`}
-                      </Typography>
+                      <Typography>{product.text}</Typography>
+                      <Typography>{product.sutText}</Typography>
                     </Box>
                     <Button
                       variant="contained"
@@ -410,17 +398,61 @@ export default function ProductView() {
                       sx={{
                         backgroundColor: '#fff',
                         color: '#157EE3',
-                        width: '243px',
+                        width: '260px',
                         fontSize: '24px',
                         padding: '10px',
+                        ':hover': {
+                          color: '#FFFFFF',
+                        },
                       }}
                     >
-                      {product.credit === 0 && 'Try free'}
-                      {product.credit > 0 && `Subscribe $${product.price}`}
+                      {product.buttonText}
                     </Button>
                   </Grid>
                 </Paper>
               )}
+              {/* Modal for Email and Password Signup */}
+              <Dialog open={openModal} onClose={() => setOpenModal(false)}>
+                <DialogTitle>Sign up to continue</DialogTitle>
+                <DialogContent>
+                  <TextField
+                    label="Email"
+                    type="email"
+                    fullWidth
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    error={!!emailError}
+                    helperText={emailError}
+                    sx={{ my: 2 }}
+                  />
+                  <TextField
+                    label="Password"
+                    type="password"
+                    fullWidth
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    error={!!passwordError}
+                    helperText={passwordError}
+                    sx={{ mb: 2 }}
+                  />
+                  <TextField
+                    label="Confirm Password"
+                    type="password"
+                    fullWidth
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    error={!!confirmPasswordError}
+                    helperText={confirmPasswordError}
+                    sx={{ marginBottom: '16px' }}
+                  />
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => setOpenModal(false)}>Cancel</Button>
+                  <Button variant="contained" onClick={() => handleSignup(currentProduct)}>
+                    Continue
+                  </Button>
+                </DialogActions>
+              </Dialog>
             </Grid>
           )}
         </Grid>
