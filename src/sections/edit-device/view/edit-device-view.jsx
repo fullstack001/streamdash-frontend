@@ -162,7 +162,8 @@ export default function EditDeviceView() {
           setSnackbarMessage(
             `${credits} credit${credits > 1 ? 's' : ''} has been added to you device successfully. `
           );
-          await getUser(user.email);
+          const res_user = await getUser({ email: user.email });
+          console.log(res_user);
         }
       } catch (error) {
         setSnackbarSeverity('error');
@@ -222,7 +223,7 @@ export default function EditDeviceView() {
           <Box mt={2}>
             <LoadingButton
               variant="contained"
-              color="success"
+              color="primary"
               onClick={handleEditUser}
               disabled={status === 'INACTIVE'}
               loading={editloading}
@@ -261,11 +262,16 @@ export default function EditDeviceView() {
               </Grid>
             </Grid>
             <Typography variant="h6">Credits</Typography>
-            <FormControl fullWidth margin="normal" error={Boolean(creditsError)}>
-              <InputLabel>Select Credits</InputLabel>
+            <FormControl fullWidth error={Boolean(creditsError)}>
+              <InputLabel id="duration-label">Select Credits</InputLabel>
               <Select
+                labelId="duration-label"
                 value={credits}
                 onChange={handleCreditsChange}
+                label="Select Credits"
+                error={!!errors.credit}
+                helperText={errors.credit}
+                fullWidth
                 sx={{
                   color: creditsError ? 'red' : 'inherit',
                   '.MuiOutlinedInput-notchedOutline': {
@@ -281,13 +287,6 @@ export default function EditDeviceView() {
                     right: '8px', // Adjust the position of the dropdown icon
                   },
                 }}
-                MenuProps={{
-                  PaperProps: {
-                    style: {
-                      maxHeight: 300, // Limit the height of the dropdown menu
-                    },
-                  },
-                }}
               >
                 {Array.from({ length: 24 }, (_, index) => (
                   <MenuItem key={index + 1} value={index + 1}>
@@ -295,6 +294,7 @@ export default function EditDeviceView() {
                   </MenuItem>
                 ))}
               </Select>
+
               {creditsError && (
                 <FormHelperText sx={{ color: 'red' }}>{creditsError}</FormHelperText>
               )}
@@ -302,7 +302,7 @@ export default function EditDeviceView() {
             <Box mt={2}>
               <LoadingButton
                 variant="contained"
-                color="success"
+                color="primary"
                 onClick={handleAddCredit}
                 loading={addLoading}
               >
@@ -317,7 +317,7 @@ export default function EditDeviceView() {
       </Grid>
       <Snackbar
         open={snackbarOpen}
-        autoHideDuration={4000}
+        autoHideDuration={8000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >

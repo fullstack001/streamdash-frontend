@@ -51,7 +51,7 @@ const CustomTextField = styled(TextField)({
 
 const CustomButton = styled(Button)({
   borderRadius: 8, // Rounded button corners
-  backgroundColor: '#7b61ff', // Purple button background
+  backgroundColor: '#1122FF', // Purple button background
   textTransform: 'none', // Normal case for button text
   fontSize: '16px',
   padding: '12px 16px',
@@ -163,6 +163,12 @@ export default function AddDeviceView() {
     if (validate()) {
       setLoading(true);
 
+      setSnackbarSeverity('success');
+      setSnackbarMessage(
+        'If you refresh the page, you will be logged out. Pages will load slow, please be patient.'
+      );
+      setSnackbarOpen(true);
+
       try {
         const data = { username, name, password, mac, credit };
         data.email = user.email;
@@ -184,7 +190,8 @@ export default function AddDeviceView() {
 
           // Open success modal instead of showing snackbar
           setOpenSuccessModal(true);
-          await getUser(user.email);
+          const res = await getUser({ email: user.email });
+          console.log(res);
         }
       } catch (error) {
         setSnackbarSeverity('error');
@@ -391,7 +398,7 @@ export default function AddDeviceView() {
 
       <Snackbar
         open={snackbarOpen}
-        autoHideDuration={4000}
+        autoHideDuration={8000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >

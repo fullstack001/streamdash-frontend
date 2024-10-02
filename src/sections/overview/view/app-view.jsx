@@ -118,10 +118,11 @@ export default function AppView() {
         </Grid>
       )}
 
-      <Grid container sx={{ maxWidth: 1000, margin: '0px auto' }} spacing={3}>
+      <Grid container sx={{ margin: '0px auto' }} spacing={3}>
         <Grid
           item
           xs={12}
+          md={6}
           elevation={4}
           sx={{
             padding: '16px',
@@ -163,6 +164,7 @@ export default function AppView() {
           <Grid
             item
             xs={12}
+            md={6}
             key={prod.credit}
             elevation={4}
             sx={{
