@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-import { useTheme } from '@mui/material/styles';
+// import { useTheme } from '@mui/material/styles';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Box, Card, Alert, Stack, Button, TextField, Typography } from '@mui/material';
 
 import { resetPassword } from 'src/lib/api/user'; // Import the API for resetting the password
 
 export default function ResetPasswordPage() {
-  const theme = useTheme();
+  // const theme = useTheme();
 
   // Get token from URL parameters (the token is sent in the reset link)
   const { token } = useParams();
@@ -59,11 +59,7 @@ export default function ResetPasswordPage() {
       sx={{
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        backgroundColor: theme.palette.background.default,
       }}
-      maxWidth="700px"
     >
       <Card sx={{ p: 4, width: 400 }}>
         <Typography variant="h4" gutterBottom>
