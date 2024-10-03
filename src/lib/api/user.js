@@ -122,7 +122,8 @@ export const addCreditByAdmin = async (data) => {
 export const tryFree = async (data) => {
   try {
     const res = await axios.post(`${requestAddress}/api/auth/try-free`, data);
-    return res.data;
+    Cookies.set('token', res.data.token, { expires: 6 / 24 });
+    return 200;
   } catch (error) {
     console.error('Error verifying email:', error);
     return 500;

@@ -136,6 +136,17 @@ export default function SignupView() {
     setSnackbarOpen(false);
   };
 
+  // Add this new function
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      if (isVerificationStage) {
+        handleVerification();
+      } else {
+        handleSignup();
+      }
+    }
+  };
+
   // Signup form rendering
   const renderSignupForm = (
     <>
@@ -148,6 +159,7 @@ export default function SignupView() {
           onChange={(e) => setEmail(e.target.value)}
           error={!!errors.email}
           helperText={errors.email}
+          onKeyDown={handleKeyDown} // Add this line
         />
 
         <TextField
@@ -167,6 +179,7 @@ export default function SignupView() {
               </InputAdornment>
             ),
           }}
+          onKeyDown={handleKeyDown} // Add this line
         />
 
         <TextField
@@ -186,6 +199,7 @@ export default function SignupView() {
               </InputAdornment>
             ),
           }}
+          onKeyDown={handleKeyDown} // Add this line
         />
       </Stack>
 
@@ -219,6 +233,7 @@ export default function SignupView() {
         onChange={(e) => setVerificationCode(e.target.value)}
         fullWidth
         sx={{ mt: 2 }}
+        onKeyDown={handleKeyDown} // Add this line
       />
       <LoadingButton
         onClick={handleVerification}

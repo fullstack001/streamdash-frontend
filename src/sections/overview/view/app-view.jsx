@@ -11,7 +11,7 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useAuth } from 'src/hooks/use-auth';
 
-import { getUser } from 'src/lib/api/user';
+import { getUser, tryFree } from 'src/lib/api/user';
 
 import CongratulationCard from '../notification';
 
@@ -45,16 +45,6 @@ const credits = [
     buttonText: 'Get 50 monts - $500',
   },
 ];
-// const products = [
-//   {
-//     credit: 0,
-//     id: 323642,
-//     price: 0,
-//     text: 'Get free access for 2 days. ',
-//     sutText: 'Start Free Trial',
-//     buttonText: 'Start Free Trial',
-//   },
-// ];
 
 export default function AppView() {
   const router = useRouter();
@@ -89,6 +79,12 @@ export default function AppView() {
     }
   }, [windowClosed, user, router]);
 
+  const freeActive = async () => {
+    const res = await tryFree({ email: user.email });
+    console.log(res);
+    setShowFreeNo(true);
+  };
+
   return (
     <Container maxWidth="xl">
       <Typography variant="h4" sx={{ mb: 5 }}>
@@ -119,46 +115,48 @@ export default function AppView() {
       )}
 
       <Grid container sx={{ margin: '0px auto' }} spacing={3}>
-        <Grid
-          item
-          xs={12}
-          md={6}
-          elevation={4}
-          sx={{
-            padding: '16px',
+        {user.free_device === 0 && (
+          <Grid
+            item
+            xs={12}
+            md={6}
+            elevation={4}
+            sx={{
+              padding: '16px',
 
-            marginBottom: '16px',
-            border: '1px solid #ddd',
-            backgroundColor: '#157EE3',
-            color: '#f5f5f5',
-          }}
-        >
-          <Grid container justifyContent="space-between" alignItems="center">
-            <Box>
-              <Typography sx={{ fontWeight: 'bold', fontSize: '40px' }} mb={2}>
-                Free Trial
-              </Typography>
-              <Typography>Get free access for 2 days.</Typography>
-              <Typography>Start Free Trial</Typography>
-            </Box>
-            <Button
-              onClick={() => setShowFreeNo(true)}
-              variant="contained"
-              sx={{
-                backgroundColor: '#fff',
-                color: '#157EE3',
-                width: '260px',
-                fontSize: '24px',
-                padding: '10px',
-                ':hover': {
-                  color: '#FFFFFF',
-                },
-              }}
-            >
-              Start Free Trial
-            </Button>
+              marginBottom: '16px',
+              border: '1px solid #ddd',
+              backgroundColor: '#157EE3',
+              color: '#f5f5f5',
+            }}
+          >
+            <Grid container justifyContent="space-between" alignItems="center">
+              <Box>
+                <Typography sx={{ fontWeight: 'bold', fontSize: '40px' }} mb={2}>
+                  Free Trial
+                </Typography>
+                <Typography>Get free access for 2 days.</Typography>
+                <Typography>Start Free Trial</Typography>
+              </Box>
+              <Button
+                onClick={freeActive}
+                variant="contained"
+                sx={{
+                  backgroundColor: '#fff',
+                  color: '#157EE3',
+                  width: '260px',
+                  fontSize: '24px',
+                  padding: '10px',
+                  ':hover': {
+                    color: '#FFFFFF',
+                  },
+                }}
+              >
+                Start Free Trial
+              </Button>
+            </Grid>
           </Grid>
-        </Grid>
+        )}
 
         {credits.map((prod) => (
           <Grid

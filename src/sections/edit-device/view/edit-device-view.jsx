@@ -316,7 +316,7 @@ export default function EditDeviceView() {
       </Grid>
       <Snackbar
         open={snackbarOpen}
-        autoHideDuration={8000}
+        autoHideDuration={16000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >

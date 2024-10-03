@@ -94,6 +94,8 @@ export default function AddDeviceView() {
     credit: '',
   });
 
+  console.log(user);
+
   useEffect(() => {
     if (!Array.isArray(devices) || devices.length === 0) {
       Cookies.remove('token');
@@ -312,7 +314,7 @@ export default function AddDeviceView() {
                   helperText={errors.credit}
                   fullWidth
                 >
-                  {user.free_device > 0 && <MenuItem value="0">2 Days Trial</MenuItem>}
+                  {user.free_device === 1 && <MenuItem value="0">2 Days Trial</MenuItem>}
                   <MenuItem value="1">1 Month</MenuItem>
                   <MenuItem value="2">2 Months</MenuItem>
                   <MenuItem value="3">3 Months</MenuItem>
@@ -398,7 +400,7 @@ export default function AddDeviceView() {
 
       <Snackbar
         open={snackbarOpen}
-        autoHideDuration={8000}
+        autoHideDuration={16000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >

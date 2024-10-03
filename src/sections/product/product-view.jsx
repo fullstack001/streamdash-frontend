@@ -184,6 +184,7 @@ export default function ProductView() {
         if (product.credit === 0) {
           const data1 = { email };
           await tryFree(data1);
+          setShowMessage(true);
         } else {
           handlePayment(prod);
         }

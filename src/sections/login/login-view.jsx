@@ -112,6 +112,13 @@ export default function LoginView() {
     setSnackbarOpen(false);
   };
 
+  // Add this new function
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      handleClick();
+    }
+  };
+
   const renderForm = (
     <>
       <Stack spacing={3} maxWidth="700px">
@@ -122,6 +129,7 @@ export default function LoginView() {
           helperText={emailError}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          onKeyDown={handleKeyDown} // Add this line
         />
 
         <TextField
@@ -132,6 +140,7 @@ export default function LoginView() {
           type={showPassword ? 'text' : 'password'}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onKeyDown={handleKeyDown} // Add this line
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
