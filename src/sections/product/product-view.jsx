@@ -181,7 +181,7 @@ export default function ProductView() {
       const response = await signupDirectly(data);
 
       if (response.status === 200) {
-        if (product.credit === 0) {
+        if (prod.credit === 0) {
           const data1 = { email };
           await tryFree(data1);
           setShowMessage(true);
