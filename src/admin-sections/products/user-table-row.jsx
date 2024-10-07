@@ -4,6 +4,7 @@ import { FaEdit } from 'react-icons/fa';
 
 import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
+import Switch from '@mui/material/Switch';
 import Tooltip from '@mui/material/Tooltip';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
@@ -12,7 +13,6 @@ import IconButton from '@mui/material/IconButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import Switch from '@mui/material/Switch';
 
 // SVG for copy icon
 const CopyIconSVG = () => (
