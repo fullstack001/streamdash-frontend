@@ -7,11 +7,14 @@ export const fetchProducts = async () => {
   return response.data;
 };
 
-export const updatePrices = async (id, newPriceCAD, newPriceUSD) => {
+export const updatePrices = async (id, priceCAD, priceUSD, discount, couponCode, couponActive) => {
   try {
     const response = await axios.put(`${requestAddress}/api/product/${id}`, {
-      priceCAD: newPriceCAD,
-      priceUSD: newPriceUSD,
+      priceCAD,
+      priceUSD,
+      discount,
+      couponCode,
+      couponActive,
     });
     return { statue: 200, msg: response.data };
   } catch (err) {

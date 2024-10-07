@@ -33,15 +33,22 @@ export default function ProductPage() {
     getProducts();
   }, []);
 
-  const onUpdatePrices = async (id, newPriceCAD, newPriceUSD) => {
+  const onUpdatePrices = async (id, priceCAD, priceUSD, discount, couponCode, couponActive) => {
     try {
       // Call the onUpdatePrices prop function to update prices on the backend
-      const res = await updatePrices(id, newPriceCAD, newPriceUSD);
+      const res = await updatePrices(id, priceCAD, priceUSD, discount, couponCode, couponActive);
       if (res.statue === 200) {
         setProducts((prev) =>
           prev.map((product) => {
             if (product._id === id) {
-              return { ...product, priceCAD: newPriceCAD, priceUSD: newPriceUSD };
+              return {
+                ...product,
+                priceCAD,
+                priceUSD,
+                discount,
+                couponCode,
+                couponActive,
+              };
             }
             return product;
           })
@@ -71,6 +78,9 @@ export default function ProductPage() {
                 { id: 'credit', label: 'Credit' },
                 { id: 'priceCAD', label: 'Price (CAD)' },
                 { id: 'priceUSD', label: 'Price (USD)' },
+                { id: 'discount', label: 'Discount(%)' },
+                { id: 'couponCode', label: 'Coupon Code' },
+                { id: 'couponActive', label: 'Coupon Active' },
                 { id: 'url', label: 'Url' },
                 { id: 'copy', label: 'Copy URL' },
                 { id: 'edit', label: 'Edit' },
@@ -83,6 +93,9 @@ export default function ProductPage() {
                   _id={row._id}
                   id={row.id}
                   credit={row.credit}
+                  discount={row.discount}
+                  couponCode={row.couponCode}
+                  couonActive={row.couponActive}
                   priceCAD={row.priceCAD}
                   priceUSD={row.priceUSD}
                   onUpdatePrices={onUpdatePrices}

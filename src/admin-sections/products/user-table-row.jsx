@@ -12,6 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import Switch from '@mui/material/Switch';
 
 // SVG for copy icon
 const CopyIconSVG = () => (
@@ -33,11 +34,24 @@ const CopyIconSVG = () => (
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({ credit, _id, id, priceCAD, priceUSD, onUpdatePrices }) {
+export default function UserTableRow({
+  credit,
+  _id,
+  id,
+  priceCAD,
+  discount,
+  couponCode,
+  couponActive,
+  priceUSD,
+  onUpdatePrices,
+}) {
   const [copySuccess, setCopySuccess] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [newPriceCAD, setNewPriceCAD] = useState(priceCAD);
   const [newPriceUSD, setNewPriceUSD] = useState(priceUSD);
+  const [newDiscount, setNewDiscount] = useState(discount);
+  const [newCouponCode, setNewCouponCode] = useState(couponCode);
+  const [newCouponActive, setNewCouponActive] = useState(couponActive);
 
   // Function to copy the URL to clipboard
   const handleCopy = () => {
@@ -57,7 +71,7 @@ export default function UserTableRow({ credit, _id, id, priceCAD, priceUSD, onUp
   };
 
   const handleUpdatePrices = () => {
-    onUpdatePrices(_id, newPriceCAD, newPriceUSD);
+    onUpdatePrices(_id, newPriceCAD, newPriceUSD, newDiscount, newCouponCode, newCouponActive);
     handleCloseDialog();
   };
 
@@ -67,6 +81,9 @@ export default function UserTableRow({ credit, _id, id, priceCAD, priceUSD, onUp
         <TableCell align="center">{credit === '0' ? 'free' : credit}</TableCell>
         <TableCell align="center">{priceCAD !== 0 && `${priceCAD.toFixed(2)} CAD`}</TableCell>
         <TableCell align="center">{priceUSD !== 0 && `${priceUSD.toFixed(2)} USD`}</TableCell>
+        <TableCell align="center">{discount}</TableCell>
+        <TableCell align="center">{couponCode}</TableCell>
+        <TableCell align="center">{couponActive}</TableCell>
         <TableCell align="center">{`https://streamdash.co/product/${id}`}</TableCell>
         <TableCell align="center">
           <Tooltip title={copySuccess ? 'Copied!' : 'Copy URL'}>
@@ -88,7 +105,7 @@ export default function UserTableRow({ credit, _id, id, priceCAD, priceUSD, onUp
       </TableRow>
 
       <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Edit Prices</DialogTitle>
+        <DialogTitle>Edit Product Details</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
@@ -107,6 +124,30 @@ export default function UserTableRow({ credit, _id, id, priceCAD, priceUSD, onUp
             value={newPriceUSD}
             onChange={(e) => setNewPriceUSD(Number(e.target.value))}
           />
+          <TextField
+            margin="dense"
+            label="Discount %"
+            type="number"
+            fullWidth
+            value={newDiscount}
+            onChange={(e) => setNewDiscount(Number(e.target.value))}
+          />
+          <TextField
+            margin="dense"
+            label="Coupon Code"
+            type="text"
+            fullWidth
+            value={newCouponCode}
+            onChange={(e) => setNewCouponCode(e.target.value)}
+          />
+          <div style={{ display: 'flex', alignItems: 'center', marginTop: '16px' }}>
+            <Switch
+              checked={newCouponActive}
+              onChange={(e) => setNewCouponActive(e.target.checked)}
+              color="primary"
+            />
+            <span>Coupon Active</span>
+          </div>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
@@ -121,6 +162,9 @@ UserTableRow.propTypes = {
   _id: PropTypes.any,
   id: PropTypes.any,
   credit: PropTypes.any,
+  discount: PropTypes.number,
+  couponCode: PropTypes.string,
+  couponActive: PropTypes.bool,
   priceCAD: PropTypes.number.isRequired,
   priceUSD: PropTypes.number.isRequired,
   onUpdatePrices: PropTypes.func.isRequired,
