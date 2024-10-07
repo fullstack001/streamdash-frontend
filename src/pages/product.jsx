@@ -46,13 +46,12 @@ export default function ProductPage() {
   // Update this function to return image URLs
   const getCountryInfo = () => {
     console.log(country);
-    if (!country) return { flagUrl: '/assets/images/world-flag.png', currency: 'US $ (USD)' };
+    if (!country) return { flagUrl: '/assets/images/world-flag.png', currency: 'USD' };
 
-    if (country === 'canada')
-      return { flagUrl: '/assets/images/canada-flag.png', currency: 'Canadian $ (CAD)' };
+    if (country === 'canada') return { flagUrl: '/assets/images/canada-flag.png', currency: 'CAD' };
     if (country === 'USA' || country === 'united states')
-      return { flagUrl: '/assets/images/us-flag.png', currency: 'US $ (USD)' };
-    return { flagUrl: '/assets/images/world-flag.png', currency: 'US $ (USD)' };
+      return { flagUrl: '/assets/images/us-flag.png', currency: 'USD' };
+    return { flagUrl: '/assets/images/world-flag.png', currency: 'USD' };
   };
 
   const { flagUrl, currency } = getCountryInfo();
@@ -72,9 +71,9 @@ export default function ProductPage() {
 
       {/* Flex container to align Sidebar and ProductView side by side */}
       <Box
-        margin={3}
         padding={2}
         sx={{
+          margin: { md: 3, xs: 0 },
           display: 'flex',
           borderBottom: 'solid 1px #D9D9D9',
           justifyContent: 'space-between',
@@ -89,7 +88,7 @@ export default function ProductPage() {
               alignItems: 'center',
               gap: 1,
               border: 'solid 1px #D9D9D9',
-              padding: '5px',
+              padding: { md: '5px 10px', xs: '5px 5px' },
               borderRadius: '5px',
             }}
           >
@@ -121,7 +120,7 @@ export default function ProductPage() {
 
         {/* Login View Section */}
         <Box>
-          <ProductView currency={currency === 'US Dollar (USD)' ? 'priceUSD' : 'priceCAD'} />
+          <ProductView currency={currency === 'USD' ? 'priceUSD' : 'priceCAD'} />
         </Box>
       </Box>
       <Box
@@ -129,6 +128,7 @@ export default function ProductPage() {
         sx={{
           borderTop: 'solid 1px #D9D9D9',
           justifyContent: 'center',
+          fontSize: { xs: '12px', md: '16px' },
           alignItems: 'center',
           '& p': {
             lineHeight: 1.5,

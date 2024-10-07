@@ -27,6 +27,10 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
         height: 40,
         display: 'inline-flex',
         ...sx,
+        '@media (max-width: 600px)': {
+          width: 150,
+          height: 30,
+        },
       }}
       {...other}
     >
