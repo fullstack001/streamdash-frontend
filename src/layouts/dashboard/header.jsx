@@ -73,13 +73,7 @@ export default function Header({ onOpenNav }) {
             borderRadius: '5px',
           }}
         >
-          <img
-            src={flagUrl}
-            alt="Country flag"
-            width={24}
-            height={16}
-            style={{ marginRight: '8px' }}
-          />
+          <img src={flagUrl} alt="Country flag" width={24} style={{ marginRight: '8px' }} />
           <Typography variant="body2" color={theme.palette.text.secondary}>
             {currency}
           </Typography>

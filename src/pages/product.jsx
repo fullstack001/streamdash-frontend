@@ -93,7 +93,7 @@ export default function ProductPage() {
               borderRadius: '5px',
             }}
           >
-            <img src={flagUrl} alt="Country flag" width={24} height={16} />
+            <img src={flagUrl} alt="Country flag" width={24} />
             {currency}
           </Typography>
           <Button

@@ -172,7 +172,7 @@ export default function ProductView({ currency }) {
   const generateProductSubText = (prod) => {
     if (prod.credit === '0') return 'Start Free Trial';
     const costPerCredit = (prod[currency] / prod.credit).toFixed(2);
-    return `Cost per credit: ${costPerCredit} ${currency === 'priceUSD' ? 'USD' : 'CAD'}`;
+    return `Cost per credit: $${costPerCredit}`;
   };
 
   const generateButtonText = (prod) => {
