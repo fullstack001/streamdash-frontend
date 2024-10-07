@@ -81,10 +81,10 @@ export default function UserTableRow({
         <TableCell align="center">{credit === '0' ? 'free' : credit}</TableCell>
         <TableCell align="center">{priceCAD !== 0 && `${priceCAD.toFixed(2)} CAD`}</TableCell>
         <TableCell align="center">{priceUSD !== 0 && `${priceUSD.toFixed(2)} USD`}</TableCell>
-        <TableCell align="center">{discount}</TableCell>
+        <TableCell align="center">{priceUSD !== 0 && discount}</TableCell>
         <TableCell align="center">{couponCode}</TableCell>
         <TableCell align="center" color={couponActive ? 'green' : 'red'}>
-          {couponActive ? 'Active' : 'InActive'}
+          {priceUSD !== 0 && <>{couponActive ? 'Active' : 'InActive'}</>}
         </TableCell>
         <TableCell align="center">{`https://streamdash.co/product/${id}`}</TableCell>
         <TableCell align="center">

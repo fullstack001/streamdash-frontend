@@ -95,7 +95,7 @@ export default function ProductPage() {
                   credit={row.credit}
                   discount={row.discount}
                   couponCode={row.couponCode}
-                  couonActive={row.couponActive}
+                  couponActive={row.couponActive}
                   priceCAD={row.priceCAD}
                   priceUSD={row.priceUSD}
                   onUpdatePrices={onUpdatePrices}
