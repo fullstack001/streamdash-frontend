@@ -164,9 +164,9 @@ export default function ProductView({ currency }) {
 
   const generateProductText = (prod) => {
     if (prod.credit === '0') return 'Get free access for 2 days.';
-    return `Get ${prod.credit} month${Number(prod.credit) > 1 ? 's' : ''} of access for ${
+    return `Get ${prod.credit} month${Number(prod.credit) > 1 ? 's' : ''} of access for $${
       prod[currency]
-    } ${currency === 'priceUSD' ? 'USD' : 'CAD'}.`;
+    } `;
   };
 
   const generateProductSubText = (prod) => {
@@ -177,9 +177,7 @@ export default function ProductView({ currency }) {
 
   const generateButtonText = (prod) => {
     if (prod.credit === '0') return 'Start Free Trial';
-    return `Get ${prod.credit} month${prod.credit > 1 ? 's' : ''} - ${prod[currency]}${
-      currency === 'priceUSD' ? 'USD' : 'CAD'
-    }`;
+    return `Get ${prod.credit} month${prod.credit > 1 ? 's' : ''} - $${prod[currency]}`;
   };
 
   useEffect(() => {
@@ -404,8 +402,8 @@ export default function ProductView({ currency }) {
                     <Grid container justifyContent="space-between" alignItems="center">
                       <Box>
                         <Typography variant="h4" sx={{ fontWeight: 'bold' }} mb={2}>
-                          {product.credit === "0" ? 'Free Trial' : product.credit}{' '}
-                          {product.credit === "1" && 'Credit'}
+                          {product.credit === '0' ? 'Free Trial' : product.credit}{' '}
+                          {product.credit === '1' && 'Credit'}
                           {Number(product.credit) > 1 && 'Credits'}
                         </Typography>
                         <Typography>{generateProductText(product)}</Typography>

@@ -81,22 +81,20 @@ export default function AppView() {
 
   const generateProductText = (prod) => {
     if (prod.credit === '0') return 'Get free access for 2 days.';
-    return `Get ${prod.credit} month${Number(prod.credit) > 1 ? 's' : ''} of access for ${
+    return `Get ${prod.credit} month${Number(prod.credit) > 1 ? 's' : ''} of access for $${
       prod[currency]
-    } ${currency === 'priceUSD' ? 'USD' : 'CAD'}.`;
+    }.`;
   };
 
   const generateProductSubText = (prod) => {
     if (prod.credit === '0') return 'Start Free Trial';
     const costPerCredit = (prod[currency] / prod.credit).toFixed(2);
-    return `Cost per credit: ${costPerCredit} ${currency === 'priceUSD' ? 'USD' : 'CAD'}`;
+    return `Cost per credit: $${costPerCredit}`;
   };
 
   const generateButtonText = (prod) => {
     if (prod.credit === '0') return 'Start Free Trial';
-    return `Get ${prod.credit} month${prod.credit > 1 ? 's' : ''} - ${prod[currency]}${
-      currency === 'priceUSD' ? 'USD' : 'CAD'
-    }`;
+    return `Get ${prod.credit} month${prod.credit > 1 ? 's' : ''} - $${prod[currency]}`;
   };
 
   return (

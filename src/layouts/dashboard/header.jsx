@@ -33,13 +33,13 @@ export default function Header({ onOpenNav }) {
   // Add this function to get country info
   const getCountryInfo = () => {
     console.log(country);
-    if (!country) return { flagUrl: '/assets/images/world-flag.png', currency: 'US Dollar (USD)' };
+    if (!country) return { flagUrl: '/assets/images/world-flag.png', currency: 'US $ (USD)' };
 
     if (country === 'canada')
-      return { flagUrl: '/assets/images/canada-flag.png', currency: 'Canadian Dollar (CAD)' };
+      return { flagUrl: '/assets/images/canada-flag.png', currency: 'Canadian $ (CAD)' };
     if (country === 'USA' || country === 'united states')
-      return { flagUrl: '/assets/images/us-flag.png', currency: 'US Dollar (USD)' };
-    return { flagUrl: '/assets/images/world-flag.png', currency: 'US Dollar (USD)' };
+      return { flagUrl: '/assets/images/us-flag.png', currency: 'US $ (USD)' };
+    return { flagUrl: '/assets/images/world-flag.png', currency: 'US $ (USD)' };
   };
 
   const { flagUrl, currency } = getCountryInfo();
