@@ -1,3 +1,8 @@
+import DOMPurify from 'dompurify';
+import PropTypes from 'prop-types';
+import ReactQuill from 'react-quill';
+import parse from 'html-react-parser';
+import 'react-quill/dist/quill.snow.css';
 import { useState, useEffect } from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 
@@ -17,6 +22,18 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import { addFac, getFacs, updateFac, deleteFac } from 'src/lib/api/fac';
 
+// Add this custom styled component for the Quill editor
+const StyledQuill = styled(ReactQuill)({
+  '& .ql-container': {
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
+  },
+  '& .ql-toolbar': {
+    borderTopLeftRadius: 4,
+    borderTopRightRadius: 4,
+  },
+});
+
 const CustomButton = styled(Button)({
   borderRadius: 8, // Rounded button corners
   backgroundColor: '#7b61ff', // Purple button background
@@ -27,6 +44,16 @@ const CustomButton = styled(Button)({
     backgroundColor: '#6a50ff', // Slightly darker purple on hover
   },
 });
+
+// Add this custom component to render sanitized HTML
+const SanitizedHTML = ({ html }) => {
+  const sanitizedHTML = DOMPurify.sanitize(html);
+  return <>{parse(sanitizedHTML)}</>;
+};
+
+SanitizedHTML.propTypes = {
+  html: PropTypes.string.isRequired,
+};
 
 export default function FacView() {
   const [facs, setFacs] = useState([]);
@@ -62,7 +89,7 @@ export default function FacView() {
     setLoading(true);
 
     try {
-      const data = { title, content };
+      const data = { title, content: content.trim() };
       let response;
       if (editing) {
         // Edit existing FAC
@@ -144,15 +171,19 @@ export default function FacView() {
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Content"
-                  variant="outlined"
+                <StyledQuill
                   value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  multiline
-                  rows={4}
-                  required
+                  onChange={setContent}
+                  placeholder="Enter content here..."
+                  modules={{
+                    toolbar: [
+                      [{ header: [1, 2, false] }],
+                      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                      [{ list: 'ordered' }, { list: 'bullet' }],
+                      ['link', 'image'],
+                      ['clean'],
+                    ],
+                  }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -190,7 +221,10 @@ export default function FacView() {
                   </>
                 }
               >
-                <ListItemText primary={fac.title} secondary={fac.content} />
+                <ListItemText
+                  primary={fac.title}
+                  secondary={<SanitizedHTML html={fac.content} />}
+                />
               </ListItem>
             ))}
           </List>

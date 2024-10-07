@@ -16,7 +16,7 @@ import { useAuth } from 'src/hooks/use-auth';
 
 import { bgGradient } from 'src/theme/css';
 import userStore from 'src/store/userStore';
-import { updateProfile, updatePassword } from 'src/lib/api/user';
+import { sendOTP, verifyOTP, updatePassword } from 'src/lib/api/user';
 
 import Iconify from 'src/components/iconify';
 
@@ -39,6 +39,10 @@ export default function ProfileEditView() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [otpError, setOtpError] = useState('');
 
   // Validate email
   const validateEmail = () => {
@@ -80,20 +84,46 @@ export default function ProfileEditView() {
     if (!validateEmail()) return;
 
     setLoading(true);
-    const data = {
-      oldEmail: authUser.email,
-      email,
-    };
-
-    const res = await updateProfile(data);
-    if (res.status !== 500) {
-      setSnackbarSeverity('success');
-      setSnackbarMessage('Email updated successfully.');
-      setUser({ ...authUser, email });
-    } else if (res.msg === 'exist') {
-      setEmailError('Email already Exist');
+    try {
+      const res = await sendOTP({ email, oldEmail: authUser.email });
+      if (res.status !== 500) {
+        setOtpSent(true);
+        setSnackbarSeverity('success');
+        setSnackbarMessage('OTP sent to your email. Please verify.');
+      } else {
+        setSnackbarSeverity('error');
+        setSnackbarMessage(res.msg);
+      }
+    } catch (error) {
       setSnackbarSeverity('error');
-      setSnackbarMessage('Error updating email. Please try again.');
+      setSnackbarMessage('Error sending OTP. Please try again.');
+    }
+    setLoading(false);
+    setSnackbarOpen(true);
+  };
+
+  // Add new function to handle OTP verification and email update
+  const handleVerifyOTPAndUpdateEmail = async () => {
+    if (!otp) {
+      setOtpError('OTP is required');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const verifyRes = await verifyOTP({ newEmail: email, otp, email: authUser.email });
+      if (verifyRes === 200) {
+        setSnackbarSeverity('success');
+        setSnackbarMessage('Email updated successfully.');
+        setUser({ ...authUser, email });
+      } else {
+        setOtpError('Invalid OTP');
+        setSnackbarSeverity('error');
+        setSnackbarMessage('Invalid OTP. Please try again.');
+      }
+    } catch (error) {
+      setSnackbarSeverity('error');
+      setSnackbarMessage('Error verifying OTP. Please try again.');
     }
     setLoading(false);
     setSnackbarOpen(true);
@@ -136,6 +166,16 @@ export default function ProfileEditView() {
           error={!!emailError}
           helperText={emailError}
         />
+        {otpSent && (
+          <TextField
+            name="otp"
+            label="OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            error={!!otpError}
+            helperText={otpError}
+          />
+        )}
       </Stack>
 
       <LoadingButton
@@ -143,11 +183,11 @@ export default function ProfileEditView() {
         size="large"
         variant="contained"
         color="inherit"
-        onClick={handleUpdateProfile}
+        onClick={otpSent ? handleVerifyOTPAndUpdateEmail : handleUpdateProfile}
         loading={loading}
         sx={{ marginTop: '20px' }}
       >
-        Update Email
+        {otpSent ? 'Verify OTP and Update Email' : 'Update Email'}
       </LoadingButton>
     </>
   );

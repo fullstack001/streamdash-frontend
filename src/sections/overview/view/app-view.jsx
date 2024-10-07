@@ -12,47 +12,41 @@ import { useRouter } from 'src/routes/hooks';
 import { useAuth } from 'src/hooks/use-auth';
 
 import { getUser, tryFree } from 'src/lib/api/user';
+import { fetchProducts } from 'src/lib/api/products';
+import { useLocationStore } from 'src/store/locationStore';
 
 import CongratulationCard from '../notification';
-
-const credits = [
-  {
-    credit: 1,
-    price: 20,
-    text: 'Get 1 months of access for $20.',
-    sutText: 'Cost per credit: $20',
-    buttonText: 'Get 1 month - $20',
-  },
-  {
-    credit: 6,
-    price: 60,
-    text: 'Get 6 months of access for $90.',
-    sutText: 'Cost per credit: $15',
-    buttonText: 'Get 6 months - $90',
-  },
-  {
-    credit: 12,
-    price: 150,
-    text: 'Get 12 months of access for $150.',
-    sutText: 'Cost per credit: $12.50',
-    buttonText: 'Get 12 months - $150',
-  },
-  {
-    credit: 50,
-    price: 450,
-    text: 'Get 50 months of access for $500.',
-    sutText: 'Cost per credit: $10',
-    buttonText: 'Get 50 monts - $500',
-  },
-];
+import TrialActivatedPopup from '../TrialActivatePopup';
 
 export default function AppView() {
+  const { country } = useLocationStore(); // Rename to storeCurrency
+  const currency = country === 'canada' ? 'priceCAD' : 'priceUSD';
   const router = useRouter();
   const [showFreeNo, setShowFreeNo] = useState(false);
   const [windowClosed, setWindowClosed] = useState(false);
+  const [showTrialPopup, setShowTrialPopup] = useState(false); // Add this state
+  const [products, setProducts] = useState(null);
   const user = useAuth();
-  const handleGridClick = (credit) => {
-    const url = `https://istreamdash.com?credit=${credit.credit}&price=${credit.price}&email=${user.email}`;
+
+  useEffect(() => {
+    const getProducts = async () => {
+      try {
+        const fetchedProducts = await fetchProducts();
+        console.log(fetchedProducts);
+        setProducts(fetchedProducts.filter((item) => item.credit !== 'all' && item.credit !== '0'));
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        // Handle error (e.g., show error message to user)
+      }
+    };
+
+    getProducts();
+  }, []);
+
+  const handleGridClick = (product) => {
+    const url = `https://istreamdash.com?credit=${product.credit}&price=${
+      product[currency]
+    }&email=${product.email}&currency=${currency === 'priceUSD' ? 'usd' : 'cad'}`;
     const newWindow = window.open(url, '_blank', 'width=800,height=650');
 
     const interval = setInterval(() => {
@@ -66,8 +60,7 @@ export default function AppView() {
   useEffect(() => {
     const getUserData = async () => {
       try {
-        const res = await getUser({ email: user.email });
-        console.log(res);
+        await getUser({ email: user.email });
         router.push('/add-device');
       } catch (error) {
         console.log(error);
@@ -75,14 +68,35 @@ export default function AppView() {
     };
     if (windowClosed) {
       getUserData();
-      setWindowClosed(false); // Reset state if needed
+      setWindowClosed(false);
     }
   }, [windowClosed, user, router]);
 
   const freeActive = async () => {
     const res = await tryFree({ email: user.email });
     console.log(res);
+    setShowTrialPopup(true);
     setShowFreeNo(true);
+  };
+
+  const generateProductText = (prod) => {
+    if (prod.credit === '0') return 'Get free access for 2 days.';
+    return `Get ${prod.credit} month${Number(prod.credit) > 1 ? 's' : ''} of access for ${
+      prod[currency]
+    } ${currency === 'priceUSD' ? 'USD' : 'CAD'}.`;
+  };
+
+  const generateProductSubText = (prod) => {
+    if (prod.credit === '0') return 'Start Free Trial';
+    const costPerCredit = (prod[currency] / prod.credit).toFixed(2);
+    return `Cost per credit: ${costPerCredit} ${currency === 'priceUSD' ? 'USD' : 'CAD'}`;
+  };
+
+  const generateButtonText = (prod) => {
+    if (prod.credit === '0') return 'Start Free Trial';
+    return `Get ${prod.credit} month${prod.credit > 1 ? 's' : ''} - ${prod[currency]}${
+      currency === 'priceUSD' ? 'USD' : 'CAD'
+    }`;
   };
 
   return (
@@ -144,7 +158,7 @@ export default function AppView() {
                 sx={{
                   backgroundColor: '#fff',
                   color: '#157EE3',
-                  width: '260px',
+                  width: '320px',
                   fontSize: '24px',
                   padding: '10px',
                   ':hover': {
@@ -158,51 +172,52 @@ export default function AppView() {
           </Grid>
         )}
 
-        {credits.map((prod) => (
-          <Grid
-            item
-            xs={12}
-            md={6}
-            key={prod.credit}
-            elevation={4}
-            sx={{
-              padding: '16px',
-              marginBottom: '16px',
-              border: '1px solid #ddd',
-              backgroundColor: '#157EE3',
-              color: '#f5f5f5',
-            }}
-          >
-            <Grid container justifyContent="space-between" alignItems="center">
-              <Box>
-                <Typography sx={{ fontWeight: 'bold', fontSize: '40px' }} mb={2}>
-                  {prod.credit} {prod.credit === 1 && 'credit'}
-                  {prod.credit > 1 && 'credits'}
-                </Typography>
-                <Typography>{prod.text}</Typography>
-                <Typography>{prod.sutText}</Typography>
-              </Box>
-              <Button
-                onClick={() => {
-                  handleGridClick(prod);
-                }}
-                variant="contained"
-                sx={{
-                  backgroundColor: '#fff',
-                  color: '#157EE3',
-                  width: '260px',
-                  fontSize: '24px',
-                  padding: '10px',
-                  ':hover': {
-                    color: '#FFFFFF',
-                  },
-                }}
-              >
-                {prod.buttonText}
-              </Button>
+        {products &&
+          products.map((prod) => (
+            <Grid
+              item
+              xs={12}
+              md={6}
+              key={prod.credit}
+              elevation={4}
+              sx={{
+                padding: '16px',
+                marginBottom: '16px',
+                border: '1px solid #ddd',
+                backgroundColor: '#157EE3',
+                color: '#f5f5f5',
+              }}
+            >
+              <Grid container justifyContent="space-between" alignItems="center">
+                <Box>
+                  <Typography sx={{ fontWeight: 'bold', fontSize: '40px' }} mb={2}>
+                    {prod.credit} {prod.credit === '1' && 'Credit'}
+                    {prod.credit > 1 && 'Credits'}
+                  </Typography>
+                  <Typography>{generateProductText(prod)}</Typography>
+                  <Typography>{generateProductSubText(prod)}</Typography>
+                </Box>
+                <Button
+                  onClick={() => {
+                    handleGridClick(prod);
+                  }}
+                  variant="contained"
+                  sx={{
+                    backgroundColor: '#fff',
+                    color: '#157EE3',
+                    width: '320px',
+                    fontSize: '24px',
+                    padding: '10px',
+                    ':hover': {
+                      color: '#FFFFFF',
+                    },
+                  }}
+                >
+                  {generateButtonText(prod)}
+                </Button>
+              </Grid>
             </Grid>
-          </Grid>
-        ))}
+          ))}
         {showFreeNo && (
           <Grid
             item
@@ -227,6 +242,14 @@ export default function AppView() {
               of your choice to test drive.
             </Typography>
           </Grid>
+        )}
+        {showTrialPopup && (
+          <TrialActivatedPopup
+            onClose={() => {
+              setShowTrialPopup(false);
+              router.push('/add-device');
+            }}
+          />
         )}
       </Grid>
     </Container>

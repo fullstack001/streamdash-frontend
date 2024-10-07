@@ -13,14 +13,14 @@ export default function ProductSideBar() {
             gutterBottom
             color="#156BE2"
           >
-            Best IPTV Service
+            Best IPTV Service – We Promise 🤝
           </Typography>
           <Typography
             sx={{ fontSize: { xs: '18px', md: '20px' }, fontWeight: '300', marginBottom: '10px' }}
             color="textSecondary"
           >
-            Choose the plan that fits your needs and enjoy seamless streaming of a wide variety of
-            channels and thousands of VODs.
+            Choose the plan that fits your needs and enjoy seamless streaming of thousands of
+            channels and VODs.
           </Typography>
           <Box sx={{ display: 'flex', marginTop: '10px' }}>
             <img
@@ -33,7 +33,7 @@ export default function ProductSideBar() {
             <Typography
               sx={{ fontSize: { xs: '18px', md: '20px' }, fontWeight: '500', marginLeft: '10px' }}
             >
-              Access over 9,000 live channels
+              Access to over 9000 channels and 50K movies & tv shows
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', marginTop: '10px' }}>
@@ -47,7 +47,7 @@ export default function ProductSideBar() {
             <Typography
               sx={{ fontSize: { xs: '18px', md: '20px' }, fontWeight: '500', marginLeft: '10px' }}
             >
-              Money-back guarantee for peace of mind
+              Smooth streaming experience in 4K
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', marginTop: '10px' }}>
@@ -61,7 +61,7 @@ export default function ProductSideBar() {
             <Typography
               sx={{ fontSize: { xs: '18px', md: '20px' }, fontWeight: '500', marginLeft: '10px' }}
             >
-              Simple set-up. Perfect privacy
+              Access to all sports streaming
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', marginTop: '10px' }}>
@@ -75,7 +75,7 @@ export default function ProductSideBar() {
             <Typography
               sx={{ fontSize: { xs: '18px', md: '20px' }, fontWeight: '500', marginLeft: '10px' }}
             >
-              Money-back guarantee for peace of mind
+              Updated daily
             </Typography>
           </Box>
         </Grid>

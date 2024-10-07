@@ -8,7 +8,7 @@ export default function ResetPasswordPage() {
   return (
     <>
       <Helmet>
-        <title> ResetPassword | Streamdash </title>
+        <title> ResetPassword | Stream Better TV </title>
       </Helmet>
 
       <ProfileView />

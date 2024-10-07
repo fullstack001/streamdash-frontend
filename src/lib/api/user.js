@@ -130,13 +130,28 @@ export const tryFree = async (data) => {
   }
 };
 
-export const updateProfile = async (data) => {
+export const sendOTP = async (data) => {
   try {
     const res = await axios.post(`${requestAddress}/api/auth/update-profile`, data);
-    return res.data;
+    return { status: 200, msg: res.data };
   } catch (error) {
-    console.log('Error update profile', error);
-    return 500;
+    console.error('Error updating profile:', error);
+    return {
+      status: 500,
+      msg: error.response?.data?.msg || 'Server error',
+    };
+  }
+};
+
+export const verifyOTP = async (data) => {
+  try {
+    const records = await axios.post(`${requestAddress}/api/auth/verify-opt`, data);
+    console.log(records.data.token);
+    Cookies.set('token', records.data.token, { expires: 6 / 24 });
+    return 200;
+  } catch (error) {
+    console.error('Error verifying verifyOTP:', error);
+    return { status: 500, msg: 'Server error' };
   }
 };
 

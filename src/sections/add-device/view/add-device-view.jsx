@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify'; // Add this import
 import Cookies from 'js-cookie';
 import { IoClose } from 'react-icons/io5';
 import { useState, useEffect } from 'react';
@@ -228,6 +229,10 @@ export default function AddDeviceView() {
       setOpenFAQ(index); // Open the clicked FAQ
     }
   };
+
+  // Simplified arrow function
+  const createMarkup = (html) => ({ __html: DOMPurify.sanitize(html) });
+
   return (
     <Container maxWidth="lg" sx={{ marginTop: 5 }}>
       <Grid container spacing={4}>
@@ -351,9 +356,11 @@ export default function AddDeviceView() {
                   {faq.title}
                 </Typography>
                 {openFAQ === faq._id && (
-                  <Typography variant="body2" sx={{ mt: 1, borderBottom: '3px solid ', pb: 2 }}>
-                    {faq.content}
-                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ mt: 1, borderBottom: '3px solid ', pb: 2 }}
+                    dangerouslySetInnerHTML={createMarkup(faq.content)}
+                  />
                 )}
               </div>
             ))}

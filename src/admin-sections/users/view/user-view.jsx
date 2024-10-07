@@ -176,6 +176,9 @@ export default function UserView() {
     if (res !== 200) {
       setSnackbarSeverity('success');
       setSnackbarMessage('User deleted successfully');
+      const updateUsers = users.filter((user) => user._id !== deleteId);
+      setUsers(updateUsers);
+      setUsers();
     } else {
       setSnackbarSeverity('error');
       setSnackbarMessage('Failed to delete device');

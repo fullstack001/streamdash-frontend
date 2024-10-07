@@ -28,7 +28,7 @@ const navConfig = [
     icon: icon('ic_blog'),
   },
   {
-    title: 'FAQ Managemenr',
+    title: 'FAQ Management',
     path: 'fac',
     icon: icon('ic_blog'),
   },

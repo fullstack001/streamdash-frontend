@@ -18,9 +18,8 @@ export default function IndexSideBar() {
           Explore a New World of TV
         </Typography>
         <Typography variant="body1" color="textSecondary">
-          Welcome to StreamDash – the best IPTV management platform. Get access to global TV
-          channels and on demand content with ease. Easily manage your devices with our self managed
-          dashboard.
+          Welcome to StreamDash – the management platform. Get access to global TV channels and on
+          demand content with ease. Easily manage your devices with our self managed dashboard.
         </Typography>
       </Box>
 

@@ -1,3 +1,5 @@
+import ReactQuill from 'react-quill'; // Add this import
+import 'react-quill/dist/quill.snow.css'; // Add this import for Quill styles
 import { useState, useEffect } from 'react';
 
 import Alert from '@mui/material/Alert';
@@ -73,7 +75,7 @@ export default function FooterView() {
     const newErrors = { title: '', content: '' };
 
     if (title.trim() === '') {
-      newErrors.title = 'Title is required.';
+      newErrors.title = 'Line 1 is required.';
       isValid = false;
     }
     if (content.trim() === '') {
@@ -124,16 +126,24 @@ export default function FooterView() {
         <Grid container item xs={12} alignItems="center" spacing={2} sx={{ mb: 1 }}>
           <Grid xs={3}>Line1*</Grid>
           <Grid xs={9}>
-            <CustomTextField
-              fullWidth
-              placeholder="Footer line 1"
-              variant="outlined"
+            <ReactQuill
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              error={!!errors.title}
-              helperText={errors.title}
-              required
+              onChange={setTitle}
+              placeholder="Footer line 1"
+              modules={{
+                toolbar: [
+                  ['bold', 'italic', 'underline', 'strike'],
+                  [{ list: 'ordered' }, { list: 'bullet' }],
+                  ['link'],
+                  ['clean'],
+                ],
+              }}
             />
+            {errors.title && (
+              <Typography color="error" variant="caption">
+                {errors.title}
+              </Typography>
+            )}
           </Grid>
         </Grid>
         <Grid container item xs={12} alignItems="center" spacing={2} sx={{ mb: 1 }}>

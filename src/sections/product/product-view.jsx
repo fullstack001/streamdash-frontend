@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 
@@ -24,57 +25,15 @@ import { useAuth } from 'src/hooks/use-auth';
 import userStore from 'src/store/userStore';
 import getDevice from 'src/lib/api/getDevice';
 import devicesStore from 'src/store/devicesStore';
+import { fetchProducts } from 'src/lib/api/products';
 import { signIn, tryFree, getUserPayment, signupDirectly } from 'src/lib/api/user';
 
 import Notification from './notification';
 
-const products = [
-  {
-    credit: 0,
-    id: 323642,
-    price: 0,
-    text: 'Get free access for 2 days. ',
-    sutText: 'Start Free Trial',
-    buttonText: 'Start Free Trial',
-  },
-  {
-    credit: 1,
-    id: 453423,
-    price: 20,
-    text: 'Get 1 months of access for $20.',
-    sutText: 'Cost per credit: $20',
-    buttonText: 'Get 1 month - $20',
-  },
-  {
-    credit: 6,
-    id: 975645,
-    price: 60,
-    text: 'Get 6 months of access for $90.',
-    sutText: 'Cost per credit: $15',
-    buttonText: 'Get 6 months - $90',
-  },
-  {
-    credit: 12,
-    id: 346345,
-    price: 150,
-    text: 'Get 12 months of access for $150.',
-    sutText: 'Cost per credit: $12.50',
-    buttonText: 'Get 12 months - $150',
-  },
-  {
-    credit: 50,
-    id: 675454,
-    price: 450,
-    text: 'Get 50 months of access for $500.',
-    sutText: 'Cost per credit: $10',
-    buttonText: 'Get 50 monts - $500',
-  },
-  { credit: 'all', id: 934323 },
-];
-
-export default function ProductView() {
+export default function ProductView({ currency }) {
   const { product_id } = useParams();
-  const product = products.find((item) => item.id === Number(product_id));
+  const [products, setProducts] = useState(null);
+  const [product, setProduct] = useState(null);
   const { setUser } = userStore();
   const router = useRouter();
   const authUser = useAuth();
@@ -97,7 +56,9 @@ export default function ProductView() {
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
   const handlePayment = () => {
-    const url = `https://istreamdash.com?credit=${currentProduct.credit}&price=${currentProduct.price}&email=${email}`;
+    const url = `https://istreamdash.com?credit=${currentProduct.credit}&price=${
+      currentProduct[currency]
+    }&email=${email}&currency=${currency === 'priceUSD' ? 'usd' : 'cad'}`;
     const newWindow = window.open(url, '_blank', 'width=800,height=650');
 
     const interval = setInterval(() => {
@@ -201,221 +162,151 @@ export default function ProductView() {
     setSnackbarOpen(false);
   };
 
+  const generateProductText = (prod) => {
+    if (prod.credit === '0') return 'Get free access for 2 days.';
+    return `Get ${prod.credit} month${Number(prod.credit) > 1 ? 's' : ''} of access for ${
+      prod[currency]
+    } ${currency === 'priceUSD' ? 'USD' : 'CAD'}.`;
+  };
+
+  const generateProductSubText = (prod) => {
+    if (prod.credit === '0') return 'Start Free Trial';
+    const costPerCredit = (prod[currency] / prod.credit).toFixed(2);
+    return `Cost per credit: ${costPerCredit} ${currency === 'priceUSD' ? 'USD' : 'CAD'}`;
+  };
+
+  const generateButtonText = (prod) => {
+    if (prod.credit === '0') return 'Start Free Trial';
+    return `Get ${prod.credit} month${prod.credit > 1 ? 's' : ''} - ${prod[currency]}${
+      currency === 'priceUSD' ? 'USD' : 'CAD'
+    }`;
+  };
+
+  useEffect(() => {
+    const getProducts = async () => {
+      try {
+        const fetchedProducts = await fetchProducts();
+        console.log(fetchedProducts);
+        setProducts(fetchedProducts);
+        if (product_id) {
+          const selectedProduct = fetchedProducts.find((item) => item.id === product_id);
+          setProduct(selectedProduct);
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        // Handle error (e.g., show error message to user)
+      }
+    };
+
+    getProducts();
+  }, [product_id]);
+
   return (
     <>
-      <Box sx={{ padding: '20px', margin: 'auto' }}>
-        <Grid container>
-          <Grid item xs={12} md={6} sx={{ padding: { xs: '20px', md: '40px' } }}>
-            <Typography
-              sx={{ fontSize: { xs: '30px', md: '45px' }, fontWeight: '600' }}
-              gutterBottom
-              color="#156BE2"
-            >
-              Discover the power of our IPTV services
-            </Typography>
-            <Typography
-              sx={{ fontSize: { xs: '18px', md: '25px' }, fontWeight: '300', marginBottom: '10px' }}
-              color="textSecondary"
-            >
-              Choose the plan that fits your needs and enjoy seamless streaming of a wide variety of
-              channels and thousands of VODs.
-            </Typography>
-            <Box sx={{ display: 'flex', marginTop: '10px' }}>
-              <img
-                width="25px"
-                height="25px"
-                style={{ marginTop: '5px' }}
-                src="/assets/icons/round_check.svg"
-                alt="Smart TV"
-              />
+      {products && (
+        <Box sx={{ padding: '20px', margin: 'auto' }}>
+          <Grid container>
+            <Grid item xs={12} md={6} sx={{ padding: { xs: '20px', md: '40px' } }}>
               <Typography
-                sx={{ fontSize: { xs: '18px', md: '25px' }, fontWeight: '500', marginLeft: '10px' }}
+                sx={{ fontSize: { xs: '30px', md: '45px' }, fontWeight: '600' }}
+                gutterBottom
+                color="#156BE2"
               >
-                Access over 9,000 live channels
+                Discover the powerful features
               </Typography>
-            </Box>
-            <Box sx={{ display: 'flex', marginTop: '10px' }}>
-              <img
-                width="25px"
-                height="25px"
-                style={{ marginTop: '5px' }}
-                src="/assets/icons/round_check.svg"
-                alt="Smart TV"
-              />
               <Typography
-                sx={{ fontSize: { xs: '18px', md: '25px' }, fontWeight: '500', marginLeft: '10px' }}
+                sx={{
+                  fontSize: { xs: '18px', md: '25px' },
+                  fontWeight: '300',
+                  marginBottom: '10px',
+                }}
+                color="textSecondary"
               >
-                Money-back guarantee for peace of mind
+                Access stalker portal (MAC ID) based IPTV service to connect your streaming device.
+                Our self-managed dashboard allows you to take control and get instant access.
               </Typography>
-            </Box>
-            <Box sx={{ display: 'flex', marginTop: '10px' }}>
-              <img
-                width="25px"
-                height="25px"
-                style={{ marginTop: '5px' }}
-                src="/assets/icons/round_check.svg"
-                alt="Smart TV"
-              />
-              <Typography
-                sx={{ fontSize: { xs: '18px', md: '25px' }, fontWeight: '500', marginLeft: '10px' }}
-              >
-                Simple set-up. Perfect privacy
-              </Typography>
-            </Box>
-            <Box sx={{ display: 'flex', marginTop: '10px' }}>
-              <img
-                width="25px"
-                height="25px"
-                style={{ marginTop: '5px' }}
-                src="/assets/icons/round_check.svg"
-                alt="Smart TV"
-              />
-              <Typography
-                sx={{ fontSize: { xs: '18px', md: '25px' }, fontWeight: '500', marginLeft: '10px' }}
-              >
-                Money-back guarantee for peace of mind
-              </Typography>
-            </Box>
-            <img src="/assets/images/product-sub.png" width="80%" alt="" />
-          </Grid>
-          {showMessage ? (
-            <Grid item xs={12} md={6}>
-              {/* Login form */}
-              <Paper elevation={4} sx={{ mt: 12, padding: '16px', marginBottom: '16px' }}>
-                <Typography variant="h6" gutterBottom>
-                  Your payment has been successfully processed.
-                  <br /> Please login below to add your device.
-                </Typography>
-                <TextField
-                  label="Email"
-                  type="email"
-                  fullWidth
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  error={!!emailError}
-                  helperText={emailError}
-                  sx={{ marginBottom: '16px' }}
+              <Box sx={{ display: 'flex', marginTop: '10px' }}>
+                <img
+                  width="25px"
+                  height="25px"
+                  style={{ marginTop: '5px' }}
+                  src="/assets/icons/round_check.svg"
+                  alt="Smart TV"
                 />
-                <TextField
-                  label="Password"
-                  type="password"
-                  fullWidth
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  error={!!passwordError}
-                  helperText={passwordError}
-                  sx={{ marginBottom: '16px' }}
-                />
-                <LoadingButton
-                  variant="contained"
-                  color="primary"
-                  loading={loading}
-                  onClick={handleClickSignin}
-                  fullWidth
-                >
-                  Log In
-                </LoadingButton>
-              </Paper>
-            </Grid>
-          ) : (
-            <Grid item xs={12} md={6}>
-              <Notification />
-
-              {/* Check if product.credit is 'all' */}
-              {product.credit === 'all' ? (
-                products
-                  .filter((prod) => prod.credit !== 'all') // Filter out 'all' itself
-                  .map((prod) => (
-                    <Paper
-                      key={prod.id}
-                      elevation={4}
-                      sx={{
-                        padding: '16px',
-                        marginBottom: '16px',
-                        border: '1px solid #ddd',
-                        backgroundColor: '#157EE3',
-                        color: '#f5f5f5',
-                      }}
-                    >
-                      <Grid container justifyContent="space-between" alignItems="center">
-                        <Box>
-                          <Typography sx={{ fontWeight: 'bold', fontSize: '40px' }} mb={2}>
-                            {prod.credit === 0 ? 'Free Trial' : prod.credit}{' '}
-                            {prod.credit === 1 && 'credit'}
-                            {prod.credit > 1 && 'credits'}
-                          </Typography>
-                          <Typography>{prod.text}</Typography>
-                          <Typography>{prod.sutText}</Typography>
-                        </Box>
-                        <Button
-                          onClick={() => {
-                            setOpenModal(true);
-                            setCurrentProduct(prod);
-                          }}
-                          variant="contained"
-                          sx={{
-                            backgroundColor: '#fff',
-                            color: '#157EE3',
-                            width: '260px',
-                            fontSize: '24px',
-                            padding: '10px',
-                            ':hover': {
-                              color: '#FFFFFF',
-                            },
-                          }}
-                        >
-                          {prod.buttonText}
-                        </Button>
-                      </Grid>
-                    </Paper>
-                  ))
-              ) : (
-                <Paper
-                  elevation={4}
+                <Typography
                   sx={{
-                    padding: '16px',
-                    marginBottom: '16px',
-                    border: '1px solid #ddd',
-                    backgroundColor: '#007bff',
-                    color: '#f5f5f5',
+                    fontSize: { xs: '18px', md: '25px' },
+                    fontWeight: '500',
+                    marginLeft: '10px',
                   }}
                 >
-                  <Grid container justifyContent="space-between" alignItems="center">
-                    <Box>
-                      <Typography variant="h4" sx={{ fontWeight: 'bold' }} mb={2}>
-                        {product.credit === 0 ? 'Free Trial' : product.credit}{' '}
-                        {product.credit === 1 && 'credit'}
-                        {product.credit > 1 && 'credits'}
-                      </Typography>
-                      <Typography>{product.text}</Typography>
-                      <Typography>{product.sutText}</Typography>
-                    </Box>
-                    <Button
-                      variant="contained"
-                      onClick={() => {
-                        setOpenModal(true);
-                        setCurrentProduct(product);
-                      }}
-                      sx={{
-                        backgroundColor: '#fff',
-                        color: '#157EE3',
-                        width: '260px',
-                        fontSize: '24px',
-                        padding: '10px',
-                        ':hover': {
-                          color: '#FFFFFF',
-                        },
-                      }}
-                    >
-                      {product.buttonText}
-                    </Button>
-                  </Grid>
-                </Paper>
-              )}
-              {/* Modal for Email and Password Signup */}
-              <Dialog open={openModal} onClose={() => setOpenModal(false)}>
-                <DialogTitle>Sign up to continue</DialogTitle>
-                <DialogContent>
+                  Get instance access – connect your device in minutes
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', marginTop: '10px' }}>
+                <img
+                  width="25px"
+                  height="25px"
+                  style={{ marginTop: '5px' }}
+                  src="/assets/icons/round_check.svg"
+                  alt="Smart TV"
+                />
+                <Typography
+                  sx={{
+                    fontSize: { xs: '18px', md: '25px' },
+                    fontWeight: '500',
+                    marginLeft: '10px',
+                  }}
+                >
+                  Your credits never expire!
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', marginTop: '10px' }}>
+                <img
+                  width="25px"
+                  height="25px"
+                  style={{ marginTop: '5px' }}
+                  src="/assets/icons/round_check.svg"
+                  alt="Smart TV"
+                />
+                <Typography
+                  sx={{
+                    fontSize: { xs: '18px', md: '25px' },
+                    fontWeight: '500',
+                    marginLeft: '10px',
+                  }}
+                >
+                  Connect unlimited devices
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', marginTop: '10px' }}>
+                <img
+                  width="25px"
+                  height="25px"
+                  style={{ marginTop: '5px' }}
+                  src="/assets/icons/round_check.svg"
+                  alt="Smart TV"
+                />
+                <Typography
+                  sx={{
+                    fontSize: { xs: '18px', md: '25px' },
+                    fontWeight: '500',
+                    marginLeft: '10px',
+                  }}
+                >
+                  Around the clock customer support
+                </Typography>
+              </Box>
+              <img src="/assets/images/product-sub.png" width="80%" alt="" />
+            </Grid>
+            {showMessage ? (
+              <Grid item xs={12} md={6}>
+                {/* Login form */}
+                <Paper elevation={4} sx={{ mt: 12, padding: '16px', marginBottom: '16px' }}>
+                  <Typography variant="h6" gutterBottom>
+                    Your payment has been successfully processed.
+                    <br /> Please login below to add your device.
+                  </Typography>
                   <TextField
                     label="Email"
                     type="email"
@@ -424,7 +315,7 @@ export default function ProductView() {
                     onChange={(e) => setEmail(e.target.value)}
                     error={!!emailError}
                     helperText={emailError}
-                    sx={{ my: 2 }}
+                    sx={{ marginBottom: '16px' }}
                   />
                   <TextField
                     label="Password"
@@ -434,30 +325,161 @@ export default function ProductView() {
                     onChange={(e) => setPassword(e.target.value)}
                     error={!!passwordError}
                     helperText={passwordError}
-                    sx={{ mb: 2 }}
-                  />
-                  <TextField
-                    label="Confirm Password"
-                    type="password"
-                    fullWidth
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    error={!!confirmPasswordError}
-                    helperText={confirmPasswordError}
                     sx={{ marginBottom: '16px' }}
                   />
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={() => setOpenModal(false)}>Cancel</Button>
-                  <Button variant="contained" onClick={() => handleSignup(currentProduct)}>
-                    Continue
-                  </Button>
-                </DialogActions>
-              </Dialog>
-            </Grid>
-          )}
-        </Grid>
-      </Box>
+                  <LoadingButton
+                    variant="contained"
+                    color="primary"
+                    loading={loading}
+                    onClick={handleClickSignin}
+                    fullWidth
+                  >
+                    Log In
+                  </LoadingButton>
+                </Paper>
+              </Grid>
+            ) : (
+              <Grid item xs={12} md={6}>
+                <Notification />
+
+                {/* Check if product.credit is 'all' */}
+                {product.credit === 'all' ? (
+                  products
+                    .filter((prod) => prod.credit !== 'all') // Filter out 'all' itself
+                    .map((prod) => (
+                      <Paper
+                        key={prod.id}
+                        elevation={4}
+                        sx={{
+                          padding: '16px',
+                          marginBottom: '16px',
+                          border: '1px solid #ddd',
+                          backgroundColor: '#157EE3',
+                          color: '#f5f5f5',
+                        }}
+                      >
+                        <Grid container justifyContent="space-between" alignItems="center">
+                          <Box>
+                            <Typography sx={{ fontWeight: 'bold', fontSize: '40px' }} mb={2}>
+                              {prod.credit === '0' ? 'Free Trial' : prod.credit}{' '}
+                              {prod.credit === '1' && 'Credit'}
+                              {Number(prod.credit) > 1 && 'Credits'}
+                            </Typography>
+                            <Typography>{generateProductText(prod)}</Typography>
+                            <Typography>{generateProductSubText(prod)}</Typography>
+                          </Box>
+                          <Button
+                            onClick={() => {
+                              setOpenModal(true);
+                              setCurrentProduct(prod);
+                            }}
+                            variant="contained"
+                            sx={{
+                              backgroundColor: '#fff',
+                              color: '#157EE3',
+                              width: '300px',
+                              fontSize: '20px',
+                              padding: '10px 0',
+                              ':hover': {
+                                color: '#FFFFFF',
+                              },
+                            }}
+                          >
+                            {generateButtonText(prod)}
+                          </Button>
+                        </Grid>
+                      </Paper>
+                    ))
+                ) : (
+                  <Paper
+                    elevation={4}
+                    sx={{
+                      padding: '16px',
+                      marginBottom: '16px',
+                      border: '1px solid #ddd',
+                      backgroundColor: '#007bff',
+                      color: '#f5f5f5',
+                    }}
+                  >
+                    <Grid container justifyContent="space-between" alignItems="center">
+                      <Box>
+                        <Typography variant="h4" sx={{ fontWeight: 'bold' }} mb={2}>
+                          {product.credit === 0 ? 'Free Trial' : product.credit}{' '}
+                          {product.credit === 1 && 'Credit'}
+                          {product.credit > 1 && 'Credits'}
+                        </Typography>
+                        <Typography>{generateProductText(product)}</Typography>
+                        <Typography>{generateProductSubText(product)}</Typography>
+                      </Box>
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          setOpenModal(true);
+                          setCurrentProduct(product);
+                        }}
+                        sx={{
+                          backgroundColor: '#fff',
+                          color: '#157EE3',
+                          width: '300px',
+                          fontSize: '20px',
+                          padding: '10px 0',
+                          ':hover': {
+                            color: '#FFFFFF',
+                          },
+                        }}
+                      >
+                        {generateButtonText(product)}
+                      </Button>
+                    </Grid>
+                  </Paper>
+                )}
+                {/* Modal for Email and Password Signup */}
+                <Dialog open={openModal} onClose={() => setOpenModal(false)}>
+                  <DialogTitle>Sign up to continue</DialogTitle>
+                  <DialogContent>
+                    <TextField
+                      label="Email"
+                      type="email"
+                      fullWidth
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      error={!!emailError}
+                      helperText={emailError}
+                      sx={{ my: 2 }}
+                    />
+                    <TextField
+                      label="Password"
+                      type="password"
+                      fullWidth
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      error={!!passwordError}
+                      helperText={passwordError}
+                      sx={{ mb: 2 }}
+                    />
+                    <TextField
+                      label="Confirm Password"
+                      type="password"
+                      fullWidth
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      error={!!confirmPasswordError}
+                      helperText={confirmPasswordError}
+                      sx={{ marginBottom: '16px' }}
+                    />
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => setOpenModal(false)}>Cancel</Button>
+                    <Button variant="contained" onClick={() => handleSignup(currentProduct)}>
+                      Continue
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+              </Grid>
+            )}
+          </Grid>
+        </Box>
+      )}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={8000}
@@ -471,3 +493,7 @@ export default function ProductView() {
     </>
   );
 }
+
+ProductView.propTypes = {
+  currency: PropTypes.string.isRequired,
+};

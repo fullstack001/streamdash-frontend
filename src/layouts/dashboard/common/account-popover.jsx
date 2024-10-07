@@ -98,15 +98,15 @@ export default function AccountPopover() {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         {MENU_OPTIONS.map((option) => (
-          <MenuItem key={option.label} onClick={handleClose}>
-            {option.icon}
-            <Link
-              to={option.link}
-              style={{ marginLeft: 8, textDecoration: 'none', color: 'inherit' }} // Remove underline and set color
-            >
+          <Link
+            to={option.link}
+            style={{ marginLeft: 8, textDecoration: 'none', color: 'inherit' }} // Remove underline and set color
+          >
+            <MenuItem key={option.label} onClick={handleClose}>
+              {option.icon}
               {option.label}
-            </Link>
-          </MenuItem>
+            </MenuItem>
+          </Link>
         ))}
 
         <Divider sx={{ borderStyle: 'dashed', m: 0 }} />

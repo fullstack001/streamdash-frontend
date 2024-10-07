@@ -13,7 +13,7 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> Login | Streamdash </title>
+        <title> Login | Stream Better TV </title>
       </Helmet>
 
       {/* Flex container to align Sidebar and LoginView side by side */}

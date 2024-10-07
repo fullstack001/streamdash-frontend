@@ -12,6 +12,7 @@ import { useAuth } from 'src/hooks/use-auth';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { bgBlur } from 'src/theme/css';
+import { useLocationStore } from 'src/store/locationStore';
 
 import Iconify from 'src/components/iconify';
 
@@ -24,9 +25,24 @@ import AccountPopover from './common/account-popover';
 // ----------------------------------------------------------------------
 
 export default function Header({ onOpenNav }) {
+  const { country } = useLocationStore();
   const user = useAuth();
   const theme = useTheme();
   const lgUp = useResponsive('up', 'lg');
+
+  // Add this function to get country info
+  const getCountryInfo = () => {
+    console.log(country);
+    if (!country) return { flagUrl: '/assets/images/world-flag.png', currency: 'US Dollar (USD)' };
+
+    if (country === 'canada')
+      return { flagUrl: '/assets/images/canada-flag.png', currency: 'Canadian Dollar (CAD)' };
+    if (country === 'USA' || country === 'united states')
+      return { flagUrl: '/assets/images/us-flag.png', currency: 'US Dollar (USD)' };
+    return { flagUrl: '/assets/images/world-flag.png', currency: 'US Dollar (USD)' };
+  };
+
+  const { flagUrl, currency } = getCountryInfo();
 
   const renderContent = (
     <>
@@ -45,6 +61,20 @@ export default function Header({ onOpenNav }) {
         <Typography variant="body1" sx={{ color: theme.palette.text.primary, mr: 4 }}>
           Credit{user.credit > 1 ? 's' : ''}: {user.credit}
         </Typography>
+
+        {/* Add country flag and currency */}
+        <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+          <img
+            src={flagUrl}
+            alt="Country flag"
+            width={24}
+            height={16}
+            style={{ marginRight: '8px' }}
+          />
+          <Typography variant="body2" color={theme.palette.text.secondary}>
+            {currency}
+          </Typography>
+        </Box>
 
         {/* <LanguagePopover /> */}
         {/* <NotificationsPopover /> */}

@@ -8,7 +8,7 @@ export default function CreditHistory() {
   return (
     <>
       <Helmet>
-        <title> Credit history | Streamdash </title>
+        <title> Credit history | Stream Better TV </title>
       </Helmet>
 
       <HistoryView />
