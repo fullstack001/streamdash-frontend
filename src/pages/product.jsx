@@ -67,7 +67,7 @@ export default function ProductPage() {
       }}
     >
       <Helmet>
-        <title> Porduct | Streamdash – Stream TV Better </title>
+        <title>Streamdash – Stream TV Better </title>
       </Helmet>
 
       {/* Flex container to align Sidebar and ProductView side by side */}

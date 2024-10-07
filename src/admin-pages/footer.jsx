@@ -8,7 +8,7 @@ export default function addDevicePage() {
   return (
     <>
       <Helmet>
-        <title> Set Footer </title>
+        <title> Streamdash – Stream TV Better </title>
       </Helmet>
 
       <FooterView />

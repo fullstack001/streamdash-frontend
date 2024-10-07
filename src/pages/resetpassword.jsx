@@ -13,7 +13,7 @@ export default function ResetPasswordPage() {
   return (
     <>
       <Helmet>
-        <title> ResetPassword |Streamdash – Stream TV Better </title>
+        <title>Streamdash – Stream TV Better </title>
       </Helmet>
       <Logo margin={3} />
       <Box

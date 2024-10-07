@@ -8,7 +8,7 @@ export default function addDevicePage() {
   return (
     <>
       <Helmet>
-        <title> Set Promotion </title>
+        <title> Streamdash – Stream TV Better </title>
       </Helmet>
 
       <PromotionView />

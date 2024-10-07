@@ -8,7 +8,7 @@ export default function addDevicePage() {
   return (
     <>
       <Helmet>
-        <title> Set Notification </title>
+        <title> Streamdash – Stream TV Better </title>
       </Helmet>
 
       <NotificationView />
