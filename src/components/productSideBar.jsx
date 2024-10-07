@@ -132,10 +132,22 @@ export default function ProductSideBar() {
               margin: '0 2%',
             },
           },
+          '& .laptop-icon': {
+            width: '130px',
+            height: '100px',
+            '@media (max-width: 900px)': {
+              width: '55px',
+              height: '50px',
+            },
+          },
         }}
       >
         <img src="/assets/images/products/smart-tv-icon.png" alt="Smart TV" />
-        <img src="/assets/images/products/laptop-icon.png" alt="Laptop or PC" />
+        <img
+          src="/assets/images/products/laptop-icon.png"
+          alt="Laptop or PC"
+          className="laptop-icon"
+        />
         <img src="/assets/images/products/android-icon.png" alt="Android" />
         <img src="/assets/images/products/ios-icon.png" alt="iOS" />
         <img src="/assets/images/products/windows-icon.png" alt="Windows" />

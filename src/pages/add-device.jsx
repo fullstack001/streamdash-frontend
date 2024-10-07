@@ -8,7 +8,7 @@ export default function addDevicePage() {
   return (
     <>
       <Helmet>
-        <title> Add Device </title>
+        <title> Add Device | Streamdash – Stream TV Better </title>
       </Helmet>
 
       <AddDeviceView />

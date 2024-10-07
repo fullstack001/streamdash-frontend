@@ -8,7 +8,7 @@ export default function SupportPage() {
   return (
     <>
       <Helmet>
-        <title> Support </title>
+        <title> Support | Streamdash – Stream TV Better </title>
       </Helmet>
       <SupportView />
     </>

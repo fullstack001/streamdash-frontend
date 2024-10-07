@@ -13,7 +13,7 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> Signup </title>
+        <title> Signup | Streamdash – Stream TV Better </title>
       </Helmet>
 
       <Logo margin={3} />

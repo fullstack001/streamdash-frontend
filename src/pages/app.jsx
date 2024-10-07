@@ -8,7 +8,7 @@ export default function AppPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard | Stream Better TV </title>
+        <title> Dashboard | Streamdash – Stream TV Better </title>
       </Helmet>
 
       <AppView />

@@ -51,8 +51,8 @@ export default function ProductPage() {
     if (country === 'canada')
       return { flagUrl: '/assets/images/canada-flag.png', currency: 'Canadian Dollar (CAD)' };
     if (country === 'USA' || country === 'united states')
-      return { flagUrl: '/assets/images/us-flag.png', currency: 'US Dollar (USD)' };
-    return { flagUrl: '/assets/images/world-flag.png', currency: 'US Dollar (USD)' };
+      return { flagUrl: '/assets/images/us-flag.png', currency: 'US $ (USD)' };
+    return { flagUrl: '/assets/images/world-flag.png', currency: 'US $ (USD)' };
   };
 
   const { flagUrl, currency } = getCountryInfo();
@@ -67,7 +67,7 @@ export default function ProductPage() {
       }}
     >
       <Helmet>
-        <title> Porduct | Stream Better TV </title>
+        <title> Porduct | Streamdash – Stream TV Better </title>
       </Helmet>
 
       {/* Flex container to align Sidebar and ProductView side by side */}
@@ -83,7 +83,16 @@ export default function ProductPage() {
       >
         <Logo />
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              border: 'solid 1px #D9D9D9',
+              padding: '5px',
+              borderRadius: '5px',
+            }}
+          >
             <img src={flagUrl} alt="Country flag" width={24} height={16} />
             {currency}
           </Typography>

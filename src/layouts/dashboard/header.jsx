@@ -63,7 +63,16 @@ export default function Header({ onOpenNav }) {
         </Typography>
 
         {/* Add country flag and currency */}
-        <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            mr: 2,
+            border: 'solid 1px #D9D9D9',
+            padding: '5px',
+            borderRadius: '5px',
+          }}
+        >
           <img
             src={flagUrl}
             alt="Country flag"
