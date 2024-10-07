@@ -404,9 +404,9 @@ export default function ProductView({ currency }) {
                     <Grid container justifyContent="space-between" alignItems="center">
                       <Box>
                         <Typography variant="h4" sx={{ fontWeight: 'bold' }} mb={2}>
-                          {product.credit === 0 ? 'Free Trial' : product.credit}{' '}
-                          {product.credit === 1 && 'Credit'}
-                          {product.credit > 1 && 'Credits'}
+                          {product.credit === "0" ? 'Free Trial' : product.credit}{' '}
+                          {product.credit === "1" && 'Credit'}
+                          {Number(product.credit) > 1 && 'Credits'}
                         </Typography>
                         <Typography>{generateProductText(product)}</Typography>
                         <Typography>{generateProductSubText(product)}</Typography>
