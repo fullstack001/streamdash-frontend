@@ -83,7 +83,9 @@ export default function UserTableRow({
         <TableCell align="center">{priceUSD !== 0 && `${priceUSD.toFixed(2)} USD`}</TableCell>
         <TableCell align="center">{discount}</TableCell>
         <TableCell align="center">{couponCode}</TableCell>
-        <TableCell align="center">{couponActive}</TableCell>
+        <TableCell align="center" color={couponActive ? 'green' : 'red'}>
+          {couponActive ? 'Active' : 'InActive'}
+        </TableCell>
         <TableCell align="center">{`https://streamdash.co/product/${id}`}</TableCell>
         <TableCell align="center">
           <Tooltip title={copySuccess ? 'Copied!' : 'Copy URL'}>
