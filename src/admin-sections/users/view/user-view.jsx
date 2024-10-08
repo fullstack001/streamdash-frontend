@@ -173,15 +173,14 @@ export default function UserView() {
   const handleConfirmDelete = async () => {
     setLoading(true);
     const res = await deleteUser(deleteId);
-    if (res !== 200) {
+    if (res !== 500) {  // Changed from res !== 200
       setSnackbarSeverity('success');
       setSnackbarMessage('User deleted successfully');
-      const updateUsers = users.filter((user) => user._id !== deleteId);
-      setUsers(updateUsers);
-      setUsers();
+      const updatedUsers = users.filter((user) => user._id !== deleteId);
+      setUsers(updatedUsers);
     } else {
       setSnackbarSeverity('error');
-      setSnackbarMessage('Failed to delete device');
+      setSnackbarMessage('Failed to delete user');
     }
     setSnackbarOpen(true);
     handleCloseConfirm();

@@ -152,7 +152,7 @@ export default function ProductView({ currency }) {
         setOpenModal(false); // Close the modal after signing up
       } else if (response.status === 500) {
         if (response.msg === 'exist') {
-          setEmailError('User already exist. Please signin');
+          setEmailError('User already exists. Please login.');
         }
       }
     }
