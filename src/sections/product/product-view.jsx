@@ -170,7 +170,7 @@ export default function ProductView({ currency }) {
   };
 
   const generateProductSubText = (prod) => {
-    if (prod.credit === '0') return 'Start Free Trial';
+    if (prod.credit === '0') return 'No credit card required';
     const costPerCredit = (prod[currency] / prod.credit).toFixed(2);
     return `Cost per credit: $${costPerCredit}`;
   };
@@ -220,8 +220,7 @@ export default function ProductView({ currency }) {
                 }}
                 color="textSecondary"
               >
-                Access stalker portal (MAC ID) based IPTV service to connect your streaming device.
-                Our self-managed dashboard allows you to take control and get instant access.
+                Discover the best stalker portal (MAC ID) based IPTV service. Sign up today and enjoy instant access to world class streaming
               </Typography>
               <Box sx={{ display: 'flex', marginTop: '10px' }}>
                 <img

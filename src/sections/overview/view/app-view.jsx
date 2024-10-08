@@ -87,7 +87,7 @@ export default function AppView() {
   };
 
   const generateProductSubText = (prod) => {
-    if (prod.credit === '0') return 'Start Free Trial';
+    if (prod.credit === '0') return 'No credit card required';
     const costPerCredit = (prod[currency] / prod.credit).toFixed(2);
     return `Cost per credit: $${costPerCredit}`;
   };
