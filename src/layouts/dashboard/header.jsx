@@ -8,10 +8,10 @@ import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
-import { useAuth } from 'src/hooks/use-auth';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { bgBlur } from 'src/theme/css';
+import { useCreditStore } from 'src/store/creditStore';
 import { useLocationStore } from 'src/store/locationStore';
 
 import Iconify from 'src/components/iconify';
@@ -26,7 +26,7 @@ import AccountPopover from './common/account-popover';
 
 export default function Header({ onOpenNav }) {
   const { country } = useLocationStore();
-  const user = useAuth();
+  const { credit } = useCreditStore();
   const theme = useTheme();
   const lgUp = useResponsive('up', 'lg');
 
@@ -58,7 +58,7 @@ export default function Header({ onOpenNav }) {
       <Stack direction="row" alignItems="center" spacing={1}>
         {/* Display the credit value */}
         <Typography variant="body1" sx={{ color: theme.palette.text.primary, mr: 4 }}>
-          Credit{user.credit > 1 ? 's' : ''}: {user.credit}
+          Credit{credit > 1 ? 's' : ''}: {credit}
         </Typography>
 
         {/* Add country flag and currency */}

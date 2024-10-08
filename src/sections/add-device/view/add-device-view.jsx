@@ -30,6 +30,7 @@ import { getFacs } from 'src/lib/api/fac'; // Assume this function exists to fet
 import { getUser } from 'src/lib/api/user';
 import addDevice from 'src/lib/api/addDevice';
 import devicesStore from 'src/store/devicesStore';
+import { useCreditStore } from 'src/store/creditStore';
 
 // Custom styles for the input fields and button
 const CustomTextField = styled(TextField)({
@@ -70,6 +71,7 @@ const FAQSection = styled('div')({
 });
 
 export default function AddDeviceView() {
+  const { setCreditFuntion } = useCreditStore();
   const router = useRouter();
   const user = useAuth();
   const { devices } = devicesStore((state) => state);
@@ -195,6 +197,7 @@ export default function AddDeviceView() {
           setOpenSuccessModal(true);
           const res = await getUser({ email: user.email });
           console.log(res);
+          setCreditFuntion();
         }
       } catch (error) {
         setSnackbarSeverity('error');

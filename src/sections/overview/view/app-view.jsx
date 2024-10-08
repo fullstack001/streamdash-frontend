@@ -13,6 +13,7 @@ import { useAuth } from 'src/hooks/use-auth';
 
 import { getUser, tryFree } from 'src/lib/api/user';
 import { fetchProducts } from 'src/lib/api/products';
+import { useCreditStore } from 'src/store/creditStore';
 import { useLocationStore } from 'src/store/locationStore';
 
 import CongratulationCard from '../notification';
@@ -21,6 +22,7 @@ import TrialActivatedPopup from '../TrialActivatePopup';
 export default function AppView() {
   const { country } = useLocationStore(); // Rename to storeCurrency
   const currency = country === 'canada' ? 'priceCAD' : 'priceUSD';
+  const { setCreditFuntion } = useCreditStore();
   const router = useRouter();
   const [showFreeNo, setShowFreeNo] = useState(false);
   const [windowClosed, setWindowClosed] = useState(false);
@@ -61,6 +63,7 @@ export default function AppView() {
     const getUserData = async () => {
       try {
         await getUser({ email: user.email });
+        setCreditFuntion();
         router.push('/add-device');
       } catch (error) {
         console.log(error);
@@ -70,7 +73,7 @@ export default function AppView() {
       getUserData();
       setWindowClosed(false);
     }
-  }, [windowClosed, user, router]);
+  }, [windowClosed, user, router, setCreditFuntion]);
 
   const freeActive = async () => {
     const res = await tryFree({ email: user.email });
