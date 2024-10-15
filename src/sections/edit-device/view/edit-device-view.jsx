@@ -24,6 +24,7 @@ import { useAuth } from 'src/hooks/use-auth';
 
 import { getUser } from 'src/lib/api/user';
 import devicesStore from 'src/store/devicesStore';
+import { useCreditStore } from 'src/store/creditStore';
 import uploadDeviceData from 'src/lib/api/uploadDeviceData';
 import addCreditToDevice from 'src/lib/api/addCreditToDevice';
 
@@ -32,6 +33,7 @@ import Label from 'src/components/label';
 export default function EditDeviceView() {
   const user = useAuth();
   const { devices, userDevices, setDevices, updateDevice, updateUserDevice } = devicesStore();
+  const { setCreditFuntion } = useCreditStore();
   // const { devices, userDevices } = devicesStore();
   const router = useRouter();
   const { id } = useParams();
@@ -163,6 +165,7 @@ export default function EditDeviceView() {
           );
           const res_user = await getUser({ email: user.email });
           console.log(res_user);
+          setCreditFuntion();
         }
       } catch (error) {
         setSnackbarSeverity('error');

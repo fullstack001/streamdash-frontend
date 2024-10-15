@@ -26,11 +26,13 @@ import userStore from 'src/store/userStore';
 import getDevice from 'src/lib/api/getDevice';
 import devicesStore from 'src/store/devicesStore';
 import { fetchProducts } from 'src/lib/api/products';
-import { signIn, tryFree, getUserPayment, signupDirectly } from 'src/lib/api/user';
+import { useCreditStore } from 'src/store/creditStore';
+import { signIn, signup, tryFree,  verifyEmail,  getUserPayment } from 'src/lib/api/user';
 
 import Notification from './notification';
 
 export default function ProductView({ currency }) {
+  const { setCreditFuntion } = useCreditStore();
   const { product_id } = useParams();
   const [products, setProducts] = useState(null);
   const [product, setProduct] = useState(null);
@@ -54,6 +56,10 @@ export default function ProductView({ currency }) {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+  const [validationCode, setValidationCode] = useState('');
+  const [showValidationInput, setShowValidationInput] = useState(false);
+  const [validationError, setValidationError] = useState('');
 
   const handlePayment = () => {
     const url = `https://istreamdash.com?credit=${currentProduct.credit}&price=${
@@ -130,6 +136,7 @@ export default function ProductView({ currency }) {
       } else {
         setDevices(response.data);
         setUserDevices(response.userDevice);
+        setCreditFuntion();
         router.push('/add-device');
       }
     }
@@ -139,22 +146,35 @@ export default function ProductView({ currency }) {
   const handleSignup = async (prod) => {
     if (validateForm()) {
       const data = { email, password };
-      const response = await signupDirectly(data);
+      const response = await signup(data);
 
       if (response.status === 200) {
-        if (prod.credit === '0') {
+        setShowValidationInput(true);
+      } else {
+          setEmailError('User already exists. Please login.');
+      }
+    }
+  };
+
+  const handleValidationCodeSubmit = async () => {
+    try {
+      const response = await verifyEmail({ email, validationCode});
+      if (response === 200) {
+        if (currentProduct.credit === '0') {
           const data1 = { email };
           await tryFree(data1);
           setShowMessage(true);
         } else {
-          handlePayment(prod);
+          handlePayment(currentProduct);
         }
-        setOpenModal(false); // Close the modal after signing up
-      } else if (response.status === 500) {
-        if (response.msg === 'exist') {
-          setEmailError('User already exist. Please signin');
-        }
+        setOpenModal(false);
+        setShowValidationInput(false);
+      } else {
+        setValidationError('Invalid code. Please try again.');
       }
+    } catch (error) {
+      console.error('Error confirming validation code:', error);
+      setValidationError('An error occurred. Please try again.');
     }
   };
 
@@ -170,7 +190,7 @@ export default function ProductView({ currency }) {
   };
 
   const generateProductSubText = (prod) => {
-    if (prod.credit === '0') return 'Start Free Trial';
+    if (prod.credit === '0') return 'No credit card required';
     const costPerCredit = (prod[currency] / prod.credit).toFixed(2);
     return `Cost per credit: $${costPerCredit}`;
   };
@@ -199,6 +219,16 @@ export default function ProductView({ currency }) {
     getProducts();
   }, [product_id]);
 
+  useEffect(() => {
+    document.addEventListener('keydown', (event)=> {
+      if (event.key === 'Enter') {
+        const continueButton = document.querySelector('.continue-button');
+
+          continueButton.click();
+      }
+    });
+  }, []);
+
   return (
     <>
       {products && (
@@ -220,10 +250,9 @@ export default function ProductView({ currency }) {
                 }}
                 color="textSecondary"
               >
-                Access stalker portal (MAC ID) based IPTV service to connect your streaming device.
-                Our self-managed dashboard allows you to take control and get instant access.
+                Discover the best stalker portal (MAC ID) based IPTV service. Sign up today and enjoy instant access to world class streaming
               </Typography>
-              <Box sx={{ display: 'flex', marginTop: '10px' }}>
+              <Box sx={{ display: 'flex', marginTop: '30px' }}>
                 <img
                   width="25px"
                   height="25px"
@@ -238,7 +267,7 @@ export default function ProductView({ currency }) {
                     marginLeft: '10px',
                   }}
                 >
-                  Get instance access – connect your device in minutes
+                  Get instant access – connect your device in minutes
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', marginTop: '10px' }}>
@@ -302,7 +331,9 @@ export default function ProductView({ currency }) {
                 {/* Login form */}
                 <Paper elevation={4} sx={{ mt: 12, padding: '16px', marginBottom: '16px' }}>
                   <Typography variant="h6" gutterBottom>
-                    Your payment has been successfully processed.
+                    {currentProduct.credit === '0'
+                      ? 'Your free trial has been activated.'
+                      : 'Your payment has been successfully processed.'}
                     <br /> Please login below to add your device.
                   </Typography>
                   <TextField
@@ -432,44 +463,82 @@ export default function ProductView({ currency }) {
                   </Paper>
                 )}
                 {/* Modal for Email and Password Signup */}
-                <Dialog open={openModal} onClose={() => setOpenModal(false)}>
-                  <DialogTitle>Sign up to continue</DialogTitle>
+                <Dialog 
+                  open={openModal} 
+                  onClose={(_, reason) => {
+                    if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                      setOpenModal(false);
+                    }
+                  }}
+                  disableEscapeKeyDown
+                >
+                  <DialogTitle>{showValidationInput ? 'Enter Validation Code' : 'Sign up to continue'}</DialogTitle>
                   <DialogContent>
-                    <TextField
-                      label="Email"
-                      type="email"
-                      fullWidth
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      error={!!emailError}
-                      helperText={emailError}
-                      sx={{ my: 2 }}
-                    />
-                    <TextField
-                      label="Password"
-                      type="password"
-                      fullWidth
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      error={!!passwordError}
-                      helperText={passwordError}
-                      sx={{ mb: 2 }}
-                    />
-                    <TextField
-                      label="Confirm Password"
-                      type="password"
-                      fullWidth
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      error={!!confirmPasswordError}
-                      helperText={confirmPasswordError}
-                      sx={{ marginBottom: '16px' }}
-                    />
+                    {!showValidationInput ? (
+                      <>
+                        <TextField
+                          label="Email"
+                          type="email"
+                          fullWidth
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          error={!!emailError}
+                          helperText={emailError}
+                          sx={{ my: 2 }}
+                        />
+                        <TextField
+                          label="Password"
+                          type="password"
+                          fullWidth
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          error={!!passwordError}
+                          helperText={passwordError}
+                          sx={{ mb: 2 }}
+                        />
+                        <TextField
+                          label="Confirm Password"
+                          type="password"
+                          fullWidth
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          error={!!confirmPasswordError}
+                          helperText={confirmPasswordError}
+                          sx={{ marginBottom: '16px' }}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <Typography variant="body2" gutterBottom>
+                          A validation code has been sent to your email. Please enter it below.
+                        </Typography>
+                        <TextField
+                          label="Validation Code"
+                          fullWidth
+                          value={validationCode}
+                          onChange={(e) => setValidationCode(e.target.value)}
+                          error={!!validationError}
+                          helperText={validationError}
+                          sx={{ marginBottom: '16px' }}
+                        />
+                      </>
+                    )}
                   </DialogContent>
                   <DialogActions>
-                    <Button onClick={() => setOpenModal(false)}>Cancel</Button>
-                    <Button variant="contained" onClick={() => handleSignup(currentProduct)}>
-                      Continue
+                      <Button onClick={() => {
+                        setOpenModal(false);
+                        setShowValidationInput(false);
+                        setValidationCode("");
+                        setEmail("");
+                        setPassword("");
+                        setConfirmPassword("");
+                    }}>Cancel</Button>
+                    <Button 
+                        variant="contained" 
+                        className="continue-button"
+                      onClick={showValidationInput ? handleValidationCodeSubmit : () => handleSignup(currentProduct)}
+                    >
+                      {showValidationInput ? 'Confirm' : 'Continue'}
                     </Button>
                   </DialogActions>
                 </Dialog>

@@ -6,7 +6,7 @@ export default function ProductSideBar() {
   return (
     <Box sx={{ backgroundColor: '#F8F4F5', borderRadius: 6, pb: 3 }}>
       {/* Header Section */}
-      <Grid container sx={{ padding: '0px' }}>
+      <Grid container sx={{ padding: '0px', marginTop: '10px' }}>
         <Grid item xs={12} md={6} sx={{ padding: '40px' }}>
           <Typography
             sx={{ fontSize: { xs: '30px', md: '45px' }, fontWeight: '600' }}
