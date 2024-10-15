@@ -24,6 +24,7 @@ import { bgGradient } from 'src/theme/css';
 import userStore from 'src/store/userStore';
 import getDevice from 'src/lib/api/getDevice';
 import devicesStore from 'src/store/devicesStore';
+import {useCreditStore} from 'src/store/creditStore';
 
 import Iconify from 'src/components/iconify';
 
@@ -38,6 +39,7 @@ export default function LoginView() {
   const { setUser } = userStore();
   const { setDevices, setUserDevices } = devicesStore();
   const authUser = useAuth();
+  const {setCreditFuntion} = useCreditStore();
 
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -93,6 +95,7 @@ export default function LoginView() {
       } else {
         setDevices(response.data);
         setUserDevices(response.userDevice);
+        setCreditFuntion();
         router.push(isAdmin() ? '/admin' : '/dashboard');
       }
     } else if (res.msg === 'email') {
