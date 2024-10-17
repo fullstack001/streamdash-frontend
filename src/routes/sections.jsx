@@ -27,6 +27,7 @@ export const AdminFacPage = lazy(() => import('src/admin-pages/fac'));
 export const AdminPromotionPage = lazy(() => import('src/admin-pages/promotion'));
 export const AdminFooterPage = lazy(() => import('src/admin-pages/footer'));
 export const ResetPasswordPage = lazy(() => import('src/pages/resetpassword'));
+export const SetPasswordPage = lazy(() => import('src/pages/setpassword'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const PrivacyPolicy = lazy(() => import('src/pages/privacy-policy'));
 export const TermsOfUse = lazy(() => import('src/pages/terms-of-use'));
@@ -157,7 +158,7 @@ export default function Router() {
       element: <ProductPage />,
     },
     { path: 'reset-password/:token', element: <ResetPasswordPage /> },
-
+    { path: 'set-password/:token', element: <SetPasswordPage /> },
     {
       path: '404',
       element: <Page404 />,

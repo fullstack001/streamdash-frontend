@@ -56,7 +56,7 @@ export default function UserView() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openAddUserModal, setOpenAddUserModal] = useState(false); // State to control modal
   const [newEmail, setNewEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // const [password, setPassword] = useState('');
 
   const [deleteId, setDeleteId] = useState('');
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -130,7 +130,7 @@ export default function UserView() {
 
   // Handle saving a new user
   const handleSaveNewUser = async () => {
-    const newUser = { email: newEmail, password };
+    const newUser = { email: newEmail };
 
     try {
       const res = await addUserByAdmin(newUser);
@@ -139,12 +139,11 @@ export default function UserView() {
         setSnackbarMessage('Create use faild.');
       } else {
         setSnackbarSeverity('success');
-        setSnackbarMessage('User added successfully.');
+        setSnackbarMessage('User added successfully. Set up password email sent to the user.');
         setUsers(res.data.filter((item) => item.isAdmin === false));
         setOpenAddUserModal(false);
         // Clear the form inputs
         setNewEmail('');
-        setPassword('');
       }
     } catch (error) {
       console.log(error);
@@ -156,7 +155,6 @@ export default function UserView() {
   const handleCloseAddUserModal = () => {
     setOpenAddUserModal(false);
     setNewEmail('');
-    setPassword('');
   };
 
   const handleDelete = (id) => {
@@ -173,7 +171,8 @@ export default function UserView() {
   const handleConfirmDelete = async () => {
     setLoading(true);
     const res = await deleteUser(deleteId);
-    if (res !== 500) {  // Changed from res !== 200
+    if (res !== 500) {
+      // Changed from res !== 200
       setSnackbarSeverity('success');
       setSnackbarMessage('User deleted successfully');
       const updatedUsers = users.filter((user) => user._id !== deleteId);
@@ -197,7 +196,7 @@ export default function UserView() {
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Devuces</Typography>
+        <Typography variant="h4">Users</Typography>
       </Stack>
       <Card>
         <UserTableToolbar
@@ -228,6 +227,7 @@ export default function UserView() {
                     <UserTableRow
                       key={row._id}
                       email={row.email}
+                      user={row}
                       isActive={row.isActive}
                       credit={row.credit}
                       editAction={handleAddCredit}
@@ -309,13 +309,6 @@ export default function UserView() {
               label="Email"
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
-              fullWidth
-            />
-            <TextField
-              label="Password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               fullWidth
             />
             <Stack direction="row" justifyContent="flex-end" spacing={2}>

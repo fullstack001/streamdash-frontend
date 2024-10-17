@@ -13,6 +13,8 @@ import Typography from '@mui/material/Typography';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
+import DeviceManagementModal from './device-management-modal';
+
 // Styles for the modal
 const modalStyle = {
   position: 'absolute',
@@ -28,13 +30,17 @@ const modalStyle = {
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({ credit, isActive, email, editAction, deleteUser }) {
+export default function UserTableRow({ credit, isActive, email, editAction, deleteUser, user }) {
   const [open, setOpen] = useState(false); // Modal open/close state
   const [newCredit, setNewCredit] = useState(0); // Track new credit value
   const [error, setError] = useState(''); // Handle input validation
+  const [deviceModalOpen, setDeviceModalOpen] = useState(false);
 
   const handleOpen = () => setOpen(true); // Open modal
   const handleClose = () => setOpen(false); // Close modal
+
+  const handleDeviceModalOpen = () => setDeviceModalOpen(true);
+  const handleDeviceModalClose = () => setDeviceModalOpen(false);
 
   // Handle save action
   const handleSave = () => {
@@ -61,9 +67,19 @@ export default function UserTableRow({ credit, isActive, email, editAction, dele
         <TableCell align="right">
           <Button
             variant="contained"
+            color="success"
+            onClick={handleDeviceModalOpen} // Open modal on click
+            startIcon={<Iconify icon="eva:edit-fill" />}
+            sx={{ mr: 2 }}
+          >
+            Device management
+          </Button>
+          <Button
+            variant="contained"
             color="primary"
             onClick={handleOpen} // Open modal on click
             startIcon={<Iconify icon="eva:edit-fill" />}
+            sx={{ mr: 2 }}
           >
             Add Credit
           </Button>
@@ -77,7 +93,6 @@ export default function UserTableRow({ credit, isActive, email, editAction, dele
           </Button>
         </TableCell>
       </TableRow>
-
       {/* Modal for adding credit */}
       <Modal open={open} onClose={handleClose} aria-labelledby="add-credit-modal">
         <Box sx={modalStyle}>
@@ -107,6 +122,16 @@ export default function UserTableRow({ credit, isActive, email, editAction, dele
           </Stack>
         </Box>
       </Modal>
+
+      {deviceModalOpen && (
+        <DeviceManagementModal
+          open={deviceModalOpen}
+          onClose={handleDeviceModalClose}
+          email={email}
+          credit={credit}
+          user={user}
+        />
+      )}
     </>
   );
 }
@@ -117,4 +142,5 @@ UserTableRow.propTypes = {
   isActive: PropTypes.any,
   editAction: PropTypes.func,
   deleteUser: PropTypes.func,
+  user: PropTypes.object,
 };
