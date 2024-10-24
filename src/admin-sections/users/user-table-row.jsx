@@ -30,7 +30,15 @@ const modalStyle = {
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({ credit, isActive, email, editAction, deleteUser, user }) {
+export default function UserTableRow({
+  credit,
+  isActive,
+  email,
+  editAction,
+  deleteUser,
+  user,
+  refetchUser,
+}) {
   const [open, setOpen] = useState(false); // Modal open/close state
   const [newCredit, setNewCredit] = useState(0); // Track new credit value
   const [error, setError] = useState(''); // Handle input validation
@@ -128,8 +136,9 @@ export default function UserTableRow({ credit, isActive, email, editAction, dele
           open={deviceModalOpen}
           onClose={handleDeviceModalClose}
           email={email}
-          credit={credit}
+          userCredit={credit}
           user={user}
+          refetchUser={refetchUser}
         />
       )}
     </>
@@ -143,4 +152,5 @@ UserTableRow.propTypes = {
   editAction: PropTypes.func,
   deleteUser: PropTypes.func,
   user: PropTypes.object,
+  refetchUser: PropTypes.func,
 };

@@ -1,14 +1,13 @@
+import toast from 'react-toastify';
 import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Modal from '@mui/material/Modal';
-import Alert from '@mui/material/Alert';
 import Table from '@mui/material/Table';
 import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
-import Snackbar from '@mui/material/Snackbar';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import TextField from '@mui/material/TextField';
@@ -61,9 +60,6 @@ export default function UserView() {
   const [deleteId, setDeleteId] = useState('');
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
   useEffect(() => {
     const getUserData = async () => {
@@ -76,6 +72,15 @@ export default function UserView() {
     };
     getUserData();
   }, []);
+
+  const refetchUser = async () => {
+    const res = await getAllUser();
+    if (res === 500) {
+      console.log(res);
+    } else {
+      setUsers(res.data.filter((item) => item.isAdmin === false));
+    }
+  };
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -109,18 +114,14 @@ export default function UserView() {
       const data = { email, credit };
       const res = await addCreditByAdmin(data);
       if (res !== 500) {
-        setSnackbarSeverity('success');
-        setSnackbarMessage('Credit added successfully to the user');
+        toast.success('Credit added successfully to the user');
         setUsers(res.data.filter((item) => item.isAdmin === false));
       } else {
-        setSnackbarSeverity('error');
-        setSnackbarMessage('Credit add faild.');
+        toast.error('Credit add faild.');
       }
     } catch {
-      setSnackbarSeverity('error');
-      setSnackbarMessage('Credit add faild.');
+      toast.error('Credit add faild.');
     }
-    setSnackbarOpen(true);
   };
 
   // Open the Add User Modal
@@ -135,11 +136,9 @@ export default function UserView() {
     try {
       const res = await addUserByAdmin(newUser);
       if (res === 500) {
-        setSnackbarSeverity('error');
-        setSnackbarMessage('Create use faild.');
+        toast.error('Create use faild.');
       } else {
-        setSnackbarSeverity('success');
-        setSnackbarMessage('User added successfully. Set up password email sent to the user.');
+        toast.success('User added successfully. Set up password email sent to the user.');
         setUsers(res.data.filter((item) => item.isAdmin === false));
         setOpenAddUserModal(false);
         // Clear the form inputs
@@ -148,7 +147,6 @@ export default function UserView() {
     } catch (error) {
       console.log(error);
     }
-    setSnackbarOpen(true);
   };
 
   // Handle closing the Add User modal
@@ -172,23 +170,14 @@ export default function UserView() {
     setLoading(true);
     const res = await deleteUser(deleteId);
     if (res !== 500) {
-      // Changed from res !== 200
-      setSnackbarSeverity('success');
-      setSnackbarMessage('User deleted successfully');
+      toast.success('User deleted successfully');
       const updatedUsers = users.filter((user) => user._id !== deleteId);
       setUsers(updatedUsers);
     } else {
-      setSnackbarSeverity('error');
-      setSnackbarMessage('Failed to delete user');
+      toast.error('Failed to delete user');
     }
-    setSnackbarOpen(true);
     handleCloseConfirm();
     setLoading(false);
-  };
-
-  // // Handle closing of the snackbar
-  const handleCloseSnackbar = () => {
-    setSnackbarOpen(false);
   };
 
   const notFound = !dataFiltered.length && !!filterMac;
@@ -200,8 +189,8 @@ export default function UserView() {
       </Stack>
       <Card>
         <UserTableToolbar
-          filterMac={filterMac}
-          onFilterMac={handleFilterByMac}
+          filterUser={filterMac}
+          onfilterUser={handleFilterByMac}
           addUser={addUserAction}
         />
 
@@ -232,6 +221,7 @@ export default function UserView() {
                       credit={row.credit}
                       editAction={handleAddCredit}
                       deleteUser={() => handleDelete(row._id)}
+                      refetchUser={refetchUser}
                     />
                   ))}
 
@@ -285,16 +275,7 @@ export default function UserView() {
           </Button>
         </DialogActions>
       </Dialog>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={8000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
+
       <Modal
         open={openAddUserModal}
         onClose={handleCloseAddUserModal}

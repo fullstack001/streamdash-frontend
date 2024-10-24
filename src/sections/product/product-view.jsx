@@ -27,7 +27,7 @@ import getDevice from 'src/lib/api/getDevice';
 import devicesStore from 'src/store/devicesStore';
 import { fetchProducts } from 'src/lib/api/products';
 import { useCreditStore } from 'src/store/creditStore';
-import { signIn, signup, tryFree,  verifyEmail,  getUserPayment } from 'src/lib/api/user';
+import { signIn, signup, tryFree, verifyEmail, getUserPayment } from 'src/lib/api/user';
 
 import Notification from './notification';
 
@@ -62,7 +62,7 @@ export default function ProductView({ currency }) {
   const [validationError, setValidationError] = useState('');
 
   const handlePayment = () => {
-    const url = `https://istreamdash.com?credit=${currentProduct.credit}&price=${
+    const url = `https://istreamdash.com/pay?credit=${currentProduct.credit}&price=${
       currentProduct[currency]
     }&email=${email}&currency=${currency === 'priceUSD' ? 'usd' : 'cad'}`;
     const newWindow = window.open(url, '_blank', 'width=800,height=650');
@@ -151,14 +151,14 @@ export default function ProductView({ currency }) {
       if (response.status === 200) {
         setShowValidationInput(true);
       } else {
-          setEmailError('User already exists. Please login.');
+        setEmailError('User already exists. Please login.');
       }
     }
   };
 
   const handleValidationCodeSubmit = async () => {
     try {
-      const response = await verifyEmail({ email, validationCode});
+      const response = await verifyEmail({ email, validationCode });
       if (response === 200) {
         if (currentProduct.credit === '0') {
           const data1 = { email };
@@ -220,11 +220,11 @@ export default function ProductView({ currency }) {
   }, [product_id]);
 
   useEffect(() => {
-    document.addEventListener('keydown', (event)=> {
+    document.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') {
         const continueButton = document.querySelector('.continue-button');
 
-          continueButton.click();
+        continueButton.click();
       }
     });
   }, []);
@@ -250,7 +250,8 @@ export default function ProductView({ currency }) {
                 }}
                 color="textSecondary"
               >
-                Discover the best stalker portal (MAC ID) based IPTV service. Sign up today and enjoy instant access to world class streaming
+                Discover the best stalker portal (MAC ID) based IPTV service. Sign up today and
+                enjoy instant access to world class streaming
               </Typography>
               <Box sx={{ display: 'flex', marginTop: '30px' }}>
                 <img
@@ -463,8 +464,8 @@ export default function ProductView({ currency }) {
                   </Paper>
                 )}
                 {/* Modal for Email and Password Signup */}
-                <Dialog 
-                  open={openModal} 
+                <Dialog
+                  open={openModal}
                   onClose={(_, reason) => {
                     if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
                       setOpenModal(false);
@@ -472,7 +473,9 @@ export default function ProductView({ currency }) {
                   }}
                   disableEscapeKeyDown
                 >
-                  <DialogTitle>{showValidationInput ? 'Enter Validation Code' : 'Sign up to continue'}</DialogTitle>
+                  <DialogTitle>
+                    {showValidationInput ? 'Enter Validation Code' : 'Sign up to continue'}
+                  </DialogTitle>
                   <DialogContent>
                     {!showValidationInput ? (
                       <>
@@ -525,18 +528,26 @@ export default function ProductView({ currency }) {
                     )}
                   </DialogContent>
                   <DialogActions>
-                      <Button onClick={() => {
+                    <Button
+                      onClick={() => {
                         setOpenModal(false);
                         setShowValidationInput(false);
-                        setValidationCode("");
-                        setEmail("");
-                        setPassword("");
-                        setConfirmPassword("");
-                    }}>Cancel</Button>
-                    <Button 
-                        variant="contained" 
-                        className="continue-button"
-                      onClick={showValidationInput ? handleValidationCodeSubmit : () => handleSignup(currentProduct)}
+                        setValidationCode('');
+                        setEmail('');
+                        setPassword('');
+                        setConfirmPassword('');
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="contained"
+                      className="continue-button"
+                      onClick={
+                        showValidationInput
+                          ? handleValidationCodeSubmit
+                          : () => handleSignup(currentProduct)
+                      }
                     >
                       {showValidationInput ? 'Confirm' : 'Continue'}
                     </Button>

@@ -48,7 +48,7 @@ export function applyFilter({ inputData, comparator, filterMac }) {
 
   if (filterMac) {
     inputData = inputData.filter(
-      (user) => user.mac.toLowerCase().indexOf(filterMac.toLowerCase()) !== -1
+      (user) => user.email.toLowerCase().indexOf(filterMac.toLowerCase()) !== -1
     );
   }
 

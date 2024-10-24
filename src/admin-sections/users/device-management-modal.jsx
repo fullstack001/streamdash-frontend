@@ -29,6 +29,8 @@ import {
 
 import getDevice from '../../lib/api/getDevice';
 import addDevice from '../../lib/api/addDevice';
+import EditDeviceModal from './edit-device-modal';
+import deleteDevice from '../../lib/api/deleteDevice';
 import assignDevice from '../../lib/api/assignDevice';
 
 const modalStyle = {
@@ -44,8 +46,15 @@ const modalStyle = {
   p: 4,
 };
 
-export default function DeviceManagementModal({ open, onClose, email, credit, user }) {
-  console.log(user);
+export default function DeviceManagementModal({
+  open,
+  onClose,
+  email,
+  userCredit,
+  user,
+  refetchUser,
+}) {
+  const [credit, setCredit] = useState(userCredit);
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [devices, setDevices] = useState([]);
   const [userDevices, setUserDevices] = useState([]);
@@ -63,9 +72,9 @@ export default function DeviceManagementModal({ open, onClose, email, credit, us
     mac: '',
     credit: '',
   });
-  // const [snackbarOpen, setSnackbarOpen] = useState(false);
-  // const [snackbarMessage, setSnackbarMessage] = useState('');
-  // const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deviceToEdit, setDeviceToEdit] = useState(null);
 
   const validate = () => {
     let isValid = true;
@@ -123,6 +132,27 @@ export default function DeviceManagementModal({ open, onClose, email, credit, us
     fetchDevices();
   }, [email, isAdding, isAssigning]);
 
+  const refetchCredit = async (credits) => {
+    const DeviceData = await getDevice(email);
+    const allDevices = DeviceData.data;
+    const assignedDevices = DeviceData.userDevice;
+    const allAssignedDevices = DeviceData.assignedDevices;
+    const currentDevices = allDevices.filter((device) =>
+      assignedDevices.some((userDevice) => userDevice.username === device.loginId)
+    );
+
+    const unAssignedDevices = allDevices.filter(
+      (device) => !allAssignedDevices.some((assignedDevice) => assignedDevice.mac === device.mac)
+    );
+
+    setCredit(credit - credits);
+
+    setUserDevices(currentDevices);
+    setDevices(unAssignedDevices);
+    refetchUser();
+  };
+  console.log(userDevices);
+
   const handleAddDevice = async () => {
     console.log('Click Edit', errors);
     if (validate()) {
@@ -179,6 +209,37 @@ export default function DeviceManagementModal({ open, onClose, email, credit, us
     }
   };
 
+  const handleRemoveDevice = async (deviceId) => {
+    try {
+      const res = await deleteDevice({ username: deviceId });
+      if (res === 200) {
+        toast.success('Device deleted successfully', {
+          position: 'top-right',
+        });
+        setDevices(devices.filter((item) => item.username !== deviceId));
+        setUserDevices(userDevices.filter((item) => item.loginId !== deviceId));
+      } else {
+        throw new Error('Failed to delete device');
+      }
+    } catch (error) {
+      toast.error('Failed to delete device', {
+        position: 'top-right',
+      });
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const handleEditDevice = (device) => {
+    setDeviceToEdit(device);
+    setEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setEditModalOpen(false);
+    setDeviceToEdit(null);
+  };
+
   // const handleCloseSnackbar = () => {
   //   setSnackbarOpen(false);
   // };
@@ -200,6 +261,7 @@ export default function DeviceManagementModal({ open, onClose, email, credit, us
                     <TableCell>MAC Address</TableCell>
                     <TableCell>Expiry</TableCell>
                     <TableCell>Status</TableCell>
+                    <TableCell>Action</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -208,11 +270,36 @@ export default function DeviceManagementModal({ open, onClose, email, credit, us
                       <TableCell>{device.mac}</TableCell>
                       <TableCell>{device.expiry}</TableCell>
                       <TableCell>{device.status}</TableCell>
-                      {/* <TableCell>
-                        <Button variant="outlined" color="secondary">
-                          Remove
-                        </Button>
-                      </TableCell> */}
+                      {device.status === 'ACTIVE' ? (
+                        <TableCell>
+                          <Button
+                            variant="outlined"
+                            color="primary"
+                            onClick={() => handleEditDevice(device)}
+                          >
+                            Edit
+                          </Button>
+                        </TableCell>
+                      ) : (
+                        <TableCell>
+                          <Button
+                            variant="outlined"
+                            color="primary"
+                            onClick={() => handleEditDevice(device)}
+                          >
+                            Edit
+                          </Button>
+
+                          <Button
+                            variant="outlined"
+                            color="secondary"
+                            onClick={() => handleRemoveDevice(device.loginId)}
+                            disabled={deleteLoading === device.username}
+                          >
+                            {deleteLoading === device.username ? 'Removing...' : 'Remove'}
+                          </Button>
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))}
                 </TableBody>
@@ -328,6 +415,19 @@ export default function DeviceManagementModal({ open, onClose, email, credit, us
         <Button onClick={onClose} variant="outlined" sx={{ mt: 2 }} fullWidth>
           Close
         </Button>
+
+        {/* Add this at the end of the component, before the closing tags */}
+        <EditDeviceModal
+          refetchCredit={refetchCredit}
+          open={editModalOpen}
+          onClose={handleCloseEditModal}
+          device={deviceToEdit}
+          email={email}
+          credit={credit}
+          devices={devices}
+          userDevices={userDevices}
+          // Add any other props needed for editing
+        />
       </Box>
     </Modal>
   );
@@ -337,6 +437,7 @@ DeviceManagementModal.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   email: PropTypes.string.isRequired,
-  credit: PropTypes.number.isRequired,
+  userCredit: PropTypes.number.isRequired,
   user: PropTypes.object.isRequired,
+  refetchUser: PropTypes.func.isRequired,
 };

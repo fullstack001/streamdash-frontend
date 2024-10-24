@@ -46,7 +46,7 @@ export default function AppView() {
   }, []);
 
   const handleGridClick = (product) => {
-    const url = `https://istreamdash.com?credit=${product.credit}&price=${
+    const url = `https://istreamdash.com/pay?credit=${product.credit}&price=${
       product[currency]
     }&email=${user.email}&currency=${currency === 'priceUSD' ? 'usd' : 'cad'}`;
     const newWindow = window.open(url, '_blank', 'width=800,height=650');
