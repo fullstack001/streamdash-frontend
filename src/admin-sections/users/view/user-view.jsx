@@ -1,4 +1,4 @@
-import toast from 'react-toastify';
+import { toast } from 'react-toastify';
 import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
